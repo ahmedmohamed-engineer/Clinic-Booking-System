@@ -22,9 +22,6 @@ export class PaymentService {
     if (appointment.status === "cancelled") {
       throw new AppError(HttpStatus.BAD_REQUEST, "Cannot pay for a cancelled appointment");
     }
-    if (appointment.status === "completed") {
-      throw new AppError(HttpStatus.BAD_REQUEST, "Cannot pay for a completed appointment");
-    }
 
     return this.create(dto);
   }
@@ -57,9 +54,6 @@ export class PaymentService {
     const appointment = await paymentRepository.findAppointmentPatientId(payment.appointmentId);
     if (appointment?.status === "cancelled") {
       throw new AppError(HttpStatus.BAD_REQUEST, "Cannot pay for a cancelled appointment");
-    }
-    if (appointment?.status === "completed") {
-      throw new AppError(HttpStatus.BAD_REQUEST, "Cannot pay for a completed appointment");
     }
 
     if (dto.amount !== undefined) {

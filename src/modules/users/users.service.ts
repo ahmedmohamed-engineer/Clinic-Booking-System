@@ -1,6 +1,7 @@
 import { usersRepository } from "./users.repository.js";
 import { AppError } from "../../shared/errors/app-error.js";
 import { HttpStatus } from "../../shared/constants/http-status.js";
+import { deleteAvatarByPublicUrl, saveAvatar } from "../../services/avatar-storage.service.js";
 import type { UpdateUserDto, UserFilter } from "./users.types.js";
 import type { UserRecord } from "./users.interfaces.js";
 import type { PaginationMeta } from "../../shared/types/pagination.types.js";
@@ -84,6 +85,26 @@ export class UsersService {
     if (!deleted) {
       throw AppError.notFound("User not found");
     }
+  }
+
+  async uploadAvatar(userId: UUID, file: Express.Multer.File | undefined): Promise<UserRecord> {
+    if (!file) {
+      throw AppError.badRequest("No avatar file provided");
+    }
+
+    const user = await usersRepository.findById(userId);
+    if (!user) {
+      throw AppError.notFound("User not found");
+    }
+
+    const saved = await saveAvatar(file.buffer);
+    const updated = await usersRepository.update(userId, { avatarUrl: saved.publicUrl });
+    if (!updated) {
+      throw AppError.notFound("User not found");
+    }
+
+    await deleteAvatarByPublicUrl(user.avatarUrl);
+    return updated;
   }
 }
 

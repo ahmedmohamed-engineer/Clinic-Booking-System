@@ -4,7 +4,8 @@ import { memo } from "react";
 import type { DoctorReadModel } from "@/types/models/doctor";
 import { Card, CardContent } from "@/components/ui/card";
 import { StarRating } from "@/components/business/StarRating";
-import { User, Award, DollarSign, Building2, Stethoscope } from "lucide-react";
+import { Avatar } from "@/components/ui/avatar";
+import { Award, DollarSign, Building2, Stethoscope } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 
 interface DoctorCardProps {
@@ -41,9 +42,13 @@ export const DoctorCard = memo(function DoctorCard({
     >
       <CardContent className="p-6">
         <div className="flex items-start gap-4">
-          <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <User className="size-7" />
-          </div>
+          <Avatar
+            src={doctor.doctor.avatarUrl}
+            fallback={doctor.doctor.displayName}
+            className="size-14 shrink-0"
+            width={64}
+            height={64}
+          />
           <div className="flex-1">
             <div className="flex items-start justify-between">
               <div>

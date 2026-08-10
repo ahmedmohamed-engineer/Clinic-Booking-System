@@ -5,6 +5,8 @@ export interface UserRecord {
   email: string;
   role: UserRole;
   isVerified: boolean;
+  fullName?: string | null;
+  avatarUrl?: string | null;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;

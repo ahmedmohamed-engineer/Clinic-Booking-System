@@ -9,12 +9,18 @@ interface IdRow {
 
 export class PatientRepository extends BaseRepository {
   private readonly selectFields = `
-    id,
-    user_id AS "userId",
-    full_name AS "fullName",
-    phone,
-    gender,
-    birth_date AS "birthDate"
+    pa.id,
+    pa.user_id AS "userId",
+    pa.full_name AS "fullName",
+    pa.phone,
+    pa.gender,
+    pa.birth_date AS "birthDate",
+    u.avatar_url AS "avatarUrl"
+  `;
+
+  private readonly fromClause = `
+    FROM patients pa
+    LEFT JOIN users u ON u.id = pa.user_id
   `;
 
   async create(data: {
@@ -24,20 +30,24 @@ export class PatientRepository extends BaseRepository {
     gender: string | null;
     birthDate: string | null;
   }): Promise<PatientRecord> {
-    const result = await this.query<PatientRecord>(
+    const result = await this.query<IdRow>(
       `INSERT INTO patients (user_id, full_name, phone, gender, birth_date)
        VALUES ($1, $2, $3, $4, $5::date)
-       RETURNING ${this.selectFields}`,
+       RETURNING id`,
       [data.userId, data.fullName, data.phone, data.gender, data.birthDate],
     );
-    return result.rows[0];
+    const created = await this.findById(result.rows[0].id);
+    if (!created) {
+      throw new Error("Failed to load created patient");
+    }
+    return created;
   }
 
   async findAll(): Promise<PatientRecord[]> {
     const result = await this.query<PatientRecord>(
       `SELECT ${this.selectFields}
-       FROM patients
-       ORDER BY full_name`,
+       ${this.fromClause}
+       ORDER BY pa.full_name`,
     );
     return result.rows;
   }
@@ -45,8 +55,8 @@ export class PatientRepository extends BaseRepository {
   async findById(id: UUID): Promise<PatientRecord | null> {
     const result = await this.query<PatientRecord>(
       `SELECT ${this.selectFields}
-       FROM patients
-       WHERE id = $1`,
+       ${this.fromClause}
+       WHERE pa.id = $1`,
       [id],
     );
     return result.rows[0] ?? null;
@@ -55,8 +65,8 @@ export class PatientRepository extends BaseRepository {
   async findByUserId(userId: UUID): Promise<PatientRecord | null> {
     const result = await this.query<PatientRecord>(
       `SELECT ${this.selectFields}
-       FROM patients
-       WHERE user_id = $1`,
+       ${this.fromClause}
+       WHERE pa.user_id = $1`,
       [userId],
     );
     return result.rows[0] ?? null;
@@ -111,14 +121,13 @@ export class PatientRepository extends BaseRepository {
     if (sets.length === 0) return null;
 
     values.push(id);
-    const result = await this.query<PatientRecord>(
+    await this.query(
       `UPDATE patients
        SET ${sets.join(", ")}
-       WHERE id = $${paramIndex}
-       RETURNING ${this.selectFields}`,
+       WHERE id = $${paramIndex}`,
       values,
     );
-    return result.rows[0] ?? null;
+    return this.findById(id);
   }
 
   async delete(id: UUID): Promise<boolean> {

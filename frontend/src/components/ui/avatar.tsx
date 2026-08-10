@@ -1,32 +1,36 @@
 "use client";
 
 import Image from "next/image";
-import { cn } from "@/lib/utils";
-
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
+import { cn, getInitials } from "@/lib/utils";
+import { mediaUrl } from "@/lib/media";
 
 interface AvatarProps {
   src?: string | null;
   alt?: string;
   fallback: string;
   className?: string;
+  width?: number;
+  height?: number;
 }
 
-export function Avatar({ src, alt, fallback, className }: AvatarProps) {
-  if (src) {
+export function Avatar({
+  src,
+  alt,
+  fallback,
+  className,
+  width = 32,
+  height = 32,
+}: AvatarProps) {
+  const resolvedSrc = mediaUrl(src);
+
+  if (resolvedSrc) {
     return (
       <Image
-        src={src}
+        src={resolvedSrc}
         alt={alt ?? fallback}
-        width={32}
-        height={32}
+        width={width}
+        height={height}
+        unoptimized
         className={cn("size-8 rounded-full object-cover", className)}
       />
     );

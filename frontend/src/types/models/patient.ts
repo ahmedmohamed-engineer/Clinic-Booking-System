@@ -5,6 +5,7 @@ export interface PatientRecord {
   phone: string | null;
   gender: string | null;
   birthDate: string | null;
+  avatarUrl?: string | null;
 }
 
 export interface PatientCreateRequest {

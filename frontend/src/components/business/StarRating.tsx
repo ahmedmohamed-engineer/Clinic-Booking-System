@@ -65,7 +65,7 @@ export function StarRating({
                 sizeMap[size],
                 "transition-colors",
                 filled
-                  ? "fill-yellow-400 text-yellow-400"
+                  ? "fill-amber-500 text-amber-500"
                   : "fill-none text-muted-foreground",
               )}
             />

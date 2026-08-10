@@ -1,7 +1,9 @@
 "use client";
 
-import { Stethoscope, X } from "lucide-react";
+import Link from "next/link";
+import { CreditCard, Star, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
 import { StatusBadge } from "@/components/business/StatusBadge";
 import { ConfirmDialog } from "@/components/business/ConfirmDialog";
 import { useState, memo } from "react";
@@ -28,12 +30,42 @@ export const AppointmentCard = memo(function AppointmentCard({
   const cancellable =
     onCancel && CANCELLABLE_STATUSES.has(appointment.status);
 
+  const isCompleted = appointment.status === "completed";
+  const needsPayment =
+    isCompleted &&
+    viewer === "patient" &&
+    (appointment.paymentStatus === null ||
+      appointment.paymentStatus === "pending" ||
+      appointment.paymentStatus === "failed");
+  const canLeaveReview =
+    isCompleted &&
+    viewer === "patient" &&
+    appointment.paymentStatus === "paid" &&
+    !appointment.reviewExists;
+  const canViewReview =
+    isCompleted &&
+    viewer === "patient" &&
+    appointment.paymentStatus === "paid" &&
+    appointment.reviewExists;
+
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-outline-variant sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex cursor-pointer flex-col gap-4 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <Stethoscope className="size-6" aria-hidden="true" />
-        </div>
+        <Avatar
+          src={
+            viewer === "doctor"
+              ? appointment.patient.avatarUrl
+              : appointment.doctor.avatarUrl
+          }
+          fallback={
+            viewer === "doctor"
+              ? appointment.patient.fullName
+              : appointment.doctor.displayName
+          }
+          className="size-10 shrink-0"
+          width={40}
+          height={40}
+        />
         <div className="min-w-0">
           <h3 className="truncate text-sm font-medium text-foreground">
             {viewer === "doctor"
@@ -42,6 +74,9 @@ export const AppointmentCard = memo(function AppointmentCard({
           </h3>
           <p className="text-sm text-muted-foreground">
             {appointment.doctor.specialtyName}
+          </p>
+          <p className="truncate text-sm text-muted-foreground">
+            {appointment.doctor.clinicName}
           </p>
         </div>
       </div>
@@ -55,14 +90,31 @@ export const AppointmentCard = memo(function AppointmentCard({
         <StatusBadge status={appointment.status} />
         {cancellable && (
           <Button
-            variant="outline"
+            variant="destructive"
             size="sm"
+            className="cursor-pointer transition-all duration-200 hover:scale-105 hover:bg-red-600 hover:text-white hover:shadow-lg"
             onClick={() => setConfirmOpen(true)}
             disabled={isCancelling}
           >
             <X className="size-3.5" />
             Cancel
           </Button>
+        )}
+        {needsPayment && (
+          <Link href="/payments" className="inline-flex">
+            <Button size="sm">
+              <CreditCard className="size-3.5" />
+              Pay
+            </Button>
+          </Link>
+        )}
+        {(canLeaveReview || canViewReview) && (
+          <Link href="/reviews" className="inline-flex">
+            <Button variant="outline" size="sm">
+              <Star className="size-3.5" />
+              {canLeaveReview ? "Leave Review" : "View Review"}
+            </Button>
+          </Link>
         )}
       </div>
 

@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+node_modules.orig-root/
 
 # Build
 dist/
@@ -46,6 +47,9 @@ temp/
 *.sqlite
 *.db
 
+# Uploads
+uploads/
+
 # Workplan (temporary, single source of truth for current task only)
 docs/workplan.md
 prompt.md
@@ -68,24 +72,9 @@ test-results/
 # Misc
 *.pid
 
-
 # Environment files
 .env.local
 .env*.local
 
 # Next.js
 .next/
-out/
-
-# Dependencies
-node_modules/
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# OS
-.DS_Store
-Thumbs.db

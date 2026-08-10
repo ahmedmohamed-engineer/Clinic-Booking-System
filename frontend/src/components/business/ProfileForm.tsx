@@ -27,6 +27,10 @@ interface ProfileFormProps {
   patient: PatientRecord;
   onSubmit: (data: UpdatePatientInput) => Promise<void> | void;
   isSubmitting?: boolean;
+  onSaveSuccess?: () => void;
+  /** Renders only the fields, no submit button — use with a footer's own Save. */
+  formId?: string;
+  hideActions?: boolean;
 }
 
 const GENDER_OPTIONS = ["male", "female", "other"];
@@ -45,7 +49,14 @@ function fromISODate(value: string | null): Date | undefined {
   return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 }
 
-export function ProfileForm({ patient, onSubmit, isSubmitting }: ProfileFormProps) {
+export function ProfileForm({
+  patient,
+  onSubmit,
+  isSubmitting,
+  onSaveSuccess,
+  formId,
+  hideActions = false,
+}: ProfileFormProps) {
   const { parse } = useApiError();
   const [fullName, setFullName] = useState(patient.fullName);
   const [phone, setPhone] = useState(patient.phone ?? "");
@@ -76,14 +87,16 @@ export function ProfileForm({ patient, onSubmit, isSubmitting }: ProfileFormProp
       return;
     }
 
-    Promise.resolve(onSubmit(result.data)).catch((err: unknown) => {
-      const { message } = parse(err);
-      setFormError(message);
-    });
+    Promise.resolve(onSubmit(result.data))
+      .then(() => onSaveSuccess?.())
+      .catch((err: unknown) => {
+        const { message } = parse(err);
+        setFormError(message);
+      });
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate id={formId}>
       {formError && (
         <div
           role="alert"
@@ -174,11 +187,13 @@ export function ProfileForm({ patient, onSubmit, isSubmitting }: ProfileFormProp
         )}
       </div>
 
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : "Save changes"}
-        </Button>
-      </div>
+      {!hideActions && (
+          <div className="flex justify-end">
+            <Button type="submit" form={formId} disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save changes"}
+            </Button>
+          </div>
+        )}
     </form>
   );
 }

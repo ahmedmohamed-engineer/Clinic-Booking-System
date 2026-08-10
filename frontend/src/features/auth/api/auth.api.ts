@@ -27,3 +27,12 @@ export async function getCurrentUser(): Promise<UserRecord> {
   const response = await api.get<ApiResponse<UserRecord>>("/auth/me");
   return response.data.data;
 }
+
+export async function uploadAvatar(file: File): Promise<UserRecord> {
+  const formData = new FormData();
+  formData.append("avatar", file);
+  const response = await api.post<ApiResponse<UserRecord>>("/users/avatar", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data.data;
+}

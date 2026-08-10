@@ -11,6 +11,7 @@ interface AppointmentInfoRow {
   id: UUID;
   patientId: UUID;
   status: string;
+  paymentStatus: string | null;
 }
 
 interface ReviewWithDoctorRow {
@@ -33,13 +34,15 @@ export class ReviewRepository extends BaseRepository {
     r.appointment_id AS "appointmentId",
     r.rating,
     r.comment,
-    json_build_object('id', pa.id, 'fullName', pa.full_name) AS patient,
+    json_build_object('id', pa.id, 'fullName', pa.full_name, 'avatarUrl', pu.avatar_url) AS patient,
     json_build_object('id', s.id, 'date', s.slot_date, 'startTime', s.start_time, 'endTime', s.end_time) AS slot,
     json_build_object(
       'id', d.id,
       'displayName', COALESCE(u.full_name, u.email),
       'clinicName', cl.name,
-      'specialtyName', sp.name
+      'specialtyName', sp.name,
+      'consultationFee', d.consultation_fee::float8,
+      'avatarUrl', u.avatar_url
     ) AS doctor
   `;
 
@@ -66,6 +69,7 @@ export class ReviewRepository extends BaseRepository {
        JOIN appointment_slots s   ON a.slot_id        = s.id
        JOIN doctors d             ON s.doctor_id      = d.id
        JOIN users u               ON d.user_id        = u.id
+       JOIN users pu              ON pa.user_id       = pu.id
        JOIN clinics cl            ON d.clinic_id      = cl.id
        JOIN specialties sp        ON d.specialty_id   = sp.id
        ORDER BY r.id`,
@@ -82,6 +86,7 @@ export class ReviewRepository extends BaseRepository {
        JOIN appointment_slots s   ON a.slot_id        = s.id
        JOIN doctors d             ON s.doctor_id      = d.id
        JOIN users u               ON d.user_id        = u.id
+       JOIN users pu              ON pa.user_id       = pu.id
        JOIN clinics cl            ON d.clinic_id      = cl.id
        JOIN specialties sp        ON d.specialty_id   = sp.id
        WHERE r.id = $1`,
@@ -99,6 +104,7 @@ export class ReviewRepository extends BaseRepository {
        JOIN appointment_slots s   ON a.slot_id        = s.id
        JOIN doctors d             ON s.doctor_id      = d.id
        JOIN users u               ON d.user_id        = u.id
+       JOIN users pu              ON pa.user_id       = pu.id
        JOIN clinics cl            ON d.clinic_id      = cl.id
        JOIN specialties sp        ON d.specialty_id   = sp.id
        WHERE r.appointment_id = $1`,
@@ -117,7 +123,9 @@ export class ReviewRepository extends BaseRepository {
 
   async findAppointmentInfo(id: UUID): Promise<AppointmentInfoRow | null> {
     const result = await this.query<AppointmentInfoRow>(
-      `SELECT id, patient_id AS "patientId", status FROM appointments WHERE id = $1`,
+      `SELECT a.id, a.patient_id AS "patientId", a.status,
+              (SELECT pay.status FROM payments pay WHERE pay.appointment_id = a.id LIMIT 1) AS "paymentStatus"
+       FROM appointments a WHERE a.id = $1`,
       [id],
     );
     return result.rows[0] ?? null;
@@ -148,6 +156,7 @@ export class ReviewRepository extends BaseRepository {
        JOIN appointment_slots s   ON a.slot_id        = s.id
        JOIN doctors d             ON s.doctor_id      = d.id
        JOIN users u               ON d.user_id        = u.id
+       JOIN users pu              ON pa.user_id       = pu.id
        JOIN clinics cl            ON d.clinic_id      = cl.id
        JOIN specialties sp        ON d.specialty_id   = sp.id
        WHERE a.patient_id = $1
@@ -166,6 +175,7 @@ export class ReviewRepository extends BaseRepository {
        JOIN appointment_slots s   ON a.slot_id        = s.id
        JOIN doctors d             ON s.doctor_id      = d.id
        JOIN users u               ON d.user_id        = u.id
+       JOIN users pu              ON pa.user_id       = pu.id
        JOIN clinics cl            ON d.clinic_id      = cl.id
        JOIN specialties sp        ON d.specialty_id   = sp.id
        WHERE s.doctor_id = $1 AND s.deleted_at IS NULL

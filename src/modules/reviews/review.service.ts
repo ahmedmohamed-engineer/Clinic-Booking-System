@@ -23,6 +23,9 @@ export class ReviewService {
     if (appointment.status !== "completed") {
       throw new AppError(HttpStatus.BAD_REQUEST, "Can only review completed appointments");
     }
+    if (appointment.paymentStatus !== "paid") {
+      throw new AppError(HttpStatus.BAD_REQUEST, "Must pay for the appointment before reviewing");
+    }
 
     return this.create(dto);
   }

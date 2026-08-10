@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { MessageSquarePlus, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { useMyReviews, useCreateReview } from "@/features/reviews";
 import { useMyAppointments } from "@/features/appointments";
@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { AppointmentRecord } from "@/types/models/appointment";
+import type { ReviewReadModel } from "@/types/models/review";
 import type { CreateReviewInput } from "@/schemas/review";
 import { formatDateTime } from "@/lib/utils";
 
@@ -31,19 +32,36 @@ function PatientReviewsContent() {
   const { data: appointments } = useMyAppointments();
   const { mutate: createReview, isPending: isSubmitting } = useCreateReview();
   const [selected, setSelected] = useState<AppointmentRecord | null>(null);
+  const [viewing, setViewing] = useState<ReviewReadModel | null>(null);
 
-  const reviewedAppointmentIds = useMemo(
-    () => new Set(reviews?.map((review) => review.appointmentId) ?? []),
+  const reviewedByAppointment = useMemo(
+    () =>
+      new Map(
+        (reviews ?? []).map((review) => [review.appointmentId, review] as const),
+      ),
     [reviews],
   );
-  const pendingReviews = useMemo(
+
+  const eligibleForReview = useMemo(
     () =>
       appointments?.filter(
         (appointment) =>
           appointment.status === "completed" &&
-          !reviewedAppointmentIds.has(appointment.id),
+          appointment.paymentStatus === "paid" &&
+          !reviewedByAppointment.has(appointment.id),
       ) ?? [],
-    [appointments, reviewedAppointmentIds],
+    [appointments, reviewedByAppointment],
+  );
+
+  const reviewedAppointments = useMemo(
+    () =>
+      appointments?.filter(
+        (appointment) =>
+          appointment.status === "completed" &&
+          appointment.paymentStatus === "paid" &&
+          reviewedByAppointment.has(appointment.id),
+      ) ?? [],
+    [appointments, reviewedByAppointment],
   );
 
   if (isError) {
@@ -75,45 +93,70 @@ function PatientReviewsContent() {
         </p>
       </header>
 
-      {pendingReviews.length > 0 && (
+      {eligibleForReview.length > 0 && (
         <section className="flex flex-col gap-3">
-          <h2 className="text-xl font-semibold text-foreground">Write a Review</h2>
-          {pendingReviews.map((appointment) => (
+          <h2 className="text-xl font-semibold text-foreground">
+            Write a Review ({eligibleForReview.length})
+          </h2>
+          {eligibleForReview.map((appointment) => (
             <div
               key={appointment.id}
-              className="flex items-center justify-between gap-4 rounded-xl border border-border bg-card p-4"
+              className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-outline-variant sm:flex-row sm:items-center sm:justify-between"
             >
-              <p className="text-sm text-muted-foreground">
-                {appointment.doctor.displayName} ·{" "}
-                {formatDateTime(appointment.slot.date, appointment.slot.startTime)}
-              </p>
+              <div className="min-w-0">
+                <h3 className="truncate text-sm font-medium text-foreground">
+                  {appointment.doctor.displayName}
+                </h3>
+                <p className="truncate text-sm text-muted-foreground">
+                  {appointment.doctor.specialtyName} ·{" "}
+                  {appointment.doctor.clinicName}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatDateTime(appointment.slot.date, appointment.slot.startTime)}
+                </p>
+              </div>
               <Button onClick={() => setSelected(appointment)}>
-                <MessageSquarePlus />
-                Write a Review
+                <Star />
+                Leave Review
               </Button>
             </div>
           ))}
         </section>
       )}
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-xl font-semibold text-foreground">Your Reviews</h2>
-        {reviews?.length === 0 ? (
-          <div className="rounded-xl border border-border bg-card">
-            <EmptyState
-              icon={<Star className="size-12" />}
-              title="No reviews yet"
-              description="Reviews you write for completed appointments will appear here."
-            />
-          </div>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {reviews?.map((review) => (
-              <ReviewCard key={review.id} review={review} />
-            ))}
-          </div>
-        )}
-      </section>
+      {reviewedAppointments.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-xl font-semibold text-foreground">
+            Your Reviews ({reviewedAppointments.length})
+          </h2>
+          {reviewedAppointments.map((appointment) => {
+            const review = reviewedByAppointment.get(appointment.id);
+            return (
+              <div
+                key={appointment.id}
+                className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-outline-variant sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="min-w-0">
+                  <h3 className="truncate text-sm font-medium text-foreground">
+                    {appointment.doctor.displayName}
+                  </h3>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {appointment.doctor.specialtyName} ·{" "}
+                    {appointment.doctor.clinicName}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatDateTime(appointment.slot.date, appointment.slot.startTime)}
+                  </p>
+                </div>
+                <Button variant="outline" onClick={() => setViewing(review ?? null)}>
+                  <Star />
+                  View Review
+                </Button>
+              </div>
+            );
+          })}
+        </section>
+      )}
 
       <Dialog open={selected !== null} onClose={() => setSelected(null)}>
         <DialogContent>
@@ -131,6 +174,19 @@ function PatientReviewsContent() {
                   });
                 }}
               />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={viewing !== null} onClose={() => setViewing(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Your Review</DialogTitle>
+          </DialogHeader>
+          {viewing && (
+            <div className="mt-4">
+              <ReviewCard review={viewing} />
             </div>
           )}
         </DialogContent>

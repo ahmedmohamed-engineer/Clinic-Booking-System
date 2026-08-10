@@ -13,12 +13,19 @@ interface DoctorProfileFormProps {
   doctor: DoctorReadModel;
   onSubmit: (data: UpdateMyDoctorInput) => Promise<void> | void;
   isSubmitting?: boolean;
+  onSaveSuccess?: () => void;
+  /** Renders only the fields, no submit button — use with a footer's own Save. */
+  formId?: string;
+  hideActions?: boolean;
 }
 
 export function DoctorProfileForm({
   doctor,
   onSubmit,
   isSubmitting,
+  onSaveSuccess,
+  formId,
+  hideActions = false,
 }: DoctorProfileFormProps) {
   const { parse } = useApiError();
   const [fullName, setFullName] = useState(doctor.doctor.displayName);
@@ -54,14 +61,16 @@ export function DoctorProfileForm({
       return;
     }
 
-    Promise.resolve(onSubmit(result.data)).catch((err: unknown) => {
-      const { message } = parse(err);
-      setFormError(message);
-    });
+    Promise.resolve(onSubmit(result.data))
+      .then(() => onSaveSuccess?.())
+      .catch((err: unknown) => {
+        const { message } = parse(err);
+        setFormError(message);
+      });
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate id={formId}>
       {formError && (
         <div
           role="alert"
@@ -138,11 +147,13 @@ export function DoctorProfileForm({
         )}
       </div>
 
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : "Save changes"}
-        </Button>
-      </div>
+      {!hideActions && (
+        <div className="flex justify-end">
+          <Button type="submit" form={formId} disabled={isSubmitting}>
+            {isSubmitting ? "Saving..." : "Save changes"}
+          </Button>
+        </div>
+      )}
     </form>
   );
 }

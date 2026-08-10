@@ -44,6 +44,18 @@ export class UsersController extends BaseController {
       next(error);
     }
   };
+
+  uploadAvatar = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user) {
+        throw AppError.unauthorized("Authentication required");
+      }
+      const user = await usersService.uploadAvatar(req.user.sub, req.file);
+      this.ok(res, user, "Avatar updated successfully");
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const usersController = new UsersController();
