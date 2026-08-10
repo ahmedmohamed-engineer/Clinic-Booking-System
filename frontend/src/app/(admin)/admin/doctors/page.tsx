@@ -8,6 +8,7 @@ import { ErrorBanner } from "@/components/feedback/ErrorBanner";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { Skeleton } from "@/components/feedback/Skeleton";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
 
 const DataTable = dynamic(
   () => import("@/components/data/DataTable").then((mod) => mod.DataTable),
@@ -61,7 +62,18 @@ export default function AdminDoctorsPage() {
     {
       key: "userId",
       header: "User",
-      render: (doctor) => doctor.doctor.displayName,
+      render: (doctor) => (
+        <div className="flex items-center gap-2.5">
+          <Avatar
+            src={doctor.doctor.avatarUrl}
+            fallback={doctor.doctor.displayName}
+            className="size-8"
+            width={32}
+            height={32}
+          />
+          <span className="truncate">{doctor.doctor.displayName}</span>
+        </div>
+      ),
     },
     {
       key: "clinicId",

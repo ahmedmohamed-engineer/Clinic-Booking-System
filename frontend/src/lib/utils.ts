@@ -5,6 +5,50 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function getInitials(name: string): string {
+  const normalized = name.trim();
+  if (!normalized) return "?";
+  if (normalized.includes("@")) {
+    return normalized.slice(0, 2).toUpperCase();
+  }
+  return normalized
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
+/**
+ * Returns a human-readable display name for a profile.
+ * Picks the first real-looking name from the candidates (skipping values that
+ * are just the email's local part, e.g. "as" for "as@hh.com"), then falls back
+ * to the email, then to any non-empty candidate, then to a default label.
+ */
+export function resolveDisplayName(
+  names: Array<string | null | undefined>,
+  email?: string | null,
+  fallback = "User",
+): string {
+  const mailbox = email?.split("@")[0]?.toLowerCase();
+
+  for (const name of names) {
+    const trimmed = name?.trim();
+    if (trimmed && (!mailbox || trimmed.toLowerCase() !== mailbox)) {
+      return trimmed;
+    }
+  }
+
+  if (email?.trim()) return email.trim();
+
+  for (const name of names) {
+    const trimmed = name?.trim();
+    if (trimmed) return trimmed;
+  }
+
+  return fallback;
+}
+
 export const APP_TIMEZONE = "Africa/Cairo";
 export const APP_LOCALE = "en-EG";
 

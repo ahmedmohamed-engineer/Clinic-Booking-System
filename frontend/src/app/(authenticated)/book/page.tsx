@@ -80,7 +80,7 @@ export default function BookAppointmentPage() {
 
   if (confirmedAppointment) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container-custom flex flex-col gap-8 p-6">
         <AppointmentConfirmation
           doctorName={selectedDoctor?.doctor.displayName ?? ""}
           specialtyName={selectedDoctor?.doctor.specialtyName}
@@ -172,22 +172,24 @@ export default function BookAppointmentPage() {
   ];
 
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-8 space-y-6">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold text-on-surface">Book an Appointment</h1>
-        <p className="text-sm text-muted-foreground">
+    <div className="container-custom flex flex-col gap-8 p-6">
+      <header className="animate-fade-in flex flex-col gap-2">
+        <h1 className="heading-1">Book an Appointment</h1>
+        <p className="body-text">
           Follow the steps below to schedule your visit with a specialist.
         </p>
-      </div>
+      </header>
 
-      <StepWizard
-        steps={steps}
-        currentStep={currentStep}
-        onNext={handleNext}
-        onBack={handleBack}
-        isNextDisabled={isNextDisabled()}
-        isLoading={bookMutation.isPending}
-      />
+      <div className="animate-fade-in">
+        <StepWizard
+          steps={steps}
+          currentStep={currentStep}
+          onNext={handleNext}
+          onBack={handleBack}
+          isNextDisabled={isNextDisabled()}
+          isLoading={bookMutation.isPending}
+        />
+      </div>
     </div>
   );
 }

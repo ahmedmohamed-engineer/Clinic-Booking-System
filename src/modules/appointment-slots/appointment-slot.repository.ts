@@ -36,7 +36,9 @@ export class AppointmentSlotRepository extends BaseRepository {
       'id', d.id,
       'displayName', COALESCE(u.full_name, u.email),
       'clinicName', cl.name,
-      'specialtyName', sp.name
+      'specialtyName', sp.name,
+      'consultationFee', d.consultation_fee::float8,
+      'avatarUrl', u.avatar_url
     ) AS doctor
   `;
 

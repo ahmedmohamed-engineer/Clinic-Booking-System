@@ -6,6 +6,7 @@ export interface UserRecord {
   email: string;
   role: UserRole;
   isVerified: boolean;
+  avatarUrl: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -15,4 +16,5 @@ export interface UpdateUserInput {
   email?: string;
   role?: UserRole;
   isVerified?: boolean;
+  avatarUrl?: string | null;
 }

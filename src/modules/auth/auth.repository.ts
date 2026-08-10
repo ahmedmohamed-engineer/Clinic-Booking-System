@@ -18,6 +18,7 @@ export class AuthRepository extends BaseRepository {
 id,
 email,
 full_name AS "fullName",
+avatar_url AS "avatarUrl",
 password_hash AS "passwordHash",
 role,
 is_verified AS "isVerified",

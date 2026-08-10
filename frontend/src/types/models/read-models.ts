@@ -1,6 +1,7 @@
 export interface PatientSummary {
   id: string;
   fullName: string;
+  avatarUrl?: string | null;
 }
 
 export interface DoctorSummary {
@@ -8,6 +9,8 @@ export interface DoctorSummary {
   displayName: string;
   clinicName: string;
   specialtyName: string;
+  consultationFee?: number;
+  avatarUrl?: string | null;
 }
 
 export interface SlotSummary {

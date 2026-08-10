@@ -11,6 +11,7 @@ import { ErrorBanner } from "@/components/feedback/ErrorBanner";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { Skeleton } from "@/components/feedback/Skeleton";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
 import { formatDate } from "@/lib/utils";
 
 const DataTable = dynamic(
@@ -101,7 +102,23 @@ export default function AdminUsersPage() {
   }
 
   const columns: Column<UserRecord>[] = useMemo(() => [
-    { key: "email", header: "Email", sortable: true },
+    {
+      key: "email",
+      header: "Email",
+      sortable: true,
+      render: (user) => (
+        <div className="flex items-center gap-2.5">
+          <Avatar
+            src={user.avatarUrl}
+            fallback={user.fullName ?? user.email}
+            className="size-8"
+            width={32}
+            height={32}
+          />
+          <span className="truncate">{user.email}</span>
+        </div>
+      ),
+    },
     {
       key: "role",
       header: "Role",
@@ -112,11 +129,11 @@ export default function AdminUsersPage() {
       header: "Verified",
       render: (user) =>
         user.isVerified ? (
-          <span className="inline-flex items-center rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-400">
+          <span className="inline-flex items-center rounded-full border border-status-success/20 bg-status-success/10 px-2.5 py-0.5 text-xs font-medium text-status-success">
             Verified
           </span>
         ) : (
-          <span className="inline-flex items-center rounded-full border border-gray-500/20 bg-gray-500/10 px-2.5 py-0.5 text-xs font-medium text-gray-400">
+          <span className="inline-flex items-center rounded-full border border-status-neutral/20 bg-status-neutral/10 px-2.5 py-0.5 text-xs font-medium text-status-neutral">
             Not verified
           </span>
         ),

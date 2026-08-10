@@ -8,6 +8,8 @@ export interface UserRecord {
   passwordHash: string;
   role: UserRole;
   isVerified: boolean;
+  fullName: string | null;
+  avatarUrl: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -18,6 +20,8 @@ export interface UserPublic {
   email: string;
   role: UserRole;
   isVerified: boolean;
+  fullName: string | null;
+  avatarUrl: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

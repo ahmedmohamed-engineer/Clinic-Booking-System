@@ -13,4 +13,6 @@ export interface AppointmentReadModel extends AppointmentRecord {
   patient: PatientSummary;
   slot: SlotSummary;
   doctor: DoctorSummary;
+  paymentStatus: string | null;
+  reviewExists: boolean;
 }

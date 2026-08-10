@@ -67,15 +67,11 @@ function PatientAppointmentsContent() {
   const empty = appointments?.length === 0;
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Appointments
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            View and manage all of your appointments.
-          </p>
+    <div className="container-custom flex flex-col gap-8 p-6">
+      <header className="animate-fade-in flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-2">
+          <h1 className="heading-1">Appointments</h1>
+          <p className="body-text">View and manage all of your appointments.</p>
         </div>
         <Link
           href="/book"
@@ -89,6 +85,7 @@ function PatientAppointmentsContent() {
         </Link>
       </header>
 
+      <div className="animate-fade-in">
       {empty ? (
         <div className="rounded-xl border border-border bg-card">
           <EmptyState
@@ -156,6 +153,7 @@ function PatientAppointmentsContent() {
           </TabsContent>
         </Tabs>
       )}
+      </div>
     </div>
   );
 }
@@ -205,16 +203,13 @@ function DoctorAppointmentsContent() {
   const empty = appointments?.length === 0;
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Appointments
-        </h1>
-        <p className="text-lg text-muted-foreground">
-          Appointments booked by your patients.
-        </p>
+    <div className="container-custom flex flex-col gap-8 p-6">
+      <header className="animate-fade-in flex flex-col gap-2">
+        <h1 className="heading-1">Appointments</h1>
+        <p className="body-text">Appointments booked by your patients.</p>
       </header>
 
+      <div className="animate-fade-in">
       {empty ? (
         <div className="rounded-xl border border-border bg-card">
           <EmptyState
@@ -271,6 +266,7 @@ function DoctorAppointmentsContent() {
           </TabsContent>
         </Tabs>
       )}
+      </div>
     </div>
   );
 }

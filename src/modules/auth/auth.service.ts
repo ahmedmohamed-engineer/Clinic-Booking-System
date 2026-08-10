@@ -125,6 +125,8 @@ export class AuthService {
       email: user.email,
       role: user.role,
       isVerified: user.isVerified,
+      fullName: user.fullName,
+      avatarUrl: user.avatarUrl,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
       deletedAt: user.deletedAt,

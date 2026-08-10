@@ -20,6 +20,9 @@ prompt
 /.next/
 /out/
 
+# local skills
+docs/skills/
+
 # production
 /build
 

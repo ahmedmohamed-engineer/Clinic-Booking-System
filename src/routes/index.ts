@@ -9,7 +9,7 @@ import { appointmentRouter } from "../modules/appointments/index.js";
 import { paymentRouter } from "../modules/payments/index.js";
 import { reviewRouter } from "../modules/reviews/index.js";
 import { patientRouter } from "../modules/patients/index.js";
-import { usersRouter } from "../modules/users/index.js";
+import { usersRouter, userSelfRouter } from "../modules/users/index.js";
 
 const router = Router();
 
@@ -24,6 +24,7 @@ router.use("/appointments", appointmentRouter);
 router.use("/payments", paymentRouter);
 router.use("/reviews", reviewRouter);
 router.use("/patients", patientRouter);
+router.use("/users", userSelfRouter);
 router.use("/doctor-schedules", doctorScheduleRouter);
 
 router.use("/admin/clinics", clinicAdminRouter);

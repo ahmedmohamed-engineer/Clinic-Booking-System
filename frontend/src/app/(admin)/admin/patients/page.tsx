@@ -9,6 +9,7 @@ import { ErrorBanner } from "@/components/feedback/ErrorBanner";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { Skeleton } from "@/components/feedback/Skeleton";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
 import { formatDate } from "@/lib/utils";
 
 const DataTable = dynamic(
@@ -70,7 +71,23 @@ export default function AdminPatientsPage() {
   const columns: Column<PatientRecord>[] = useMemo(
     () => [
 
-    { key: "fullName", header: "Full name", sortable: true },
+    {
+      key: "fullName",
+      header: "Full name",
+      sortable: true,
+      render: (patient) => (
+        <div className="flex items-center gap-2.5">
+          <Avatar
+            src={patient.avatarUrl}
+            fallback={patient.fullName}
+            className="size-8"
+            width={32}
+            height={32}
+          />
+          <span className="truncate">{patient.fullName}</span>
+        </div>
+      ),
+    },
     {
       key: "phone",
       header: "Phone",

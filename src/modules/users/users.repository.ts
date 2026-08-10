@@ -9,6 +9,7 @@ export class UsersRepository extends BaseRepository {
     id,
     email,
     role,
+    avatar_url AS "avatarUrl",
     is_verified AS "isVerified",
     created_at AS "createdAt",
     updated_at AS "updatedAt",
@@ -92,6 +93,10 @@ export class UsersRepository extends BaseRepository {
     if (data.isVerified !== undefined) {
       sets.push(`is_verified = $${paramIndex++}`);
       values.push(data.isVerified);
+    }
+    if (data.avatarUrl !== undefined) {
+      sets.push(`avatar_url = $${paramIndex++}`);
+      values.push(data.avatarUrl);
     }
 
     if (sets.length === 0) return null;

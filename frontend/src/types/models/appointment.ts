@@ -1,4 +1,4 @@
-import type { AppointmentStatus } from "../enums";
+import type { AppointmentStatus, PaymentStatus } from "../enums";
 import type {
   PatientSummary,
   SlotSummary,
@@ -17,6 +17,8 @@ export interface AppointmentReadModel extends AppointmentRecord {
   patient: PatientSummary;
   slot: SlotSummary;
   doctor: DoctorSummary;
+  paymentStatus: PaymentStatus | null;
+  reviewExists: boolean;
 }
 
 export interface AppointmentCreateRequest {

@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { Wallet } from "lucide-react";
-import { useMyPayments, useUpdateMyPayment } from "@/features/payments";
+import { CreditCard, Receipt, Wallet } from "lucide-react";
+import { useMyAppointments } from "@/features/appointments";
+import { useMyPayments, useUpdateMyPayment, useCreatePayment } from "@/features/payments";
 import { PaymentCard } from "@/components/business/PaymentCard";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/feedback/Skeleton";
 import { ErrorBanner } from "@/components/feedback/ErrorBanner";
 import { EmptyState } from "@/components/feedback/EmptyState";
+import { formatDateTime } from "@/lib/utils";
+import { StatusBadge } from "@/components/business/StatusBadge";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { PaymentRecord } from "@/types/models/payment";
+import type { AppointmentReadModel } from "@/types/models/appointment";
 import type { UpdatePaymentInput } from "@/schemas/payment";
 
 const PaymentForm = dynamic(
@@ -22,9 +27,20 @@ const PaymentForm = dynamic(
   { loading: () => <Skeleton variant="form" /> },
 );
 
+function needsPayment(appointment: AppointmentReadModel): boolean {
+  return (
+    appointment.status === "completed" &&
+    (appointment.paymentStatus === null ||
+      appointment.paymentStatus === "pending" ||
+      appointment.paymentStatus === "failed")
+  );
+}
+
 export default function PatientPaymentsPage() {
-  const { data: payments, isPending, isError, refetch } = useMyPayments();
+  const { data: appointments, isPending, isError, refetch } = useMyAppointments();
+  const { data: payments, isPending: isPaymentsPending } = useMyPayments();
   const { mutate: updateMyPayment, isPending: isPaying } = useUpdateMyPayment();
+  const { mutate: createPayment, isPending: isCreating } = useCreatePayment();
   const [selected, setSelected] = useState<PaymentRecord | null>(null);
 
   if (isError) {
@@ -35,7 +51,7 @@ export default function PatientPaymentsPage() {
     );
   }
 
-  if (isPending) {
+  if (isPending || isPaymentsPending) {
     return (
       <div className="flex flex-col gap-4 p-6">
         <Skeleton className="h-8 w-56" />
@@ -45,7 +61,35 @@ export default function PatientPaymentsPage() {
     );
   }
 
-  const empty = payments?.length === 0;
+  const due = (appointments ?? []).filter(needsPayment);
+  const paymentByAppointment = new Map(
+    (payments ?? []).map((payment) => [payment.appointmentId, payment]),
+  );
+
+  const history = (payments ?? []).filter(
+    (payment) => !due.some((appointment) => appointment.id === payment.appointmentId),
+  );
+
+  const openPay = (appointment: AppointmentReadModel) => {
+    const existing = paymentByAppointment.get(appointment.id);
+    if (existing) {
+      setSelected(existing);
+      return;
+    }
+    createPayment(
+      {
+        appointmentId: appointment.id,
+        amount: appointment.doctor.consultationFee ?? 0,
+        method: "card",
+        status: "pending",
+      },
+      {
+        onSuccess: (created) => setSelected(created),
+      },
+    );
+  };
+
+  const empty = due.length === 0 && history.length === 0;
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -54,28 +98,93 @@ export default function PatientPaymentsPage() {
           Payments
         </h1>
         <p className="text-lg text-muted-foreground">
-          View your payment history and complete pending payments.
+          Complete payments for your visits and track your payment history.
         </p>
       </header>
 
       {empty ? (
         <div className="rounded-xl border border-border bg-card">
           <EmptyState
-            icon={<Wallet className="size-12" />}
-            title="No payments yet"
-            description="Payments for your appointments will appear here."
+            icon={<Wallet className="size-12 text-primary" />}
+            title="Nothing to pay"
+            description="Payments for your completed visits will appear here."
           />
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
-          {payments?.map((payment) => (
-            <PaymentCard
-              key={payment.id}
-              payment={payment}
-              onPay={setSelected}
-              isPaying={isPaying && selected?.id === payment.id}
-            />
-          ))}
+        <div className="flex flex-col gap-6">
+          <section className="flex flex-col gap-3">
+            <h2 className="text-xl font-semibold text-foreground">
+              Complete payment ({due.length})
+            </h2>
+            {due.length === 0 ? (
+              <div className="rounded-xl border border-border bg-card">
+                <EmptyState
+                  icon={<CreditCard className="size-12 text-primary" />}
+                  title="No payments due"
+                  description="You're all caught up. Nothing needs to be paid right now."
+                />
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {due.map((appointment) => (
+                  <div
+                    key={appointment.id}
+                    className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-outline-variant sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <Receipt className="size-6" aria-hidden="true" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="truncate text-sm font-medium text-foreground">
+                          {appointment.doctor.displayName}
+                        </h3>
+                        <p className="truncate text-sm text-muted-foreground">
+                          {appointment.doctor.specialtyName} ·{" "}
+                          {appointment.doctor.clinicName}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatDateTime(appointment.slot.date, appointment.slot.startTime)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4 sm:justify-end">
+                      <div className="text-left sm:text-right">
+                        <p className="text-sm font-medium text-foreground">
+                          {appointment.doctor.consultationFee !== undefined
+                            ? new Intl.NumberFormat("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                              }).format(appointment.doctor.consultationFee)
+                            : ""}
+                        </p>
+                        <StatusBadge status={appointment.paymentStatus ?? "pending"} />
+                      </div>
+                      <Button
+                        onClick={() => openPay(appointment)}
+                        disabled={isCreating}
+                      >
+                        <CreditCard />
+                        {isCreating ? "Preparing..." : "Pay"}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {history.length > 0 && (
+            <section className="flex flex-col gap-3">
+              <h2 className="text-xl font-semibold text-foreground">
+                Payment history ({history.length})
+              </h2>
+              {history.map((payment) => (
+                <PaymentCard key={payment.id} payment={payment} />
+              ))}
+            </section>
+          )}
         </div>
       )}
 

@@ -1,13 +1,16 @@
 import { CalendarDays, Phone, User as UserIcon, VenusAndMars } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, resolveDisplayName } from "@/lib/utils";
 import type { PatientRecord } from "@/types/models/patient";
 
 interface ProfileSummaryCardProps {
   patient: PatientRecord | null;
+  email?: string | null;
 }
 
-export function ProfileSummaryCard({ patient }: ProfileSummaryCardProps) {
+export function ProfileSummaryCard({ patient, email }: ProfileSummaryCardProps) {
   if (!patient) return null;
+
+  const displayName = resolveDisplayName([patient.fullName], email, "Patient");
 
   const rows = [
     {
@@ -35,7 +38,7 @@ export function ProfileSummaryCard({ patient }: ProfileSummaryCardProps) {
         </div>
         <div className="min-w-0">
           <h3 className="truncate text-sm font-semibold text-foreground">
-            {patient.fullName}
+            {displayName}
           </h3>
           <p className="text-sm text-muted-foreground">Patient profile</p>
         </div>

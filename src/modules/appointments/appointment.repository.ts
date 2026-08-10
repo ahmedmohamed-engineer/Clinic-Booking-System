@@ -36,14 +36,18 @@ export class AppointmentRepository extends BaseRepository {
     a.slot_id AS "slotId",
     a.status,
     a.notes,
-    json_build_object('id', p.id, 'fullName', p.full_name) AS patient,
+    json_build_object('id', p.id, 'fullName', p.full_name, 'avatarUrl', pu.avatar_url) AS patient,
     json_build_object('id', s.id, 'date', s.slot_date, 'startTime', s.start_time, 'endTime', s.end_time) AS slot,
     json_build_object(
       'id', d.id,
       'displayName', COALESCE(u.full_name, u.email),
       'clinicName', cl.name,
-      'specialtyName', sp.name
-    ) AS doctor
+      'specialtyName', sp.name,
+      'consultationFee', d.consultation_fee::float8,
+      'avatarUrl', u.avatar_url
+    ) AS doctor,
+    (SELECT pay.status FROM payments pay WHERE pay.appointment_id = a.id LIMIT 1) AS "paymentStatus",
+    EXISTS(SELECT 1 FROM reviews r WHERE r.appointment_id = a.id) AS "reviewExists"
   `;
 
   async create(data: {
@@ -69,6 +73,7 @@ export class AppointmentRepository extends BaseRepository {
        JOIN appointment_slots s ON a.slot_id     = s.id
        JOIN doctors d           ON s.doctor_id   = d.id
        JOIN users u             ON d.user_id     = u.id
+       JOIN users pu            ON p.user_id     = pu.id
        JOIN clinics cl          ON d.clinic_id   = cl.id
        JOIN specialties sp      ON d.specialty_id = sp.id
        ORDER BY a.id`,
@@ -84,6 +89,7 @@ export class AppointmentRepository extends BaseRepository {
        JOIN appointment_slots s ON a.slot_id     = s.id
        JOIN doctors d           ON s.doctor_id   = d.id
        JOIN users u             ON d.user_id     = u.id
+       JOIN users pu            ON p.user_id     = pu.id
        JOIN clinics cl          ON d.clinic_id   = cl.id
        JOIN specialties sp      ON d.specialty_id = sp.id
        WHERE a.id = $1`,
@@ -100,6 +106,7 @@ export class AppointmentRepository extends BaseRepository {
        JOIN appointment_slots s ON a.slot_id     = s.id
        JOIN doctors d           ON s.doctor_id   = d.id
        JOIN users u             ON d.user_id     = u.id
+       JOIN users pu            ON p.user_id     = pu.id
        JOIN clinics cl          ON d.clinic_id   = cl.id
        JOIN specialties sp      ON d.specialty_id = sp.id
        WHERE a.patient_id = $1
@@ -117,6 +124,7 @@ export class AppointmentRepository extends BaseRepository {
        JOIN appointment_slots s ON a.slot_id     = s.id
        JOIN doctors d           ON s.doctor_id   = d.id
        JOIN users u             ON d.user_id     = u.id
+       JOIN users pu            ON p.user_id     = pu.id
        JOIN clinics cl          ON d.clinic_id   = cl.id
        JOIN specialties sp      ON d.specialty_id = sp.id
        WHERE s.doctor_id = $1 AND s.deleted_at IS NULL
