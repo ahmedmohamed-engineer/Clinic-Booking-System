@@ -33,7 +33,7 @@ export class DoctorRepository extends BaseRepository {
     d.experience_years AS "experienceYears",
     json_build_object(
       'id', d.id,
-      'displayName', COALESCE(u.full_name, u.email),
+      'displayName', COALESCE(NULLIF(TRIM(u.full_name), ''), 'Doctor'),
       'clinicName', cl.name,
       'specialtyName', sp.name,
       'consultationFee', d.consultation_fee::float8,

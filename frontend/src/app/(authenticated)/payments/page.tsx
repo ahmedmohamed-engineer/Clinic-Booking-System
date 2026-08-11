@@ -92,18 +92,16 @@ export default function PatientPaymentsPage() {
   const empty = due.length === 0 && history.length === 0;
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Payments
-        </h1>
-        <p className="text-lg text-muted-foreground">
+    <div className="container-custom flex flex-col gap-8 p-6">
+      <header className="animate-fade-in flex flex-col gap-2">
+        <h1 className="heading-1">Payments</h1>
+        <p className="body-text">
           Complete payments for your visits and track your payment history.
         </p>
       </header>
 
       {empty ? (
-        <div className="rounded-xl border border-border bg-card">
+        <div className="animate-fade-in rounded-xl border border-border bg-card">
           <EmptyState
             icon={<Wallet className="size-12 text-primary" />}
             title="Nothing to pay"
@@ -111,9 +109,9 @@ export default function PatientPaymentsPage() {
           />
         </div>
       ) : (
-        <div className="flex flex-col gap-6">
+        <div className="animate-fade-in flex flex-col gap-6">
           <section className="flex flex-col gap-3">
-            <h2 className="text-xl font-semibold text-foreground">
+            <h2 className="heading-2">
               Complete payment ({due.length})
             </h2>
             {due.length === 0 ? (
@@ -149,8 +147,8 @@ export default function PatientPaymentsPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-4 sm:justify-end">
-                      <div className="text-left sm:text-right">
+                    <div className="flex flex-col gap-3 sm:items-end sm:justify-between">
+                      <div className="flex items-center justify-between gap-4">
                         <p className="text-sm font-medium text-foreground">
                           {appointment.doctor.consultationFee !== undefined
                             ? new Intl.NumberFormat("en-US", {
@@ -162,6 +160,7 @@ export default function PatientPaymentsPage() {
                         <StatusBadge status={appointment.paymentStatus ?? "pending"} />
                       </div>
                       <Button
+                        className="w-full sm:w-auto"
                         onClick={() => openPay(appointment)}
                         disabled={isCreating}
                       >
@@ -177,7 +176,7 @@ export default function PatientPaymentsPage() {
 
           {history.length > 0 && (
             <section className="flex flex-col gap-3">
-              <h2 className="text-xl font-semibold text-foreground">
+              <h2 className="heading-2">
                 Payment history ({history.length})
               </h2>
               {history.map((payment) => (

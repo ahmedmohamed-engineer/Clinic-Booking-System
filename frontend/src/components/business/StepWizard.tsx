@@ -74,15 +74,17 @@ export function StepWizard({
 
       <div className="min-h-[200px]">{steps[currentStep]?.content}</div>
 
-      <div className="flex justify-between pt-4">
+      <div className="flex flex-col gap-2 pt-4 sm:flex-row sm:justify-between">
         <Button
           variant="outline"
+          className="w-full sm:w-auto"
           onClick={onBack}
           disabled={currentStep === 0 || isLoading}
         >
           Back
         </Button>
         <Button
+          className="w-full sm:w-auto"
           onClick={onNext}
           disabled={isNextDisabled || isLoading}
         >

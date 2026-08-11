@@ -19,12 +19,12 @@ export function NextAppointmentHero({ appointment, action }: NextAppointmentHero
   return (
     <Card className="animate-fade-in overflow-hidden border-t-4 border-t-primary">
       <CardContent className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
           <div>
             <h2 id="next-appointment-heading" className="heading-2">
               Your next appointment
             </h2>
-            <p className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            <p className="mt-2 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
               {formatDate(appointment.slot.date)}
             </p>
             <p className="mt-1 flex items-center gap-1.5 text-lg font-medium text-muted-foreground">
@@ -36,7 +36,7 @@ export function NextAppointmentHero({ appointment, action }: NextAppointmentHero
           <StatusBadge status={appointment.status} />
         </div>
 
-        <dl className="grid grid-cols-1 gap-3 border-t border-border/60 pt-6 text-sm sm:grid-cols-2">
+        <dl className="grid grid-cols-1 gap-3 border-t border-border/60 pt-6 text-sm md:grid-cols-2">
           <div className="flex items-start gap-3">
             <Avatar
               src={appointment.doctor.avatarUrl}
@@ -66,9 +66,9 @@ export function NextAppointmentHero({ appointment, action }: NextAppointmentHero
         </dl>
       </CardContent>
 
-      <CardFooter className="relative flex flex-wrap items-center gap-3 border-t border-border/60">
-        <Link href={detailsHref} className="inline-flex">
-          <Button variant="outline">
+      <CardFooter className="relative flex flex-col items-stretch gap-3 border-t border-border/60 md:flex-row md:flex-wrap md:items-center">
+        <Link href={detailsHref} className="inline-flex w-full md:w-auto">
+          <Button variant="outline" className="w-full md:w-auto">
             <CalendarCheck />
             View details
           </Button>

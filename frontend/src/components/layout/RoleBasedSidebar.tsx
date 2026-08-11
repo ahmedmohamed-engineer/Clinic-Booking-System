@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { usePrefetchBookingData } from "@/hooks/usePrefetchBookingData";
-import { cn } from "@/lib/utils";
+import { cn, isPathActive } from "@/lib/utils";
 
 interface NavItem {
   label: string;
@@ -38,7 +38,13 @@ const doctorLinks: NavItem[] = [
   { label: "Profile", href: "/profile", icon: User },
 ];
 
-export function RoleBasedSidebar({ className }: { className?: string }) {
+export function RoleBasedSidebar({
+  className,
+  onNavigate,
+}: {
+  className?: string;
+  onNavigate?: () => void;
+}) {
   const { user } = useAuth();
   const pathname = usePathname();
   const prefetchBooking = usePrefetchBookingData();
@@ -49,11 +55,12 @@ export function RoleBasedSidebar({ className }: { className?: string }) {
     <nav className={cn("flex flex-col gap-1 p-4", className)}>
       {links.map((link) => {
         const Icon = link.icon;
-        const isActive = pathname === link.href;
+        const isActive = isPathActive(pathname, link.href);
         return (
           <Link
             key={link.href}
             href={link.href}
+            onClick={onNavigate}
             onMouseEnter={link.href === "/book" ? prefetchBooking : undefined}
             onFocus={link.href === "/book" ? prefetchBooking : undefined}
             className={cn(
@@ -63,6 +70,12 @@ export function RoleBasedSidebar({ className }: { className?: string }) {
                 : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
+            {isActive && (
+              <span
+                aria-hidden="true"
+                className="size-1.5 shrink-0 rounded-full bg-primary"
+              />
+            )}
             <Icon className="size-4 shrink-0" />
             {link.label}
           </Link>

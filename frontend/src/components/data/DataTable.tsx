@@ -46,7 +46,7 @@ function DataTableRowInner<T extends object>({
       )}
     >
       {columns.map((col) => (
-        <td key={col.key} className={cn("px-4 py-3 text-sm text-foreground", col.className)}>
+        <td key={col.key} className={cn("whitespace-nowrap px-4 py-3 text-sm text-foreground", col.className)}>
           {col.render
             ? col.render(item)
             : String((item as Record<string, unknown>)[col.key] ?? "")}
@@ -94,13 +94,13 @@ export function DataTable<T extends object>({
   if (loading) {
     return (
       <div className={cn("overflow-x-auto rounded-lg border border-border", className)}>
-        <table className="w-full">
+        <table className="w-full min-w-[800px]">
           <thead>
             <tr className="border-b border-border bg-muted/50">
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={cn("px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase", col.className)}
+                  className={cn("whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase", col.className)}
                 >
                   {col.header}
                 </th>
@@ -133,7 +133,7 @@ export function DataTable<T extends object>({
 
   return (
     <div className={cn("overflow-x-auto rounded-lg border border-border", className)}>
-      <table className="w-full">
+      <table className="w-full min-w-[800px]">
         <thead>
           <tr className="border-b border-border bg-muted/50">
             {columns.map((col) => {
@@ -142,7 +142,7 @@ export function DataTable<T extends object>({
                 <th
                   key={col.key}
                   className={cn(
-                    "px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase",
+                    "whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase",
                     canSort && "cursor-pointer select-none hover:text-foreground",
                     col.className,
                   )}

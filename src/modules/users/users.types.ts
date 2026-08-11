@@ -11,6 +11,7 @@ export interface UserFilter {
   role?: UserRole;
   isVerified?: boolean;
   search?: string;
+  deletedOnly?: boolean;
   page?: number;
   limit?: number;
 }

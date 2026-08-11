@@ -5,6 +5,7 @@ export interface ClinicRecord {
   address: string | null;
   city: string | null;
   description: string | null;
+  doctorsCount: number;
 }
 
 export interface ClinicCreateRequest {

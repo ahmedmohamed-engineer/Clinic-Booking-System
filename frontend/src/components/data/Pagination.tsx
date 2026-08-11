@@ -9,6 +9,9 @@ interface PaginationProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onPagePrefetch?: (page: number) => void;
+  pageSize?: number;
+  pageSizeOptions?: number[];
+  onPageSizeChange?: (size: number) => void;
   className?: string;
 }
 
@@ -17,9 +20,12 @@ export function Pagination({
   totalPages,
   onPageChange,
   onPagePrefetch,
+  pageSize,
+  pageSizeOptions = [10, 25, 50],
+  onPageSizeChange,
   className,
 }: PaginationProps) {
-  if (totalPages <= 1) return null;
+  if (totalPages <= 1 && !onPageSizeChange) return null;
 
   const handlePagePrefetch = (target: number) => {
     if (target >= 1 && target <= totalPages && target !== page) {
@@ -39,11 +45,28 @@ export function Pagination({
   if (totalPages > 1) pages.push(totalPages);
 
   return (
-    <div className={cn("flex flex-col items-center gap-2", className)}>
-      <p className="text-xs text-muted-foreground" aria-live="polite">
-        Page {page} of {totalPages}
-      </p>
-      <nav className="flex items-center justify-center gap-1" aria-label="Pagination">
+    <div className={cn("flex flex-col items-center justify-between gap-3 sm:flex-row", className)}>
+      {onPageSizeChange && (
+        <label className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span>Rows per page</span>
+          <select
+            value={pageSize}
+            onChange={(e) => onPageSizeChange(Number(e.target.value))}
+            className="h-8 rounded-lg border border-border bg-surface-container-low px-2 text-sm text-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/50"
+          >
+            {pageSizeOptions.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      <div className="flex flex-col items-center gap-2">
+        <p className="text-xs text-muted-foreground" aria-live="polite">
+          Page {page} of {totalPages}
+        </p>
+        <nav className="flex items-center justify-center gap-1" aria-label="Pagination">
         <Button
           variant="outline"
           size="xs"
@@ -88,6 +111,7 @@ export function Pagination({
           <ChevronRight className="size-4" />
         </Button>
       </nav>
+      </div>
     </div>
   );
 }

@@ -140,17 +140,23 @@ function PatientProfileContent() {
                     onSaveSuccess={() => setIsEditing(false)}
                   />
                 </CardContent>
-                <CardFooter className="justify-end gap-2">
+                <CardFooter className="flex-col justify-end gap-2 sm:flex-row">
                   <Button
                     type="button"
                     variant="outline"
+                    className="w-full sm:w-auto"
                     onClick={() => setIsEditing(false)}
                     disabled={isSaving}
                   >
                     <X className="size-4" aria-hidden="true" />
                     Cancel
                   </Button>
-                  <Button type="submit" form="profile-form" disabled={isSaving}>
+                  <Button
+                    type="submit"
+                    form="profile-form"
+                    className="w-full sm:w-auto"
+                    disabled={isSaving}
+                  >
                     {isSaving ? "Saving..." : "Save changes"}
                   </Button>
                 </CardFooter>
@@ -269,10 +275,11 @@ function DoctorProfileContent() {
                     onSaveSuccess={() => setIsEditing(false)}
                   />
                 </CardContent>
-                <CardFooter className="justify-end gap-2">
+                <CardFooter className="flex-col justify-end gap-2 sm:flex-row">
                   <Button
                     type="button"
                     variant="outline"
+                    className="w-full sm:w-auto"
                     onClick={() => setIsEditing(false)}
                     disabled={isSaving}
                   >
@@ -282,6 +289,7 @@ function DoctorProfileContent() {
                   <Button
                     type="submit"
                     form="doctor-profile-form"
+                    className="w-full sm:w-auto"
                     disabled={isSaving}
                   >
                     {isSaving ? "Saving..." : "Save changes"}

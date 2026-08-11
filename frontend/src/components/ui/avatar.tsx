@@ -22,6 +22,7 @@ export function Avatar({
   height = 32,
 }: AvatarProps) {
   const resolvedSrc = mediaUrl(src);
+  const sizeClass = className && /\bsize-\d+\b/.test(className) ? "" : "size-8";
 
   if (resolvedSrc) {
     return (
@@ -31,7 +32,7 @@ export function Avatar({
         width={width}
         height={height}
         unoptimized
-        className={cn("size-8 rounded-full object-cover", className)}
+        className={cn("rounded-full object-cover", sizeClass, className)}
       />
     );
   }
@@ -39,7 +40,8 @@ export function Avatar({
   return (
     <div
       className={cn(
-        "flex size-8 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground select-none",
+        "flex items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground select-none",
+        sizeClass,
         className,
       )}
       aria-label={alt ?? fallback}

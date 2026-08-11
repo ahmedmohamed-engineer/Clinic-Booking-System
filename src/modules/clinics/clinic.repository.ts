@@ -10,7 +10,8 @@ export class ClinicRepository extends BaseRepository {
     phone,
     address,
     city,
-    description
+    description,
+    (SELECT COUNT(*)::int FROM doctors d WHERE d.clinic_id = clinics.id) AS "doctorsCount"
   `;
 
   async create(data: {

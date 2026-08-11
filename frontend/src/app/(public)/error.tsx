@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/layout/Footer";
+import { Logo } from "@/components/layout/Logo";
 
 export default function PublicError({
   reset,
@@ -13,7 +13,7 @@ export default function PublicError({
   return (
     <div className="flex min-h-full flex-col">
       <header className="flex h-14 items-center border-b border-border px-6">
-        <Link href="/" className="text-lg font-bold text-primary">HealthFlow</Link>
+        <Logo />
       </header>
       <main className="flex flex-1 items-center justify-center px-4">
         <div className="max-w-md space-y-4 text-center">

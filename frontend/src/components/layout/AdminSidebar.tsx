@@ -15,7 +15,7 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, isPathActive } from "@/lib/utils";
 
 const adminLinks: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -31,18 +31,25 @@ const adminLinks: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Patients", href: "/admin/patients", icon: Users },
 ];
 
-export function AdminSidebar({ className }: { className?: string }) {
+export function AdminSidebar({
+  className,
+  onNavigate,
+}: {
+  className?: string;
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
 
   return (
     <nav className={cn("flex flex-col gap-1 overflow-y-auto p-4", className)}>
       {adminLinks.map((link) => {
         const Icon = link.icon;
-        const isActive = pathname === link.href;
+        const isActive = isPathActive(pathname, link.href);
         return (
           <Link
             key={link.href}
             href={link.href}
+            onClick={onNavigate}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               isActive
@@ -50,6 +57,12 @@ export function AdminSidebar({ className }: { className?: string }) {
                 : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
+            {isActive && (
+              <span
+                aria-hidden="true"
+                className="size-1.5 shrink-0 rounded-full bg-primary"
+              />
+            )}
             <Icon className="size-4 shrink-0" />
             {link.label}
           </Link>

@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "HealthFlow - Clinic Booking System",
+  title: "MediCare - Clinic Booking System",
   description: "Book appointments with healthcare professionals",
 };
 

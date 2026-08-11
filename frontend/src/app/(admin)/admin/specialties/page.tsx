@@ -8,6 +8,7 @@ import { ErrorBanner } from "@/components/feedback/ErrorBanner";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { Skeleton } from "@/components/feedback/Skeleton";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 const DataTable = dynamic(
   () => import("@/components/data/DataTable").then((mod) => mod.DataTable),
@@ -98,19 +99,76 @@ export default function AdminSpecialtiesPage() {
       {isError ? (
         <ErrorBanner message="Could not load specialties." onRetry={refetch} />
       ) : (
-        <DataTable
-          columns={columns}
-          data={specialties ?? []}
-          loading={isPending}
-          sortable
-          emptyState={
-            <EmptyState
-              icon={<Stethoscope className="size-12" />}
-              title="No specialties yet"
-              description="Create your first specialty to get started."
+        <>
+          <div className="flex flex-col gap-4 md:hidden">
+            {isPending ? (
+              <>
+                <Skeleton variant="card" />
+                <Skeleton variant="card" />
+                <Skeleton variant="card" />
+              </>
+            ) : (specialties ?? []).length === 0 ? (
+              <div className="rounded-xl border border-border">
+                <EmptyState
+                  icon={<Stethoscope className="size-12" />}
+                  title="No specialties yet"
+                  description="Create your first specialty to get started."
+                />
+              </div>
+            ) : (
+              (specialties ?? []).map((specialty) => (
+                <Card key={specialty.id}>
+                  <CardContent className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Stethoscope className="size-5" />
+                      </div>
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {specialty.name}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        onClick={() => setEditing(specialty)}
+                        aria-label={`Edit ${specialty.name}`}
+                        title={`Edit ${specialty.name}`}
+                      >
+                        <Pencil className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        onClick={() => setDeleting(specialty)}
+                        aria-label={`Delete ${specialty.name}`}
+                        title={`Delete ${specialty.name}`}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+
+          <div className="hidden md:block">
+            <DataTable
+              columns={columns}
+              data={specialties ?? []}
+              loading={isPending}
+              sortable
+              emptyState={
+                <EmptyState
+                  icon={<Stethoscope className="size-12" />}
+                  title="No specialties yet"
+                  description="Create your first specialty to get started."
+                />
+              }
             />
-          }
-        />
+          </div>
+        </>
       )}
 
       {creating && (

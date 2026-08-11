@@ -22,4 +22,5 @@ export interface UserFilters {
   role?: UserRole;
   isVerified?: boolean;
   search?: string;
+  deletedOnly?: boolean;
 }

@@ -21,6 +21,37 @@ export class DoctorScheduleController extends BaseController {
     }
   };
 
+  createMySchedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const schedule = await doctorScheduleService.createMySchedule(req.user!.sub, req.body);
+      this.created(res, schedule, "Schedule created successfully");
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateMySchedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const schedule = await doctorScheduleService.updateMySchedule(
+        req.user!.sub,
+        req.params.id as string,
+        req.body,
+      );
+      this.ok(res, schedule, "Schedule updated successfully");
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteMySchedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await doctorScheduleService.deleteMySchedule(req.user!.sub, req.params.id as string);
+      this.noContent(res);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   findAll = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const schedules = await doctorScheduleService.findAll();

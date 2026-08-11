@@ -46,7 +46,7 @@ export default function RegisterPage() {
         <div className="space-y-1 text-center">
           <h1 className="text-2xl font-bold text-foreground">Create account</h1>
           <p className="text-sm text-muted-foreground">
-            Get started with HealthFlow
+            Get started with MediCare
           </p>
         </div>
 
