@@ -10,6 +10,8 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { Skeleton } from "@/components/feedback/Skeleton";
 import { StatusBadge } from "@/components/business/StatusBadge";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 
 const DataTable = dynamic(
   () => import("@/components/data/DataTable").then((mod) => mod.DataTable),
@@ -74,7 +76,40 @@ export default function AdminAppointmentSlotsPage() {
   });
 
   const columns: Column<AppointmentSlotReadModel>[] = useMemo(() => [
-    { key: "doctorId", header: "Doctor", render: (slot) => slot.doctor.displayName },
+    {
+      key: "doctorId",
+      header: "Doctor",
+      render: (slot) => (
+        <div className="flex min-w-0 items-center gap-2.5">
+          <Avatar
+            src={slot.doctor.avatarUrl}
+            fallback={slot.doctor.displayName}
+            className="size-8 shrink-0"
+            width={32}
+            height={32}
+          />
+          <span className="truncate font-medium">{slot.doctor.displayName}</span>
+        </div>
+      ),
+    },
+    {
+      key: "clinicId",
+      header: "Clinic",
+      render: (slot) => (
+        <span className="block max-w-[12rem] truncate" title={slot.doctor.clinicName}>
+          {slot.doctor.clinicName}
+        </span>
+      ),
+    },
+    {
+      key: "specialtyId",
+      header: "Specialty",
+      render: (slot) => (
+        <span className="block max-w-[10rem] truncate" title={slot.doctor.specialtyName}>
+          {slot.doctor.specialtyName}
+        </span>
+      ),
+    },
     {
       key: "slotDate",
       header: "Date",
@@ -141,19 +176,105 @@ export default function AdminAppointmentSlotsPage() {
         <ErrorBanner message="Could not load appointment slots." onRetry={refetch} />
       ) : (
         <>
-          <DataTable
-            columns={columns}
-            data={slots}
-            loading={isPending}
-            sortable
-            emptyState={
-              <EmptyState
-                icon={<CalendarRange className="size-12" />}
-                title="No slots yet"
-                description="Create appointment slots for doctors to fill their schedule."
-              />
-            }
-          />
+          <div className="flex flex-col gap-4 md:hidden">
+            {isPending ? (
+              <>
+                <Skeleton variant="card" />
+                <Skeleton variant="card" />
+                <Skeleton variant="card" />
+              </>
+            ) : slots.length === 0 ? (
+              <div className="rounded-xl border border-border">
+                <EmptyState
+                  icon={<CalendarRange className="size-12" />}
+                  title="No slots yet"
+                  description="Create appointment slots for doctors to fill their schedule."
+                />
+              </div>
+            ) : (
+              slots.map((slot) => (
+                <Card key={slot.id}>
+                  <CardContent className="flex flex-col gap-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <Avatar
+                          src={slot.doctor.avatarUrl}
+                          fallback={slot.doctor.displayName}
+                          className="size-10 shrink-0"
+                          width={40}
+                          height={40}
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-foreground">
+                            {slot.doctor.displayName}
+                          </p>
+                          <p className="truncate text-xs text-muted-foreground">
+                            {slot.doctor.clinicName}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => setEditing(slot)}
+                          aria-label={`Edit slot for ${slot.doctor.displayName} on ${formatDate(slot.slotDate)}`}
+                          title={`Edit slot for ${slot.doctor.displayName} on ${formatDate(slot.slotDate)}`}
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => setDeleting(slot)}
+                          aria-label={`Delete slot for ${slot.doctor.displayName} on ${formatDate(slot.slotDate)}`}
+                          title={`Delete slot for ${slot.doctor.displayName} on ${formatDate(slot.slotDate)}`}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <StatusBadge status={slot.status} />
+                      <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                        {slot.doctor.specialtyName}
+                      </span>
+                    </div>
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
+                      <div className="flex flex-col">
+                        <dt className="text-muted-foreground">Date</dt>
+                        <dd className="whitespace-nowrap text-foreground">
+                          {formatDate(slot.slotDate)}
+                        </dd>
+                      </div>
+                      <div className="flex flex-col">
+                        <dt className="text-muted-foreground">Time</dt>
+                        <dd className="whitespace-nowrap text-foreground">
+                          {formatTime(slot.startTime)} – {formatTime(slot.endTime)}
+                        </dd>
+                      </div>
+                    </dl>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+
+          <div className="hidden md:block">
+            <DataTable
+              columns={columns}
+              data={slots}
+              loading={isPending}
+              sortable
+              emptyState={
+                <EmptyState
+                  icon={<CalendarRange className="size-12" />}
+                  title="No slots yet"
+                  description="Create appointment slots for doctors to fill their schedule."
+                />
+              }
+            />
+          </div>
           <Pagination
             page={page}
             totalPages={totalPages}

@@ -45,7 +45,7 @@ export const DoctorCard = memo(function DoctorCard({
           <Avatar
             src={doctor.doctor.avatarUrl}
             fallback={doctor.doctor.displayName}
-            className="size-14 shrink-0"
+            className="size-16 shrink-0"
             width={64}
             height={64}
           />

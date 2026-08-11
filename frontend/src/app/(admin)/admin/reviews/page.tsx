@@ -10,6 +10,8 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { Skeleton } from "@/components/feedback/Skeleton";
 import { StarRating } from "@/components/business/StarRating";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 import { formatDateTime } from "@/lib/utils";
 
 const DataTable = dynamic(
@@ -66,10 +68,32 @@ export default function AdminReviewsPage() {
 
   const columns: Column<ReviewReadModel>[] = useMemo(() => [
     {
+      key: "patientId",
+      header: "Patient",
+      render: (review) => (
+        <div className="flex min-w-0 items-center gap-2.5">
+          <Avatar
+            src={review.patient.avatarUrl}
+            fallback={review.patient.fullName}
+            className="size-8 shrink-0"
+            width={32}
+            height={32}
+          />
+          <span className="truncate font-medium">{review.patient.fullName}</span>
+        </div>
+      ),
+    },
+    {
       key: "appointmentId",
       header: "Appointment",
-      render: (review) =>
-        `${review.doctor.displayName} · ${formatDateTime(review.slot.date, review.slot.startTime)}`,
+      render: (review) => (
+        <div>
+          <span className="block truncate font-medium">{review.doctor.displayName}</span>
+          <span className="block whitespace-nowrap text-xs text-muted-foreground">
+            {formatDateTime(review.slot.date, review.slot.startTime)}
+          </span>
+        </div>
+      ),
     },
     {
       key: "rating",
@@ -128,19 +152,103 @@ export default function AdminReviewsPage() {
         <ErrorBanner message="Could not load reviews." onRetry={refetch} />
       ) : (
         <>
-          <DataTable
-            columns={columns}
-            data={reviews}
-            loading={isPending}
-            sortable
-            emptyState={
-              <EmptyState
-                icon={<Star className="size-12" />}
-                title="No reviews yet"
-                description="Reviews left by patients will appear here."
-              />
-            }
-          />
+          <div className="flex flex-col gap-4 md:hidden">
+            {isPending ? (
+              <>
+                <Skeleton variant="card" />
+                <Skeleton variant="card" />
+                <Skeleton variant="card" />
+              </>
+            ) : reviews.length === 0 ? (
+              <div className="rounded-xl border border-border">
+                <EmptyState
+                  icon={<Star className="size-12" />}
+                  title="No reviews yet"
+                  description="Reviews left by patients will appear here."
+                />
+              </div>
+            ) : (
+              reviews.map((review) => (
+                <Card key={review.id}>
+                  <CardContent className="flex flex-col gap-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <Avatar
+                          src={review.patient.avatarUrl}
+                          fallback={review.patient.fullName}
+                          className="size-10 shrink-0"
+                          width={40}
+                          height={40}
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-foreground">
+                            {review.patient.fullName}
+                          </p>
+                          <p className="truncate text-xs text-muted-foreground">
+                            {review.doctor.displayName}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => setEditing(review)}
+                          aria-label={`Edit review for ${review.doctor.displayName}`}
+                          title={`Edit review for ${review.doctor.displayName}`}
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => setDeleting(review)}
+                          aria-label={`Delete review for ${review.doctor.displayName}`}
+                          title={`Delete review for ${review.doctor.displayName}`}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <StarRating rating={review.rating} readonly size="sm" />
+                    {review.comment ? (
+                      <p className="line-clamp-3 text-xs text-muted-foreground">{review.comment}</p>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">No comment</span>
+                    )}
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
+                      <div className="flex flex-col">
+                        <dt className="text-muted-foreground">Date</dt>
+                        <dd className="whitespace-nowrap text-foreground">
+                          {formatDateTime(review.slot.date, review.slot.startTime)}
+                        </dd>
+                      </div>
+                      <div className="flex flex-col">
+                        <dt className="text-muted-foreground">Rating</dt>
+                        <dd className="text-foreground">{review.rating} / 5</dd>
+                      </div>
+                    </dl>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+
+          <div className="hidden md:block">
+            <DataTable
+              columns={columns}
+              data={reviews}
+              loading={isPending}
+              sortable
+              emptyState={
+                <EmptyState
+                  icon={<Star className="size-12" />}
+                  title="No reviews yet"
+                  description="Reviews left by patients will appear here."
+                />
+              }
+            />
+          </div>
           <Pagination
             page={page}
             totalPages={totalPages}

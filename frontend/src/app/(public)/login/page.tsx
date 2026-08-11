@@ -60,7 +60,7 @@ function LoginForm() {
         <div className="space-y-1 text-center">
           <h1 className="text-2xl font-bold text-foreground">Sign in</h1>
           <p className="text-sm text-muted-foreground">
-            Welcome back to HealthFlow
+            Welcome back to MediCare
           </p>
         </div>
 

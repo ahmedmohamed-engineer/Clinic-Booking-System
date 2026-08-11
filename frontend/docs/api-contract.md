@@ -665,7 +665,8 @@ Rate limiting is **not yet implemented**. The `429 TOO_MANY_REQUESTS` status cod
       "phone": "string | null",
       "address": "string | null",
       "city": "string | null",
-      "description": "string | null"
+      "description": "string | null",
+      "doctorsCount": "number"
     }
   ]
 }

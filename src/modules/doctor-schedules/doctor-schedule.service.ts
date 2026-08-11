@@ -6,12 +6,69 @@ import type { DoctorScheduleRecord, DoctorScheduleReadModel } from "./doctor-sch
 import type { UUID } from "../../shared/types/common.types.js";
 
 export class DoctorScheduleService {
-  async findMySchedule(userId: UUID): Promise<DoctorScheduleReadModel[]> {
+  private async findMyDoctorId(userId: UUID): Promise<UUID> {
     const doctor = await doctorScheduleRepository.findDoctorByUserId(userId);
     if (!doctor) {
       throw AppError.notFound("Doctor profile not found");
     }
-    return doctorScheduleRepository.findByDoctorId(doctor.id);
+    return doctor.id;
+  }
+
+  async findMySchedule(userId: UUID): Promise<DoctorScheduleReadModel[]> {
+    const doctorId = await this.findMyDoctorId(userId);
+    return doctorScheduleRepository.findByDoctorId(doctorId);
+  }
+
+  async createMySchedule(
+    userId: UUID,
+    dto: Omit<CreateDoctorScheduleDto, "doctorId">,
+  ): Promise<DoctorScheduleRecord> {
+    const doctorId = await this.findMyDoctorId(userId);
+
+    const duplicate = await doctorScheduleRepository.findDuplicate(
+      doctorId,
+      dto.weekday,
+      dto.startTime,
+    );
+    if (duplicate) {
+      throw new AppError(HttpStatus.CONFLICT, "Schedule already exists for this weekday and start time");
+    }
+
+    return doctorScheduleRepository.create({
+      doctorId,
+      weekday: dto.weekday,
+      startTime: dto.startTime,
+      endTime: dto.endTime,
+      slotDuration: dto.slotDuration,
+    });
+  }
+
+  async updateMySchedule(
+    userId: UUID,
+    id: UUID,
+    dto: UpdateDoctorScheduleDto,
+  ): Promise<DoctorScheduleRecord> {
+    const doctorId = await this.findMyDoctorId(userId);
+    const schedule = await doctorScheduleRepository.findById(id);
+    if (!schedule) {
+      throw AppError.notFound("Schedule not found");
+    }
+    if (schedule.doctorId !== doctorId) {
+      throw new AppError(HttpStatus.FORBIDDEN, "You can only modify your own schedule");
+    }
+    return this.update(id, dto);
+  }
+
+  async deleteMySchedule(userId: UUID, id: UUID): Promise<void> {
+    const doctorId = await this.findMyDoctorId(userId);
+    const schedule = await doctorScheduleRepository.findById(id);
+    if (!schedule) {
+      throw AppError.notFound("Schedule not found");
+    }
+    if (schedule.doctorId !== doctorId) {
+      throw new AppError(HttpStatus.FORBIDDEN, "You can only delete your own schedule");
+    }
+    return this.delete(id);
   }
 
   async create(dto: CreateDoctorScheduleDto): Promise<DoctorScheduleRecord> {

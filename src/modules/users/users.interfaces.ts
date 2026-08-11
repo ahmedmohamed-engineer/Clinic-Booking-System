@@ -4,6 +4,7 @@ import type { UserRole } from "../../shared/types/user.types.js";
 export interface UserRecord {
   id: UUID;
   email: string;
+  fullName: string | null;
   role: UserRole;
   isVerified: boolean;
   avatarUrl: string | null;

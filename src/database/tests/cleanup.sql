@@ -1,4 +1,5 @@
 TRUNCATE TABLE
+refresh_tokens,
 notifications,
 reviews,
 payments,

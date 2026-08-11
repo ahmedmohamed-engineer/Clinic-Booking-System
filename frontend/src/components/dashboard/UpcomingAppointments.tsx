@@ -20,13 +20,13 @@ export function UpcomingAppointments({
       className="animate-fade-in flex flex-col gap-4"
     >
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between border-b border-border/60">
+        <CardHeader className="flex flex-col gap-2 border-b border-border/60 md:flex-row md:items-center md:justify-between">
           <h2 id="upcoming-heading" className="heading-2">
             Upcoming appointments
           </h2>
           <Link
             href="/appointments"
-            className="text-sm font-semibold text-primary hover:text-primary/80 hover:underline"
+            className="w-fit text-sm font-semibold text-primary hover:text-primary/80 hover:underline"
           >
             View all
           </Link>

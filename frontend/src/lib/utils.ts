@@ -5,6 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function isPathActive(pathname: string, href: string): boolean {
+  if (pathname === href) return true;
+  return pathname.startsWith(href.endsWith("/") ? href : `${href}/`);
+}
+
 export function getInitials(name: string): string {
   const normalized = name.trim();
   if (!normalized) return "?";

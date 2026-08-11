@@ -14,7 +14,7 @@ export function Footer({ className }: FooterProps) {
         className,
       )}
     >
-      &copy; {year} HealthFlow. All rights reserved.
+      &copy; {year} MediCare. All rights reserved.
     </footer>
   );
 }

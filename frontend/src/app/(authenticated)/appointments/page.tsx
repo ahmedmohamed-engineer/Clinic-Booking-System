@@ -75,10 +75,11 @@ function PatientAppointmentsContent() {
         </div>
         <Link
           href="/book"
+          className="inline-flex w-full md:w-auto"
           onMouseEnter={prefetchBooking}
           onFocus={prefetchBooking}
         >
-          <Button>
+          <Button className="w-full md:w-auto">
             <CalendarPlus />
             Book Appointment
           </Button>
@@ -95,10 +96,11 @@ function PatientAppointmentsContent() {
             action={
               <Link
                 href="/book"
+                className="inline-flex w-full md:w-auto"
                 onMouseEnter={prefetchBooking}
                 onFocus={prefetchBooking}
               >
-                <Button>
+                <Button className="w-full md:w-auto">
                   <CalendarPlus />
                   Book Appointment
                 </Button>
@@ -108,7 +110,7 @@ function PatientAppointmentsContent() {
         </div>
       ) : (
         <Tabs defaultValue="upcoming">
-          <TabsList>
+          <TabsList className="w-full sm:w-auto">
             <TabsTrigger value="upcoming">
               Upcoming ({upcoming.length})
             </TabsTrigger>
@@ -220,7 +222,7 @@ function DoctorAppointmentsContent() {
         </div>
       ) : (
         <Tabs defaultValue="upcoming">
-          <TabsList>
+          <TabsList className="w-full sm:w-auto">
             <TabsTrigger value="upcoming">
               Upcoming ({upcoming.length})
             </TabsTrigger>

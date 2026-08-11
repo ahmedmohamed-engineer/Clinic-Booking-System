@@ -8,6 +8,7 @@ export class UsersRepository extends BaseRepository {
   private readonly selectFields = `
     id,
     email,
+    full_name AS "fullName",
     role,
     avatar_url AS "avatarUrl",
     is_verified AS "isVerified",
@@ -17,7 +18,9 @@ export class UsersRepository extends BaseRepository {
   `;
 
   private buildWhere(filter: UserFilter): { clause: string; params: unknown[] } {
-    const conditions: string[] = ["deleted_at IS NULL"];
+    const conditions: string[] = filter.deletedOnly
+      ? ["deleted_at IS NOT NULL"]
+      : ["deleted_at IS NULL"];
     const params: unknown[] = [];
 
     if (filter.role) {
@@ -30,10 +33,12 @@ export class UsersRepository extends BaseRepository {
     }
     if (filter.search) {
       params.push(`%${filter.search}%`);
-      conditions.push(`email ILIKE $${params.length}`);
+      conditions.push(
+        `(email ILIKE $${params.length} OR full_name ILIKE $${params.length})`,
+      );
     }
 
-    return { clause: conditions.join(" AND "), params };
+    return { clause: conditions.length > 0 ? conditions.join(" AND ") : "TRUE", params };
   }
 
   async count(filter: UserFilter): Promise<number> {

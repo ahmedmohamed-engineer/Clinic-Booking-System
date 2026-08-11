@@ -61,7 +61,7 @@ function DashboardStats({
 }) {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((key) => (
           <Skeleton key={key} variant="card" className="h-24" />
         ))}
@@ -70,7 +70,7 @@ function DashboardStats({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {stats.map(({ icon: Icon, label, value, hint, href }) => {
         const content = (
           <Card className="h-full transition-colors group-hover:border-primary/50 group-focus-visible:border-primary/50">
@@ -155,17 +155,22 @@ function PatientDashboardContent() {
           <>
             <Link
               href="/book"
-              className="inline-flex"
+              className="inline-flex w-full md:w-auto"
               onMouseEnter={prefetchBooking}
               onFocus={prefetchBooking}
             >
-              <Button>
+              <Button className="w-full md:w-auto">
                 <CalendarPlus />
                 Book Appointment
               </Button>
             </Link>
-            <Link href="/appointments" className="inline-flex">
-              <Button variant="outline">View Appointments</Button>
+            <Link
+              href="/appointments"
+              className="inline-flex w-full md:w-auto"
+            >
+              <Button variant="outline" className="w-full md:w-auto">
+                View Appointments
+              </Button>
             </Link>
           </>
         }
@@ -175,10 +180,11 @@ function PatientDashboardContent() {
         action={
           <Link
             href="/book"
+            className="inline-flex w-full md:w-auto"
             onMouseEnter={prefetchBooking}
             onFocus={prefetchBooking}
           >
-            <Button size="lg">
+            <Button size="lg" className="w-full md:w-auto">
               <CalendarPlus />
               Book Appointment
             </Button>
@@ -362,13 +368,13 @@ function DoctorDashboardContent() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <section className="animate-fade-in flex flex-col gap-4 lg:col-span-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <h2 id="upcoming-heading" className="heading-2">
               Upcoming Appointments
             </h2>
             <Link
               href="/appointments"
-              className="text-sm font-semibold text-primary hover:text-primary/80 hover:underline"
+              className="w-fit text-sm font-semibold text-primary hover:text-primary/80 hover:underline"
             >
               View All
             </Link>
@@ -419,13 +425,20 @@ function DoctorDashboardContent() {
               onRetry={refetchSchedule}
             />
           ) : (schedules?.length ?? 0) === 0 ? (
-            <div className="rounded-xl border border-border bg-card">
-              <EmptyState
-                icon={<CalendarClock className="size-12" />}
-                title="No schedule defined"
-                description="Contact your administrator to set up your weekly schedule."
-              />
-            </div>
+<div className="rounded-xl border border-border bg-card">
+            <EmptyState
+              icon={<CalendarClock className="size-12" />}
+              title="No schedule defined"
+              description="Set your weekly availability so patients can book you."
+              action={
+                <Link href="/schedule">
+                  <Button variant="outline" size="sm">
+                    Set up your schedule
+                  </Button>
+                </Link>
+              }
+            />
+          </div>
           ) : (
             <WeeklyCalendar schedules={schedules ?? []} />
           )}

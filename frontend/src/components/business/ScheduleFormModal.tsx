@@ -19,8 +19,10 @@ import {
 } from "@/components/ui/dialog";
 import {
   createDoctorScheduleSchema,
+  createMyDoctorScheduleSchema,
   updateDoctorScheduleSchema,
   type CreateDoctorScheduleInput,
+  type CreateMyDoctorScheduleInput,
   type UpdateDoctorScheduleInput,
 } from "@/schemas/schedule";
 import type { DoctorReadModel } from "@/types/models/doctor";
@@ -42,8 +44,11 @@ interface ScheduleFormModalProps {
   open: boolean;
   onClose: () => void;
   schedule?: DoctorScheduleRecord | null;
-  doctors: DoctorReadModel[];
-  onSubmit: (data: CreateDoctorScheduleInput | UpdateDoctorScheduleInput) => void;
+  doctors?: DoctorReadModel[];
+  withDoctorField?: boolean;
+  onSubmit: (
+    data: CreateDoctorScheduleInput | CreateMyDoctorScheduleInput | UpdateDoctorScheduleInput,
+  ) => void;
   isSubmitting?: boolean;
 }
 
@@ -51,7 +56,8 @@ export function ScheduleFormModal({
   open,
   onClose,
   schedule,
-  doctors,
+  doctors = [],
+  withDoctorField = true,
   onSubmit,
   isSubmitting,
 }: ScheduleFormModalProps) {
@@ -73,16 +79,18 @@ export function ScheduleFormModal({
     setFieldErrors({});
     setFormError(null);
 
-    const payload = {
-      doctorId,
+    const basePayload = {
       weekday: Number(weekday),
       startTime,
       endTime,
       slotDuration: Number(slotDuration),
     };
+    const payload = withDoctorField ? { ...basePayload, doctorId } : basePayload;
     const result = schedule
       ? updateDoctorScheduleSchema.safeParse(payload)
-      : createDoctorScheduleSchema.safeParse(payload);
+      : withDoctorField
+        ? createDoctorScheduleSchema.safeParse(payload)
+        : createMyDoctorScheduleSchema.safeParse(payload);
 
     if (!result.success) {
       const errors: Record<string, string> = {};
@@ -116,24 +124,26 @@ export function ScheduleFormModal({
             </div>
           )}
 
-          <div className="space-y-2">
-            <Label htmlFor="doctorId">Doctor</Label>
-            <Select value={doctorId} onValueChange={(value) => setDoctorId(value ?? "")} disabled={isSubmitting}>
-              <SelectTrigger id="doctorId" className="w-full">
-                <SelectValue placeholder="Select doctor" />
-              </SelectTrigger>
-              <SelectContent>
-                {doctors.map((doctor) => (
-                  <SelectItem key={doctor.id} value={doctor.id}>
-                    {doctor.doctor.displayName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {fieldErrors.doctorId && (
-              <p className="text-xs text-destructive">{fieldErrors.doctorId}</p>
-            )}
-          </div>
+          {withDoctorField && (
+            <div className="space-y-2">
+              <Label htmlFor="doctorId">Doctor</Label>
+              <Select value={doctorId} onValueChange={(value) => setDoctorId(value ?? "")} disabled={isSubmitting}>
+                <SelectTrigger id="doctorId" className="w-full">
+                  <SelectValue placeholder="Select doctor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {doctors.map((doctor) => (
+                    <SelectItem key={doctor.id} value={doctor.id}>
+                      {doctor.doctor.displayName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {fieldErrors.doctorId && (
+                <p className="text-xs text-destructive">{fieldErrors.doctorId}</p>
+              )}
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="weekday">Day</Label>

@@ -49,7 +49,7 @@ export const AppointmentCard = memo(function AppointmentCard({
     appointment.reviewExists;
 
   return (
-    <div className="flex cursor-pointer flex-col gap-4 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-4">
         <Avatar
           src={
@@ -81,41 +81,43 @@ export const AppointmentCard = memo(function AppointmentCard({
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4 sm:justify-end">
-        <div className="text-left sm:text-right">
+      <div className="flex flex-col gap-3 sm:items-end sm:justify-between">
+        <div className="flex items-center justify-between gap-4">
           <p className="text-sm font-medium text-foreground">
             {formatDateTime(appointment.slot.date, appointment.slot.startTime)}
           </p>
+          <StatusBadge status={appointment.status} />
         </div>
-        <StatusBadge status={appointment.status} />
-        {cancellable && (
-          <Button
-            variant="destructive"
-            size="sm"
-            className="cursor-pointer transition-all duration-200 hover:scale-105 hover:bg-red-600 hover:text-white hover:shadow-lg"
-            onClick={() => setConfirmOpen(true)}
-            disabled={isCancelling}
-          >
-            <X className="size-3.5" />
-            Cancel
-          </Button>
-        )}
-        {needsPayment && (
-          <Link href="/payments" className="inline-flex">
-            <Button size="sm">
-              <CreditCard className="size-3.5" />
-              Pay
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+          {cancellable && (
+            <Button
+              variant="destructive"
+              size="sm"
+              className="w-full cursor-pointer transition-all duration-200 hover:scale-105 hover:bg-red-600 hover:text-white hover:shadow-lg sm:w-auto"
+              onClick={() => setConfirmOpen(true)}
+              disabled={isCancelling}
+            >
+              <X className="size-3.5" />
+              Cancel
             </Button>
-          </Link>
-        )}
-        {(canLeaveReview || canViewReview) && (
-          <Link href="/reviews" className="inline-flex">
-            <Button variant="outline" size="sm">
-              <Star className="size-3.5" />
-              {canLeaveReview ? "Leave Review" : "View Review"}
-            </Button>
-          </Link>
-        )}
+          )}
+          {needsPayment && (
+            <Link href="/payments" className="inline-flex w-full sm:w-auto">
+              <Button size="sm" className="w-full sm:w-auto">
+                <CreditCard className="size-3.5" />
+                Pay
+              </Button>
+            </Link>
+          )}
+          {(canLeaveReview || canViewReview) && (
+            <Link href="/reviews" className="inline-flex w-full sm:w-auto">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                <Star className="size-3.5" />
+                {canLeaveReview ? "Leave Review" : "View Review"}
+              </Button>
+            </Link>
+          )}
+        </div>
       </div>
 
       <ConfirmDialog

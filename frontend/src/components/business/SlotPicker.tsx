@@ -37,15 +37,15 @@ export function SlotPicker({
             Choose a date to view available appointment slots.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="size-5 text-primary" />
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <CalendarIcon className="size-5 shrink-0 text-primary" />
           <Input
             id="slot-date"
             type="date"
             min={todayStr}
             value={selectedDate}
             onChange={(e) => onDateChange(e.target.value)}
-            className="w-auto bg-surface-container-lowest"
+            className="w-full bg-surface-container-lowest sm:w-auto"
           />
         </div>
       </div>

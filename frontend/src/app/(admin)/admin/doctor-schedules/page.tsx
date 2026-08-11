@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   useSchedulesAdmin,
   useCreateSchedule,
@@ -194,18 +195,83 @@ export default function AdminDoctorSchedulesPage() {
             <WeeklyCalendar schedules={doctorSchedules} />
           </div>
 
-          <DataTable
-            columns={columns}
-            data={doctorSchedules}
-            sortable
-            emptyState={
-              <EmptyState
-                icon={<Clock className="size-12" />}
-                title="No schedules for this doctor"
-                description="Add a schedule to define this doctor's availability."
-              />
-            }
-          />
+          <div className="flex flex-col gap-4 md:hidden">
+            {doctorSchedules.length === 0 ? (
+              <div className="rounded-xl border border-border">
+                <EmptyState
+                  icon={<Clock className="size-12" />}
+                  title="No schedules for this doctor"
+                  description="Add a schedule to define this doctor's availability."
+                />
+              </div>
+            ) : (
+              doctorSchedules.map((schedule) => (
+                <Card key={schedule.id}>
+                  <CardContent className="flex flex-col gap-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-foreground">
+                          {DAYS[schedule.weekday]}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {formatTime(schedule.startTime)} – {formatTime(schedule.endTime)}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => setEditing(schedule)}
+                          aria-label={`Edit schedule for ${schedule.doctor.displayName}`}
+                          title={`Edit schedule for ${schedule.doctor.displayName}`}
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => setDeleting(schedule)}
+                          aria-label={`Delete schedule for ${schedule.doctor.displayName}`}
+                          title={`Delete schedule for ${schedule.doctor.displayName}`}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
+                      <div className="flex flex-col">
+                        <dt className="text-muted-foreground">Start</dt>
+                        <dd className="text-foreground">{formatTime(schedule.startTime)}</dd>
+                      </div>
+                      <div className="flex flex-col">
+                        <dt className="text-muted-foreground">End</dt>
+                        <dd className="text-foreground">{formatTime(schedule.endTime)}</dd>
+                      </div>
+                      <div className="col-span-2 flex flex-col">
+                        <dt className="text-muted-foreground">Slot duration</dt>
+                        <dd className="text-foreground">{schedule.slotDuration} min</dd>
+                      </div>
+                    </dl>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+
+          <div className="hidden md:block">
+            <DataTable
+              columns={columns}
+              data={doctorSchedules}
+              sortable
+              emptyState={
+                <EmptyState
+                  icon={<Clock className="size-12" />}
+                  title="No schedules for this doctor"
+                  description="Add a schedule to define this doctor's availability."
+                />
+              }
+            />
+          </div>
         </>
       )}
 

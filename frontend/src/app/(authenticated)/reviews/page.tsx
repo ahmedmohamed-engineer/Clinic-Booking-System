@@ -83,19 +83,18 @@ function PatientReviewsContent() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Reviews
-        </h1>
-        <p className="text-lg text-muted-foreground">
+    <div className="container-custom flex flex-col gap-8 p-6">
+      <header className="animate-fade-in flex flex-col gap-2">
+        <h1 className="heading-1">Reviews</h1>
+        <p className="body-text">
           Share your experience after a completed appointment.
         </p>
       </header>
 
+      <div className="animate-fade-in flex flex-col gap-6">
       {eligibleForReview.length > 0 && (
         <section className="flex flex-col gap-3">
-          <h2 className="text-xl font-semibold text-foreground">
+          <h2 className="heading-2">
             Write a Review ({eligibleForReview.length})
           </h2>
           {eligibleForReview.map((appointment) => (
@@ -115,7 +114,10 @@ function PatientReviewsContent() {
                   {formatDateTime(appointment.slot.date, appointment.slot.startTime)}
                 </p>
               </div>
-              <Button onClick={() => setSelected(appointment)}>
+              <Button
+                className="w-full sm:w-auto"
+                onClick={() => setSelected(appointment)}
+              >
                 <Star />
                 Leave Review
               </Button>
@@ -126,7 +128,7 @@ function PatientReviewsContent() {
 
       {reviewedAppointments.length > 0 && (
         <section className="flex flex-col gap-3">
-          <h2 className="text-xl font-semibold text-foreground">
+          <h2 className="heading-2">
             Your Reviews ({reviewedAppointments.length})
           </h2>
           {reviewedAppointments.map((appointment) => {
@@ -148,7 +150,11 @@ function PatientReviewsContent() {
                     {formatDateTime(appointment.slot.date, appointment.slot.startTime)}
                   </p>
                 </div>
-                <Button variant="outline" onClick={() => setViewing(review ?? null)}>
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  onClick={() => setViewing(review ?? null)}
+                >
                   <Star />
                   View Review
                 </Button>
@@ -191,6 +197,7 @@ function PatientReviewsContent() {
           )}
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }
@@ -217,16 +224,15 @@ function DoctorReviewsContent() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Reviews
-        </h1>
-        <p className="text-lg text-muted-foreground">
+    <div className="container-custom flex flex-col gap-8 p-6">
+      <header className="animate-fade-in flex flex-col gap-2">
+        <h1 className="heading-1">Reviews</h1>
+        <p className="body-text">
           Reviews left by patients for your appointments.
         </p>
       </header>
 
+      <div className="animate-fade-in">
       <section className="flex flex-col gap-3">
         {reviews?.length === 0 ? (
           <div className="rounded-xl border border-border bg-card">
@@ -244,6 +250,7 @@ function DoctorReviewsContent() {
           </div>
         )}
       </section>
+      </div>
     </div>
   );
 }

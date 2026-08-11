@@ -34,7 +34,7 @@ export class PaymentRepository extends BaseRepository {
     json_build_object('id', s.id, 'date', s.slot_date, 'startTime', s.start_time, 'endTime', s.end_time) AS slot,
     json_build_object(
       'id', d.id,
-      'displayName', COALESCE(u.full_name, u.email),
+      'displayName', COALESCE(NULLIF(TRIM(u.full_name), ''), 'Doctor'),
       'clinicName', cl.name,
       'specialtyName', sp.name,
       'consultationFee', d.consultation_fee::float8,

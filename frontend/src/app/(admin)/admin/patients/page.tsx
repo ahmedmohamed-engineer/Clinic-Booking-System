@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { Skeleton } from "@/components/feedback/Skeleton";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
 
 const DataTable = dynamic(
@@ -158,19 +159,97 @@ export default function AdminPatientsPage() {
         <ErrorBanner message="Could not load patients." onRetry={refetch} />
       ) : (
         <>
-          <DataTable
-            columns={columns}
-            data={patients}
-            loading={isPending}
-            sortable
-            emptyState={
-              <EmptyState
-                icon={<ClipboardList className="size-12" />}
-                title="No patients yet"
-                description="Patient profiles will appear here once they register."
-              />
-            }
-          />
+          <div className="flex flex-col gap-4 md:hidden">
+            {isPending ? (
+              <>
+                <Skeleton variant="card" />
+                <Skeleton variant="card" />
+                <Skeleton variant="card" />
+              </>
+            ) : patients.length === 0 ? (
+              <div className="rounded-xl border border-border">
+                <EmptyState
+                  icon={<ClipboardList className="size-12" />}
+                  title="No patients yet"
+                  description="Patient profiles will appear here once they register."
+                />
+              </div>
+            ) : (
+              patients.map((patient) => (
+                <Card key={patient.id}>
+                  <CardContent className="flex flex-col gap-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <Avatar
+                          src={patient.avatarUrl}
+                          fallback={patient.fullName}
+                          className="size-10 shrink-0"
+                          width={40}
+                          height={40}
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-foreground">
+                            {patient.fullName}
+                          </p>
+                          <p className="truncate text-xs text-muted-foreground">
+                            {patient.gender ?? "—"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => setEditing(patient)}
+                          aria-label={`Edit ${patient.fullName}`}
+                          title={`Edit ${patient.fullName}`}
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => setDeleting(patient)}
+                          aria-label={`Delete ${patient.fullName}`}
+                          title={`Delete ${patient.fullName}`}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
+                      <div className="flex flex-col">
+                        <dt className="text-muted-foreground">Phone</dt>
+                        <dd className="truncate text-foreground">{patient.phone ?? "—"}</dd>
+                      </div>
+                      <div className="flex flex-col">
+                        <dt className="text-muted-foreground">Date of birth</dt>
+                        <dd className="text-foreground">
+                          {patient.birthDate ? formatDate(patient.birthDate) : "—"}
+                        </dd>
+                      </div>
+                    </dl>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+
+          <div className="hidden md:block">
+            <DataTable
+              columns={columns}
+              data={patients}
+              loading={isPending}
+              sortable
+              emptyState={
+                <EmptyState
+                  icon={<ClipboardList className="size-12" />}
+                  title="No patients yet"
+                  description="Patient profiles will appear here once they register."
+                />
+              }
+            />
+          </div>
           <Pagination
             page={page}
             totalPages={totalPages}

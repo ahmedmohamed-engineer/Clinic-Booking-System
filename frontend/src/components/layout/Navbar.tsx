@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Menu } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { Logo } from "./Logo";
 import { UserMenu } from "./UserMenu";
 
 interface NavbarProps {
@@ -24,14 +24,12 @@ export function Navbar({ onMenuClick }: NavbarProps) {
             size="icon"
             onClick={onMenuClick}
             aria-label="Toggle menu"
-            className="md:hidden"
+            className="lg:hidden"
           >
             <Menu className="size-5" />
           </Button>
         )}
-        <Link href="/" className="text-lg font-bold text-primary">
-          HealthFlow
-        </Link>
+        <Logo />
       </div>
 
       <div className="relative flex items-center gap-2">
