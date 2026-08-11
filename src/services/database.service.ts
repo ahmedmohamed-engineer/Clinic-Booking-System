@@ -1,5 +1,5 @@
 import pg from "pg";
-import { database } from "../config/index.js";
+import { database, env } from "../config/index.js";
 
 export const pool = new pg.Pool({
   host: database.host,
@@ -7,6 +7,9 @@ export const pool = new pg.Pool({
   database: database.name,
   user: database.user,
   password: database.password,
+  ...(env.NODE_ENV === "production"
+    ? { ssl: { rejectUnauthorized: false } }
+    : {}),
 });
 
 pool.on("error", (err) => {
