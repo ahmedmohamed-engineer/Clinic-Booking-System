@@ -1,6 +1,6 @@
 # Project Report — Clinic Booking System Backend
 
-> Internal document for project owner. Not for public distribution.
+> Technical report documenting the design and implementation of the Clinic Booking System backend.
 
 ---
 

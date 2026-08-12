@@ -6,6 +6,15 @@ The frontend application is documented in [`frontend/README.md`](frontend/README
 
 ---
 
+## Live Demo
+
+- **Frontend (MediCare):** https://clinic-booking-system-two.vercel.app
+- **Backend API (Railway):** https://clinic-booking-system-production-2a48.up.railway.app — `GET /health` and `GET /api/v1/*` endpoints (verified responding at the time of writing).
+
+See the [Deployment](#deployment) section for platform details.
+
+---
+
 ## Features
 
 - **Patient Registration & Authentication** — Email/password registration with bcrypt password hashing, JWT access tokens, and refresh token rotation.

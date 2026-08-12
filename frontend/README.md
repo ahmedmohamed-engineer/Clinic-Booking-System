@@ -4,6 +4,8 @@ The frontend of the Clinic Booking System ("MediCare"). It is the client-side ap
 
 It talks to the backend REST API documented in the [backend README](../README.md).
 
+> **Live demo:** deployed at https://clinic-booking-system-two.vercel.app (frontend). Backend API is live on Railway — [`/health`](https://clinic-booking-system-production-2a48.up.railway.app/health) and `/api/v1/*` endpoints verified responding at the time of writing. See [Deployment](#deployment).
+
 ---
 
 ## Tech Stack
