@@ -1,6 +1,8 @@
-# Clinic Booking System
+# Clinic Booking System — Backend API
 
 A production-grade RESTful API backend for managing clinic appointments, doctor schedules, patient registrations, payments, and reviews. Built with Node.js, Express 5, PostgreSQL, and TypeScript, following a modular layered architecture with role-based access control and refresh token rotation.
+
+The frontend application is documented in [`frontend/README.md`](frontend/README.md). This README covers only the backend.
 
 ---
 
@@ -9,11 +11,12 @@ A production-grade RESTful API backend for managing clinic appointments, doctor 
 - **Patient Registration & Authentication** — Email/password registration with bcrypt password hashing, JWT access tokens, and refresh token rotation.
 - **Role-Based Access Control (RBAC)** — Three roles (`patient`, `doctor`, `admin`) with granular permission sets.
 - **Doctor & Clinic Management** — Full CRUD for doctors, clinics, and medical specialties with public read endpoints.
-- **Weekly Schedule Templates** — Define recurring weekly schedules per doctor with configurable slot durations.
-- **Appointment Slot Generation** — Individual bookable time slots with status tracking (`available`, `booked`, `cancelled`) and overlap prevention.
+- **Weekly Schedule Templates** — Define recurring weekly schedules per doctor with configurable slot durations (doctor self-service and admin-managed).
+- **Appointment Slot Management** — Individual bookable time slots with status tracking (`available`, `booked`, `cancelled`) and overlap prevention.
 - **Appointment Booking** — Patients can book, view, and cancel their own appointments. Doctors can manage appointments assigned to them.
-- **Payment Records** — Track payments per appointment with multiple methods and statuses.
+- **Payment Records** — Record payments per appointment (manual record-keeping — no payment gateway integration) with multiple methods and statuses.
 - **Reviews & Ratings** — Patients can review completed appointments (ratings 1–5).
+- **Avatar Uploads** — Profile photo uploads (`POST /api/v1/users/avatar`) with multer, MIME/type-size enforcement, and Sharp-based image processing.
 - **Soft Delete** — Users and appointment slots support soft deletion with partial indexes.
 - **Refresh Token Rotation** — Each refresh token is single-use; a new one is issued on every refresh.
 - **Input Validation** — Zod schemas validate all request bodies with detailed error responses.
@@ -27,14 +30,19 @@ A production-grade RESTful API backend for managing clinic appointments, doctor 
 | Layer | Technology |
 |-------|-----------|
 | **Runtime** | Node.js 22 |
-| **Language** | TypeScript 7 (strict mode, ES2022 target) |
+| **Language** | TypeScript 7 (strict mode, target per `tsconfig.json`) |
 | **Framework** | Express 5 |
-| **Database** | PostgreSQL 17 |
+| **Database** | PostgreSQL 17 (used by the dev container and local testing) |
 | **Database Driver** | `pg` 8 |
 | **Validation** | Zod 4 |
 | **Authentication** | `jsonwebtoken` 9 + `bcrypt` 6 |
+| **File Uploads** | `multer` 2 (memory storage) + `sharp` 0.35 |
 | **Dev Runner** | `tsx` (TypeScript execute) |
 | **Package Manager** | npm |
+
+---
+
+> **Note:** runtime and language versions are the ones installed in `package.json` / the dev container at the time of writing. Re-verify with `node --version`, `npx tsc --version`.
 
 ---
 
@@ -48,11 +56,14 @@ Client
   ▼
 Express App (app.ts)
   │  express.json()
+  │  cors() — configured from CORS_ORIGINS
+  │  GET /health — liveness probe
+  │  /uploads — static files (avatar uploads)
   │  /api/v1
   │
   ▼
 Routes (routes/index.ts)
-  │  Mounts module routers
+  │  Mounts module routers (public + /admin/*)
   │
   ▼
 Middlewares
@@ -112,7 +123,8 @@ src/
 │   └── index.ts                # Re-exports
 ├── services/
 │   ├── database.service.ts     # pg Pool singleton + connectDatabase()
-│   └── migration.service.ts    # SQL file-based migration runner
+│   ├── migration.service.ts    # SQL file-based migration runner
+│   └── avatar-storage.service.ts # Sharp-based avatar resize/optimization
 ├── routes/
 │   └── index.ts                # Central router mounting all modules
 ├── shared/
@@ -128,6 +140,7 @@ src/
 │   ├── middlewares/
 │   │   ├── auth.middleware.ts       # authenticate() + authorize()
 │   │   ├── validation.middleware.ts # Zod validate()
+│   │   ├── upload.middleware.ts     # multer avatar upload + MIME/size checks
 │   │   └── error.middleware.ts      # Global error handler
 │   ├── repositories/
 │   │   └── base.repository.ts  # Transaction and query base class
@@ -142,11 +155,11 @@ src/
 │   └── utils/
 │       └── password.ts         # bcrypt hash/compare
 ├── database/
-│   ├── migrations/             # SQL migration files (versioned)
+│   ├── migrations/             # Versioned SQL migrations (001–008)
 │   └── tests/                  # SQL validation scripts
 └── modules/                    # Feature modules
     ├── auth/
-    ├── users/
+    ├── users/                  # Admin CRUD + self avatar upload
     ├── patients/
     ├── doctors/
     ├── clinics/
@@ -155,9 +168,10 @@ src/
     ├── appointment-slots/
     ├── appointments/
     ├── payments/
-    ├── reviews/
-    └── notifications/          # Placeholder (table exists, no logic)
+    └── reviews/
 ```
+
+**Note:** a `notifications` table exists in the database schema, but no notifications API module is implemented.
 
 Each module follows the same file convention (8 files):
 - `{module}.controller.ts`
@@ -204,7 +218,7 @@ users (1) ──── (1) patients ──── (*) appointments ──── (
 **Key constraints:**
 - `patients.user_id` — UNIQUE (one patient record per user)
 - `doctors.user_id` — UNIQUE (one doctor profile per user)
-- `appointments.slot_id` — UNIQUE (one appointment per slot)
+- `appointments.slot_id` — partial UNIQUE index `WHERE status IN ('scheduled', 'confirmed')` (one active appointment per slot; a slot can be rebooked after its appointment is cancelled/completed)
 - `payments.appointment_id` — UNIQUE (one payment per appointment)
 - `reviews.appointment_id` — UNIQUE (one review per appointment)
 - `doctor_schedules(doctor_id, weekday, start_time)` — UNIQUE (no overlapping schedule entries)
@@ -303,7 +317,7 @@ The system implements **resource-based permissions** mapped to roles.
 | Role | Permissions |
 |------|-------------|
 | **admin** | All `MANAGE_*` permissions (11 permissions covering users, patients, doctors, clinics, specialties, schedules, slots, appointments, payments, reviews, notifications) |
-| **doctor** | `VIEW_OWN_PROFILE`, `MANAGE_OWN_PROFILE`, `VIEW_OWN_SCHEDULE`, `MANAGE_OWN_APPOINTMENTS`, `VIEW_OWN_REVIEWS`, `MANAGE_OWN_NOTIFICATIONS` |
+| **doctor** | `VIEW_OWN_PROFILE`, `MANAGE_OWN_PROFILE`, `VIEW_OWN_SCHEDULE`, `MANAGE_OWN_SCHEDULE`, `MANAGE_OWN_APPOINTMENTS`, `VIEW_OWN_REVIEWS`, `MANAGE_OWN_NOTIFICATIONS` |
 | **patient** | `VIEW_OWN_PROFILE`, `MANAGE_OWN_PROFILE`, `BOOK_APPOINTMENT`, `MANAGE_OWN_APPOINTMENTS`, `PAY_APPOINTMENT`, `MANAGE_OWN_REVIEWS`, `MANAGE_OWN_NOTIFICATIONS` |
 
 ### Permission Enforcement
@@ -355,15 +369,16 @@ Beyond middleware-level authorization, services enforce data ownership:
 
 ---
 
-### Users (Admin)
+### Users (Admin CRUD + Self Avatar)
 
-**Purpose:** Admin CRUD for user accounts with soft delete support.
+**Purpose:** Admin CRUD for user accounts with soft delete support; authenticated users can upload their profile avatar.
 
 **Business Rules:**
-- Only admins with `MANAGE_USERS` permission can access
+- Only admins with `MANAGE_USERS` permission can access the CRUD endpoints
 - Email uniqueness check excludes the current user on update
 - Cannot update or delete a soft-deleted user
 - Soft delete sets `deleted_at` and `updated_at` to `NOW()`
+- `POST /users/avatar` is available to any authenticated role; multipart `avatar` field, JPEG/PNG/WebP under 2 MB; the resized/optimized image is served from `/uploads` (static, 7-day cache)
 
 **Endpoints:**
 | Method | Route | Auth | Permission |
@@ -372,6 +387,7 @@ Beyond middleware-level authorization, services enforce data ownership:
 | GET | `/admin/users/:id` | Yes | `MANAGE_USERS` |
 | PATCH | `/admin/users/:id` | Yes | `MANAGE_USERS` |
 | DELETE | `/admin/users/:id` | Yes | `MANAGE_USERS` |
+| POST | `/users/avatar` | Yes | Any authenticated role |
 
 ---
 
@@ -400,13 +416,14 @@ Beyond middleware-level authorization, services enforce data ownership:
 
 ### Doctors
 
-**Purpose:** Manage doctor profiles. Public read, admin CRUD.
+**Purpose:** Manage doctor profiles. Public read, admin CRUD, and doctor self-service.
 
 **Business Rules:**
 - Doctor creation requires an existing user with role `doctor`
 - Clinic and specialty must exist
 - One doctor per user (UNIQUE `user_id` constraint)
 - Public list/detail endpoints are unauthenticated
+- Doctors can view and edit their own profile via `/doctors/me`
 - `consultation_fee >= 0`, `experience_years >= 0`
 - Hard delete
 
@@ -415,6 +432,8 @@ Beyond middleware-level authorization, services enforce data ownership:
 |--------|-------|------|------------|
 | GET | `/doctors` | No | — |
 | GET | `/doctors/:id` | No | — |
+| GET | `/doctors/me` | Yes | `VIEW_OWN_PROFILE` |
+| PATCH | `/doctors/me` | Yes | `MANAGE_OWN_PROFILE` |
 | GET | `/admin/doctors` | Yes | `MANAGE_DOCTORS` |
 | GET | `/admin/doctors/:id` | Yes | `MANAGE_DOCTORS` |
 | POST | `/admin/doctors` | Yes | `MANAGE_DOCTORS` |
@@ -483,12 +502,15 @@ Beyond middleware-level authorization, services enforce data ownership:
 | Method | Route | Auth | Permission |
 |--------|-------|------|------------|
 | GET | `/doctor-schedules/me` | Yes | `VIEW_OWN_SCHEDULE` |
-| GET | `/doctor-schedules` | Yes | `MANAGE_SCHEDULES` |
-| GET | `/doctor-schedules/:id` | Yes | `MANAGE_SCHEDULES` |
-| GET | `/doctor-schedules/doctor/:doctorId` | Yes | `MANAGE_SCHEDULES` |
-| POST | `/doctor-schedules` | Yes | `MANAGE_SCHEDULES` |
-| PATCH | `/doctor-schedules/:id` | Yes | `MANAGE_SCHEDULES` |
-| DELETE | `/doctor-schedules/:id` | Yes | `MANAGE_SCHEDULES` |
+| POST | `/doctor-schedules/me` | Yes | `MANAGE_OWN_SCHEDULE` |
+| PATCH | `/doctor-schedules/me/:id` | Yes | `MANAGE_OWN_SCHEDULE` |
+| DELETE | `/doctor-schedules/me/:id` | Yes | `MANAGE_OWN_SCHEDULE` |
+| GET | `/admin/doctor-schedules` | Yes | `MANAGE_SCHEDULES` |
+| GET | `/admin/doctor-schedules/:id` | Yes | `MANAGE_SCHEDULES` |
+| GET | `/admin/doctor-schedules/doctor/:doctorId` | Yes | `MANAGE_SCHEDULES` |
+| POST | `/admin/doctor-schedules` | Yes | `MANAGE_SCHEDULES` |
+| PATCH | `/admin/doctor-schedules/:id` | Yes | `MANAGE_SCHEDULES` |
+| DELETE | `/admin/doctor-schedules/:id` | Yes | `MANAGE_SCHEDULES` |
 
 ---
 
@@ -532,6 +554,8 @@ Beyond middleware-level authorization, services enforce data ownership:
 - Patients can only cancel their own appointments
 - Doctors can only cancel appointments assigned to their slots
 - Only `scheduled` or `confirmed` appointments can be cancelled
+- `PATCH /appointments/mine/:id` lets a patient or doctor cancel their own appointment (ownership is enforced in the service layer)
+- Appointments that have a linked payment cannot be deleted (conflict error)
 - Past appointments cannot be cancelled by patients
 - Status transitions update slot status accordingly (cancelled → available, restored → booked)
 - Delete releases the slot back to `available`
@@ -569,6 +593,7 @@ Beyond middleware-level authorization, services enforce data ownership:
 |--------|-------|------|------------|
 | POST | `/payments` | Yes | `PAY_APPOINTMENT` / `MANAGE_PAYMENTS` |
 | GET | `/payments/mine` | Yes | `PAY_APPOINTMENT` |
+| PATCH | `/payments/mine/:id` | Yes | `PAY_APPOINTMENT` |
 | GET | `/payments` | Yes | `MANAGE_PAYMENTS` |
 | GET | `/payments/:id` | Yes | `MANAGE_PAYMENTS` |
 | GET | `/payments/appointment/:appointmentId` | Yes | `MANAGE_PAYMENTS` |
@@ -603,21 +628,22 @@ Beyond middleware-level authorization, services enforce data ownership:
 
 ## API Overview
 
-All endpoints are prefixed with `/api/v1`.
+All endpoints are prefixed with `/api/v1`. `GET /health` (liveness probe) is mounted at the root of the app, outside the API prefix.
 
 | Module | Prefix | Public | Auth | Admin |
 |--------|--------|--------|------|-------|
+| Health | `/health` | ✓ | — | — |
 | Auth | `/auth` | Register, Login, Refresh | Logout, Me | — |
-| Users | `/admin/users` | — | — | ✓ |
+| Users | `/users` | — | Avatar upload | `/admin/users` |
 | Patients | `/patients` | — | `/me` | ✓ |
-| Doctors | `/doctors` | List, Detail | — | `/admin/doctors` |
+| Doctors | `/doctors` | List, Detail | `/me` | `/admin/doctors` |
 | Clinics | `/clinics` | List, Detail | — | `/admin/clinics` |
 | Specialties | `/specialties` | List, Detail | — | `/admin/specialties` |
-| Doctor Schedules | `/doctor-schedules` | — | `/me` | ✓ |
+| Doctor Schedules | `/doctor-schedules` | — | `/me` | `/admin/doctor-schedules` |
 | Appointment Slots | `/appointment-slots` | Available, By Doctor, By Date | — | `/admin/appointment-slots` |
-| Appointments | `/appointments` | — | `/mine` | ✓ |
-| Payments | `/payments` | — | `/mine` | ✓ |
-| Reviews | `/reviews` | — | `/mine` | ✓ |
+| Appointments | `/appointments` | — | `/mine`, create | `/admin/appointments` |
+| Payments | `/payments` | — | `/mine` | `/admin/payments` |
+| Reviews | `/reviews` | — | `/mine` | `/admin/reviews` |
 
 ---
 
@@ -654,7 +680,7 @@ The server automatically:
 
 ### Environment Variables
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root (see `.env.example` for the full list):
 
 ```env
 NODE_ENV=development
@@ -666,21 +692,49 @@ DB_NAME=clinic_booking
 DB_USER=postgres
 DB_PASSWORD=postgres
 
+# CORS - comma-separated list of allowed browser origins
+CORS_ORIGINS=http://localhost:3000
+
 JWT_SECRET=your-jwt-secret-min-32-chars
 JWT_EXPIRES_IN=15m
 JWT_REFRESH_SECRET=your-refresh-secret-min-32-chars
 JWT_REFRESH_EXPIRES_IN=7d
+
+# Optional: avatar upload directory (defaults to ./uploads)
+# UPLOAD_DIR=uploads
 ```
+
+Optional bootstrap variables parsed by the environment schema (`SYSTEM_ADMIN_EMAIL`, `SYSTEM_ADMIN_PASSWORD`, `SYSTEM_ADMIN_NAME`) exist in `.env.example`. They are currently **not consumed** by any startup/bootstrap logic — treat them as reserved until the admin seeding feature is implemented. `JWT_SECRET` and `JWT_REFRESH_SECRET` must be at least 32 characters. For production, set secrets on the hosting platform, never commit them.
 
 ### Scripts
 
 | Script | Description |
 |--------|-------------|
 | `npm run dev` | Start development server with hot reload (`tsx watch`) |
-| `npm run build` | Compile TypeScript to JavaScript |
+| `npm run build` | Compile TypeScript to JavaScript + copy migration files |
 | `npm run start` | Start compiled production server |
 | `npm run typecheck` | Run TypeScript type checking |
 | `npm test` | Run tests (not yet implemented) |
+
+---
+
+## Deployment
+
+The backend does not ship its own Dockerfile, `Procfile`, or `nixpacks` configuration in the repository — deployment is handled by the hosting platform. The known production deployments are:
+
+- **Backend:** REST API deployed on Railway (`clinic-booking-system-production-2a48.up.railway.app`), with the connection string provided via environment variables.
+- **Database:** Neon PostgreSQL (connection URL injected through environment variables).
+- **Frontend:** Next.js app on Vercel — see [`frontend/README.md`](frontend/README.md).
+
+Build/start in production from the source tree:
+
+```bash
+npm install
+npm run build   # tsc + copy migrations
+npm start       # node dist/server.js
+```
+
+On startup the server connects to PostgreSQL, applies pending migrations, and begins listening. `UPLOAD_DIR` defaults to `./uploads` — configure a persistent volume for that path on the host.
 
 ---
 
@@ -709,10 +763,10 @@ JWT_REFRESH_EXPIRES_IN=7d
 - All queries use parameterized prepared statements (`$1`, `$2`, etc.)
 - No string concatenation for user input
 
-### Row-Level Security (Ownership)
-- Service layer enforces data ownership
-- Patients can only access their own appointments, payments, reviews
-- Doctors can only access their own schedules and assigned appointments
+### Service-Layer Ownership (Access Control)
+- Data ownership is enforced **in service code** using the authenticated user id (`req.user.sub`); there are no PostgreSQL RLS policies
+- Patients can only access their own appointments, payments, reviews, and patient profile
+- Doctors can only access their own profile, schedule, and appointments assigned to their slots
 
 ### IDOR Prevention
 - Access to resources by ID is gated by authorization middleware AND ownership checks in services
@@ -832,11 +886,10 @@ npm run db:test
 - **Unit and Integration Tests** — Add comprehensive test coverage with Jest or Vitest
 - **API Versioning** — Formalize versioning strategy (already structured for `/api/v1`)
 - **Passwordless Token Refresh** — Implement refresh token automatic renewal before expiry
-- **Email Notifications** — Implement the notifications module for appointment reminders and status changes
 - **Slot Auto-Generation** — Automatically generate appointment slots from doctor schedules via a scheduled job
+- **Email Notifications** — Implement the notifications API module (the database table already exists)
 - **Rate Limiting** — Add rate limiting to authentication endpoints
 - **Request Logging** — Add structured logging (pino, winston) for observability
-- **Health Check** — Add `/health` endpoint for monitoring
 - **Pagination** — Implement pagination filtering and sorting across all list endpoints (infrastructure exists but is partially used)
 - **Docker Compose for Production** — Add production-grade Docker Compose configuration
 - **CI/CD Pipeline** — Add GitHub Actions for linting, type checking, and testing
