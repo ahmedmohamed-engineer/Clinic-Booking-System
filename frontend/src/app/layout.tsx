@@ -33,6 +33,16 @@ export default function RootLayout({
       className={`${archivo.variable} ${kalam.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        {/* Day/Night: the Prescription Pad opens on the night desk by default.
+            Set the class before first paint so the stored or default theme is
+            never flashed as the wrong one. Must mirror getInitialTheme(). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("hf_theme");var theme=(t==="light"||t==="dark")?t:"dark";var r=document.documentElement;r.classList.toggle("dark",theme==="dark");r.setAttribute("data-theme",theme);}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-on-surface">
         {/* THESIS: Booking is a prescription — an explicit, trustworthy document that converts care into action; the familiar doctor-list-grid-and-blue SaaS register is refused for a sheet you watch being written and stamped.
              OWN-WORLD: cream paper ground with hairline ink rules, white sheets, ink-blue print (#16325c), one red rubber-stamp action (#d9553d), pharmacy green for availability, carbon-copy confirmation; Archivo letterhead type, Kalam for inked annotations.

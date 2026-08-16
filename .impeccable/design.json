@@ -1,46 +1,79 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-15T00:00:00.000Z",
-  "title": "Design System: MediCare",
+  "generatedAt": "2026-08-16T00:00:00.000Z",
+  "title": "Design System: The Prescription Pad",
   "extensions": {
     "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "Day Sheet / Night Desk",
+        "canonical": "#f7f3ea",
+        "tonalRamp": ["#141b2e", "#232c4c", "#475569", "#55617a", "#8b94a6", "#cfc8b8", "#ede7d8", "#f7f3ea"]
+      },
       "primary": {
         "role": "primary",
-        "displayName": "MediCare Blue",
-        "canonical": "#0f6cbd",
-        "tonalRamp": ["#062c4d", "#0a4380", "#0d559e", "#0f6cbd", "#2f88d4", "#5ba5de", "#8fc2e9", "#c8e2f6"]
+        "displayName": "Stamp Red",
+        "canonical": "#c2412c",
+        "tonalRamp": ["#3a1622", "#6b2728", "#8f332b", "#c2412c", "#d9553d", "#e0614a", "#e8a24c", "#f7e3dd"]
       },
       "secondary": {
         "role": "secondary",
-        "displayName": "Calm Teal",
-        "canonical": "#0fb9a6",
-        "tonalRamp": ["#042e28", "#075449", "#097b6b", "#0fb9a6", "#3ccbbc", "#6ad8cc", "#9ce6de", "#d0f4ef"]
+        "displayName": "Print Ink",
+        "canonical": "#16325c",
+        "tonalRamp": ["#0b1629", "#101f3d", "#16325c", "#2b4a7d", "#4d6a9d", "#7590c0", "#a9bde0", "#dbe6f5"]
       },
-      "neutral-background": {
+      "tertiary": {
+        "role": "tertiary",
+        "displayName": "Pharmacy Green",
+        "canonical": "#0f9d68",
+        "tonalRamp": ["#06291d", "#0a4f38", "#0b7d55", "#0f9d68", "#2fc29b", "#4cd6ac", "#7fe3c3", "#bff1e2"]
+      },
+      "foreground": {
         "role": "neutral",
-        "displayName": "Snow Slate",
-        "canonical": "#f8fafc",
-        "tonalRamp": ["#0f172a", "#334155", "#64748b", "#94a3b8", "#cbd5e1", "#e2e8f0", "#f1f5f9", "#f8fafc"]
+        "displayName": "Ink Slate (day) / Night Cream (desk)",
+        "canonical": "#16325c",
+        "tonalRamp": ["#f3efe2", "#d8d2c2", "#bcb6a4", "#8b94a6", "#55617a", "#475569", "#16325c", "#141b2e"]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Parchment / Night Slate",
+        "canonical": "#fffdf8",
+        "tonalRamp": ["#1c2440", "#232c4c", "#2b3652", "#3a4666", "#55617a", "#cfc8b8", "#f4efe3", "#fffdf8"]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Slate Muted",
+        "canonical": "#55617a",
+        "tonalRamp": ["#1f2634", "#2d3547", "#3d4659", "#55617a", "#6e7a93", "#8b94a6", "#a9b0bd", "#b6bcc9"]
       }
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Display",
-        "purpose": "Landing-page hero headlines only. In-product hierarchy tops out at headline."
+        "displayName": "Page-Sheet Title",
+        "purpose": "The printed sheet title (heading-1). The system's type tops out here — no oversized display register."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default card/table/form text, 14px at 1.6 leading, in slate muted."
       },
       "label": {
-        "displayName": "Micro-label",
-        "purpose": "Section eyebrows and metadata labels; uppercase with 0.05em tracking."
+        "displayName": "Printed Micro-label",
+        "purpose": "Metadata reads as typeset print: 11.5px, 600, uppercase, +0.12em tracking."
+      },
+      "ink": {
+        "displayName": "Kalam Ink",
+        "purpose": "Handwritten annotations only: the Rx mark and the hero lines being written."
       }
     },
     "shadows": [
-      { "name": "state-selected", "value": "0 4px 6px -1px rgb(0 0 0 / 0.1)", "purpose": "Selected cards and active wizard steps only. Flat by default; shadows are a state response." },
-      { "name": "float", "value": "0 10px 15px -3px rgb(0 0 0 / 0.1)", "purpose": "Floating elements (hero mock card, confirmation chips) and modal elevation." }
+      { "name": "sheet", "value": "0 4px 6px -1px rgb(0 0 0 / 0.1)", "purpose": "The paper sheet in the hand: auth panes, confirmation pad, selected slots, desk notes." },
+      { "name": "front-sheet", "value": "0 10px 15px -3px rgb(0 0 0 / 0.1)", "purpose": "The hero's day sheet, dialogs, and mobile sheets — the document you are reading." }
     ],
     "motion": [
-      { "name": "ease-state", "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default state transitions (hover, focus, active press)." },
-      { "name": "fade-in", "value": "fadeIn 0.3s ease-in-out (translateY(-8px) → 0)", "purpose": "Content entrance." },
-      { "name": "shimmer", "value": "shimmer 1.5s infinite, 90deg gradient sweep", "purpose": "Skeleton loading surfaces only." }
+      { "name": "ease-state", "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Stamp and control state transitions (hover, focus, active press)." },
+      { "name": "theme-swap", "value": "300ms rotate/scale/opacity crossfade, motion-reduce disabled", "purpose": "The ThemeToggle moon/sun dance — a quiet stamp-ink moment, not a color event." },
+      { "name": "fade-in", "value": "fadeIn 0.3s ease-in-out (translateY(-8px) to 0)", "purpose": "Content entrance on the sheet." },
+      { "name": "shimmer", "value": "shimmer 1.5s infinite, 90deg sweep (night desk: surface-family tone mix)", "purpose": "Skeleton loading surfaces; night skeletons are slate, not gray." }
     ],
     "breakpoints": [
       { "name": "sm", "value": "640px" },
@@ -49,85 +82,79 @@
   },
   "components": [
     {
-      "name": "Primary Button",
+      "name": "Stamp Button (Primary)",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The single committed action. MediCare Blue fill, white text, compact 32px height.",
-      "html": "<button class=\"ds-btn-primary\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg>Get started</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 10px; border: 1px solid transparent; border-radius: 8px; background: #0f6cbd; color: #ffffff; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: color-mix(in oklch, #0f6cbd, #0f172a 20%); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: none; border-color: #0f6cbd; box-shadow: 0 0 0 3px rgb(15 108 189 / 0.5); } .ds-btn-primary:disabled { opacity: 0.5; pointer-events: none; } .ds-icon { width: 16px; height: 16px; flex-shrink: 0; }"
+      "description": "The rubber stamp: the one decisive action on a sheet. Stamp-red fill, parchment text, 32px, rounded-lg.",
+      "html": "<button class=\"ds-stamp-btn\"><svg class=\"ds-stamp-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m12 3 1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3Z\"/></svg>Confirm booking</button>",
+      "css": ".ds-stamp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid transparent; border-radius: 8px; background: #c2412c; color: #fffdf8; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms; } .ds-desk .ds-stamp-btn { background: #e0614a; } .ds-stamp-btn:hover { background: color-mix(in oklch, #c2412c, #f7f3ea 18%); transform: rotate(-1deg); } .ds-desk .ds-stamp-btn:hover { background: color-mix(in oklch, #e0614a, #141b2e 18%); } .ds-stamp-btn:active { transform: translateY(1px); } .ds-stamp-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgb(194 65 44 / 0.5); } .ds-stamp-btn:disabled { opacity: 0.5; pointer-events: none; } .ds-stamp-icon { width: 14px; height: 14px; flex-shrink: 0; }"
     },
     {
-      "name": "Outline Button",
+      "name": "Theme Toggle",
       "kind": "button",
-      "refersTo": "button-outline",
-      "description": "Secondary path next to a primary: hairline border, snow fill, slate text.",
-      "html": "<button class=\"ds-btn-outline\">Sign in</button>",
-      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 10px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; color: #0f172a; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms; } .ds-btn-outline:hover { background: #f1f5f9; color: #0f172a; } .ds-btn-outline:focus-visible { outline: none; border-color: #0f6cbd; box-shadow: 0 0 0 3px rgb(15 108 189 / 0.5); } .ds-btn-outline:disabled { opacity: 0.5; pointer-events: none; }"
+      "refersTo": "button-ghost",
+      "description": "Day/Night switch in every chrome (AuthLayout, Navbar, AdminNavbar). Ghost icon button with a moon/sun crossfade; the night desk is the default.",
+      "html": "<button class=\"ds-toggle\" aria-label=\"Switch to light theme\"><span class=\"ds-toggle-track\"><svg class=\"ds-toggle-icon ds-moon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z\"/></svg><svg class=\"ds-toggle-icon ds-sun\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2\"/><path d=\"M12 20v2\"/><path d=\"m4.93 4.93 1.41 1.41\"/><path d=\"m17.66 17.66 1.41 1.41\"/><path d=\"M2 12h2\"/><path d=\"M20 12h2\"/><path d=\"m6.34 17.66-1.41 1.41\"/><path d=\"m19.07 4.93-1.41 1.41\"/></svg></span></button>",
+      "css": ".ds-toggle { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: #16325c; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-toggle:hover { background: #f0ead9; } .ds-desk .ds-toggle { color: #f3efe2; } .ds-desk .ds-toggle:hover { background: #232c4c; } .ds-toggle:focus-visible { outline: none; box-shadow: 0 0 0 3px rgb(22 50 92 / 0.5); } .ds-desk .ds-toggle:focus-visible { box-shadow: 0 0 0 3px rgb(143 176 232 / 0.5); } .ds-toggle-track { position: relative; display: grid; width: 20px; height: 20px; place-items: center; } .ds-toggle-icon { position: absolute; width: 16px; height: 16px; transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms; } .ds-sun { opacity: 0; transform: rotate(90deg) scale(0.5); } .ds-desk .ds-sun { opacity: 1; transform: rotate(0) scale(1); } .ds-desk .ds-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }"
     },
     {
       "name": "Text Input",
       "kind": "input",
       "refersTo": "input-text",
-      "description": "Form field: 36px, hairline border, snow fill, primary focus ring.",
-      "html": "<label class=\"ds-label\" for=\"ds-input\">Email</label><input id=\"ds-input\" class=\"ds-input\" type=\"email\" placeholder=\"you@example.com\"/>",
-      "css": ".ds-label { display: block; margin-bottom: 6px; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: #64748b; } .ds-input { width: 100%; height: 36px; padding: 4px 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; color: #0f172a; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 14px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms; } .ds-input::placeholder { color: #64748b; } .ds-input:focus { outline: none; border-color: #0f6cbd; box-shadow: 0 0 0 2px #0f6cbd; } .ds-input[aria-invalid=\"true\"] { border-color: #dc2626; box-shadow: 0 0 0 2px #dc2626; } .ds-input:disabled { opacity: 0.5; cursor: not-allowed; }"
+      "description": "A line to fill in: 36px, ink-stroke border, paper ground, ink-blue focus ring.",
+      "html": "<label class=\"ds-label\" for=\"ds-input\">Patient name</label><input id=\"ds-input\" class=\"ds-input\" type=\"text\" placeholder=\"Write the name here\"/>",
+      "css": ".ds-label { display: block; margin-bottom: 6px; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #55617a; } .ds-input { width: 100%; height: 36px; padding: 4px 12px; border: 1px solid #cfc8b8; border-radius: 8px; background: #f7f3ea; color: #16325c; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 14px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); outline: none; transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms; } .ds-desk .ds-input { background: #141b2e; border-color: #3a4666; color: #f3efe2; } .ds-input::placeholder { color: #55617a; } .ds-input:focus { border-color: #16325c; box-shadow: 0 0 0 2px #16325c; } .ds-desk .ds-input:focus { border-color: #8fb0e8; box-shadow: 0 0 0 2px #8fb0e8; } .ds-input[aria-invalid=\"true\"] { border-color: #b3261e; box-shadow: 0 0 0 2px #b3261e; }"
     },
     {
-      "name": "Status Badge",
-      "kind": "chip",
-      "refersTo": "status-badge",
-      "description": "Semantic status pill: 10% tint fill + 25% alpha border of a single status tone, capitalized 12px text.",
-      "html": "<span class=\"ds-badge ds-badge-success\">Available</span> <span class=\"ds-badge ds-badge-warning\">Pending</span> <span class=\"ds-badge ds-badge-danger\">Cancelled</span>",
-      "css": ".ds-badge { display: inline-flex; align-items: center; padding: 2px 10px; border: 1px solid; border-radius: 9999px; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 12px; font-weight: 500; text-transform: capitalize; } .ds-badge-success { background: rgb(22 163 74 / 0.10); border-color: rgb(22 163 74 / 0.25); color: #16a34a; } .ds-badge-warning { background: rgb(217 119 6 / 0.10); border-color: rgb(217 119 6 / 0.25); color: #d97706; } .ds-badge-danger { background: rgb(220 38 38 / 0.10); border-color: rgb(220 38 38 / 0.25); color: #dc2626; }"
-    },
-    {
-      "name": "Card",
+      "name": "Paper Sheet",
       "kind": "card",
-      "refersTo": "card-default",
-      "description": "Flat-by-default container: white fill, hairline ring, 14px radius. Shadow only when selected.",
-      "html": "<div class=\"ds-card\"><div class=\"ds-card-title\">Dr. Heba Aziz</div><div class=\"ds-card-meta\">Orthopedics · Alexandria Health Hub</div><div class=\"ds-card-action\">$40</div></div>",
-      "css": ".ds-card { display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 14px; background: #ffffff; color: #0f172a; font-family: Inter, ui-sans-serif, system-ui, sans-serif; box-shadow: 0 0 0 1px rgb(15 23 42 / 0.10); } .ds-card-title { font-size: 16px; font-weight: 500; line-height: 1.375; } .ds-card-meta { font-size: 14px; color: #64748b; } .ds-card-action { margin-top: 8px; font-size: 14px; font-weight: 600; color: #0f6cbd; }"
+      "refersTo": "paper-sheet",
+      "description": "A sheet of stock: bright parchment, hairline ink edge, softly rounded; the recurring document container with letterhead rule.",
+      "html": "<div class=\"ds-sheet\"><div class=\"ds-sheet-head\"><span class=\"ds-sheet-mark\">Rx</span><span class=\"ds-sheet-name\">MediCare</span><span class=\"ds-sheet-ref\">No. 02481</span></div><div class=\"ds-sheet-rule\"></div><div class=\"ds-sheet-row\"><span>Specialist</span><span>Dr. Heba Aziz</span></div><div class=\"ds-sheet-row\"><span>Date</span><span class=\"ds-tab\">12 Aug 2026</span></div><div class=\"ds-sheet-row\"><span>Fee</span><span class=\"ds-tab\">$40</span></div></div>",
+      "css": ".ds-sheet { display: flex; flex-direction: column; gap: 10px; padding: 24px 28px; border: 1px solid #d8d2c2; border-radius: 10px; background: #fffdf8; color: #16325c; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); } .ds-desk .ds-sheet { background: #1c2440; border-color: #2b3652; color: #f3efe2; } .ds-sheet-head { display: flex; align-items: baseline; gap: 8px; } .ds-sheet-mark { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 2px solid #d9553d; outline: 1px solid #d9553d; outline-offset: -4px; border-radius: 4px; color: #d9553d; font-family: Kalam, cursive; font-size: 13px; font-weight: 700; } .ds-desk .ds-sheet-mark { border-color: #e0614a; outline-color: #e0614a; color: #e0614a; } .ds-sheet-name { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; } .ds-sheet-ref { margin-left: auto; font-size: 11.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #55617a; } .ds-desk .ds-sheet-ref { color: #b6bcc9; } .ds-sheet-rule { border-bottom: 3px double rgba(22, 50, 92, 0.28); } .ds-desk .ds-sheet-rule { border-bottom-color: rgba(243, 239, 226, 0.22); } .ds-sheet-row { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; color: #55617a; } .ds-desk .ds-sheet-row { color: #b6bcc9; } .ds-sheet-row > span:last-child { font-weight: 500; color: #16325c; } .ds-desk .ds-sheet-row > span:last-child { color: #f3efe2; } .ds-tab { font-variant-numeric: tabular-nums; }"
     },
     {
-      "name": "Doctor Card (Signature)",
+      "name": "Ruled Writing Sheet (Signature)",
       "kind": "custom",
-      "refersTo": "doctor-card",
-      "description": "The booking decision point: 64px avatar, specialty in primary, clinic, experience, fee, star rating, bio clamp. Selection = 2px primary border + tint.",
-      "html": "<div class=\"ds-doctor\" tabindex=\"0\" role=\"button\" aria-pressed=\"false\"><div class=\"ds-doctor-avatar\">HA</div><div class=\"ds-doctor-body\"><div class=\"ds-doctor-name-row\"><span class=\"ds-doctor-name\">Dr. Heba Aziz</span><span class=\"ds-doctor-rating\"><svg class=\"ds-star\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z\"/></svg>4.8</span></div><div class=\"ds-doctor-specialty\">Orthopedics</div><div class=\"ds-doctor-meta\">Alexandria Health Hub · 18 years</div><div class=\"ds-doctor-fee\">$40</div></div></div>",
-      "css": ".ds-doctor { display: flex; gap: 16px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 14px; background: #ffffff; font-family: Inter, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms, background-color 150ms; } .ds-doctor:hover { border-color: #0f6cbd; } .ds-doctor:focus-visible { outline: none; box-shadow: 0 0 0 2px #0f6cbd; } .ds-doctor[aria-pressed=\"true\"] { border: 2px solid #0f6cbd; background: rgb(15 108 189 / 0.05); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); } .ds-doctor-avatar { display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 14px; background: #dbeafe; color: #0f6cbd; font-size: 20px; font-weight: 600; flex-shrink: 0; } .ds-doctor-body { flex: 1; min-width: 0; } .ds-doctor-name-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; } .ds-doctor-name { font-size: 16px; font-weight: 600; color: #0f172a; } .ds-doctor-rating { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 500; color: #f59e0b; } .ds-star { width: 14px; height: 14px; } .ds-doctor-specialty { margin-top: 2px; font-size: 14px; color: #0f6cbd; } .ds-doctor-meta { margin-top: 8px; font-size: 14px; color: #64748b; } .ds-doctor-fee { margin-top: 8px; font-size: 14px; font-weight: 600; color: #0f172a; }"
+      "refersTo": "ruled-sheet",
+      "description": "The prescription being written: tokenized ruled lines at a strict 28px cadence, ink annotations, carbon copy offset behind. The world's signature document.",
+      "html": "<div class=\"ds-ruled-wrap\"><div class=\"ds-carbon\" aria-hidden=\"true\"></div><div class=\"ds-doc\"><div class=\"ds-lead-row\"><span class=\"ds-place\">MediCare</span><span class=\"ds-doc-label\">Appointment prescription</span></div><div class=\"ds-doc-rule\"></div><div class=\"ds-ruled\"><div class=\"ds-line\"><span class=\"ds-doc-label\">Specialist</span><span class=\"ds-ink\">Dr. Heba Aziz</span></div><div class=\"ds-line\"><span class=\"ds-doc-label\">Date</span><span class=\"ds-tab\">12 Aug 2026</span></div><div class=\"ds-line\"><span class=\"ds-doc-label\">Time</span><span class=\"ds-tab\">09:00 - 09:30</span></div></div><span class=\"ds-stamp\">Booked</span></div></div>",
+      "css": ".ds-ruled-wrap { position: relative; max-width: 420px; } .ds-carbon { position: absolute; top: -8px; right: 12px; left: 12px; bottom: 14px; transform: rotate(2deg); border: 1px solid rgba(216, 210, 194, 0.7); border-radius: 8px; background: rgba(255, 253, 248, 0.6); opacity: 0.7; } .ds-desk .ds-carbon { border-color: rgba(43, 54, 82, 0.7); background: rgba(28, 36, 64, 0.6); } .ds-doc { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; padding: 24px 28px; border: 1px solid #d8d2c2; border-radius: 10px; background: #fffdf8; color: #16325c; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); } .ds-desk .ds-doc { background: #1c2440; border-color: #2b3652; color: #f3efe2; } .ds-lead-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; } .ds-place { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; } .ds-doc-label { font-size: 11.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #55617a; } .ds-desk .ds-doc-label { color: #b6bcc9; } .ds-doc-rule { border-bottom: 3px double rgba(22, 50, 92, 0.28); } .ds-desk .ds-doc-rule { border-bottom-color: rgba(243, 239, 226, 0.22); } .ds-ruled { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(22, 50, 92, 0.14) 27px, rgba(22, 50, 92, 0.14) 28px); } .ds-desk .ds-ruled { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(243, 239, 226, 0.12) 27px, rgba(243, 239, 226, 0.12) 28px); } .ds-line { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 14px; } .ds-line > span:last-child { font-weight: 500; } .ds-ink { font-family: Kalam, cursive; font-size: 16px; font-weight: 700; color: #16325c; } .ds-desk .ds-ink { color: #8fb0e8; } .ds-doc .ds-ink, .ds-doc .ds-tab { font-variant-numeric: tabular-nums; } .ds-stamp { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; transform: rotate(-3deg); padding: 6px 16px; border: 2px solid #c2412c; outline: 1px solid #c2412c; outline-offset: -5px; border-radius: 6px; color: #c2412c; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; } .ds-desk .ds-stamp { border-color: #e0614a; outline-color: #e0614a; color: #e0614a; } .ds-tab { font-variant-numeric: tabular-nums; }"
     }
   ],
   "narrative": {
-    "northStar": "The Calm Clinic",
-    "overview": "MediCare is a healthcare product, and it looks like one: calm, considered, and clinical in the best sense — precise, legible, and reassuring. Patients arrive when they are unwell or pressed for time, so nothing about the interface is allowed to alarm, crowd, or second-guess them. The visual language is confident flatness: generous spacing, low-contrast hairline borders, soft tonal surfaces, and color used deliberately — a single committed primary doing the heavy lifting, with status colors reserved for meaning (green = ok, amber = wait, red = stop).\n\nThe system is utilitarian-precise: buttons, cards, and inputs are compact (32px control height), radius is gently curved (8px standard, 14px for cards), and typography is one family — Inter — whose display weight carries emphasis instead of a second font. The aesthetic philosophy is premium healthcare software: closer to Strip-era calm SaaS than to decorative health-and-wellness styling. Atmospheric gradients and soft glows appear sparingly, in the public landing experience only; authenticated work surfaces stay flat and quiet.\n\nThe incumbent rulebook (product owner's design standard, frontend/docs/reports/skillsUIUX/design-system.md) is binding on this world: trust and clarity over decorative convenience, never invent actions the product cannot perform, every screen answers where am I / what is happening / what should I do next / what is most important / what happened before in that order.",
+    "northStar": "The Prescription Pad",
+    "overview": "Booking an appointment here is not choosing from a grid — it is standing at the desk while a prescription is written for you, line by line, and stamped. Every screen is a sheet on the pad: a letterhead (the clinic mark), ruled writing lines carrying the facts of the visit (clinic, specialty, doctor, time), and one red rubber stamp falling on the decisive action. The familiar doctor-list-grid-and-blue SaaS register is refused outright; the world's own materials — paper, ink, ruled lines, stamp, carbon copy — carry the whole system.\n\nThe pad opens on the night desk by default: a deep navy-slate ground (--background: #141b2e) with cream ink (--foreground: #f3efe2), set before first paint so a stored or default theme never flashes. A single ThemeToggle (moon/sun crossfade, ghost button) swings every layout — AuthLayout, Navbar, AdminNavbar — to the cream day sheet (--background: #f7f3ea, ink-blue print, slate body text), and back again. Both modes use one token system: :root holds the day-sheet values, .dark overrides them.",
     "keyCharacteristics": [
-      "One typeface (Inter); hierarchy through weight, size, and case, not font family.",
-      "Flat, tonal surfaces with hairline ring borders; shadows only as state response (hover, selected).",
-      "Compact controls throughout: 32px default buttons, 36px inputs.",
-      "A single committed primary blue; status colors carry semantic meaning only.",
-      "Radius vocabulary: 8px controls, 10px standard, 14px cards, full pill for badges.",
-      "Dark mode: toggle and token block exist, but the .dark token values currently mirror :root — the dark theme has no distinct visual yet (see Colors note)."
+      "Dark-default: the night desk is the ground truth; the cream day sheet is one quiet toggle away, everywhere.",
+      "The document metaphor: paper-sheet surfaces, letterhead-rule double rules, stamp-ring rubber stamps, carbon-copy sheets tucked behind offsets.",
+      "Tokenized ruled writing lines: .ruled runs a repeating --color-ruled-rule at a strict 28px cadence, tuned per mode.",
+      "Two typefaces with strict roles: Archivo (letterhead/print) everywhere; Kalam (font-ink) only for handwritten ink — the Rx mark and the hero being written.",
+      "One committed action accent — the stamp red — plus style-ink blue for structure and a deep pharmacy green for availability/confirmation."
     ],
     "rules": [
-      { "name": "The One Accent Rule", "body": "MediCare Blue is the only action accent. Teal is secondary, violet is charts-only, and status colors never decorate — a green or red appears only when a status genuinely requires it.", "section": "colors" },
-      { "name": "The Tonal Reading Rule", "body": "Neutrals are expressed as a surface-container family (lowest → highest) rather than shadows; depth is read from tone, not from elevation.", "section": "colors" },
-      { "name": "The One Family Rule", "body": "Inter everywhere. A second family is a redesign decision, never a local accent.", "section": "typography" },
-      { "name": "The Flat-by-Default Rule", "body": "Surfaces are flat at rest; an element earns its shadow by being selected, floating, or modal — never just for being a card.", "section": "elevation" }
+      { "name": "The Night-Desk Default Rule", "body": "The pad opens dark. Unset visitors get the night desk; localStorage(\"hf_theme\") and a pre-paint inline script lock the mode before first render. Light is a toggle, never a default.", "section": "colors" },
+      { "name": "The One Stamp Rule", "body": "The red accent marks the single decisive action on a surface. Wherever it appears more than once (a slot picker, a wizard), it marks current selection — it never decorates.", "section": "colors" },
+      { "name": "The Print Ink Rule", "body": "Ink blue is the writing color. Structure, text, and non-decisive actions are written in ink blue; introducing a second decorative color is a system decision, not a local flourish.", "section": "colors" },
+      { "name": "The Ink Ration Rule", "body": "Kalam is the hand on the sheet, and a hand writes only a little. The font-ink role is confined to the Rx mark and the hero's inked lines; falling back to it for UI copy turns the document into a scribble.", "section": "typography" },
+      { "name": "The Printed Label Rule", "body": "Metadata reads as print: uppercase, +0.12em tracking, 11.5px, muted — headings read as ink, metadata reads as typeset.", "section": "typography" },
+      { "name": "The Flat Sheet Rule", "body": "Cards are flat at rest — hairline ring, no shadow. Elevation is reserved for sheets (paper in the hand), selection (the slot you picked), and floating notes — never for the sake of popping a card.", "section": "elevation" }
     ],
     "dos": [
-      "Do lead each screen with the answer to where am I / what's happening / what do I do next (page title, current state, primary action — in that visual order).",
-      "Do keep cards quiet: hairline ring, white fill, primary border only for selection or emphasis.",
-      "Do use the status tint recipe — 10% fill / 25% border of a single status tone — for every badge.",
-      "Do reserve the display type size for the landing hero; in-product hierarchy tops out at heading-1.",
-      "Do ship real data and honest states: real clinics, doctors, fees, availability; skeleton/empty/error states only ever show demo content, never invented business facts.",
-      "Do verify focus visibility on every interactive element (WCAG 2.1 AA scope)."
+      "Do open on the night desk and let the ThemeToggle swing the whole document at once — never theme a single page.",
+      "Do write every important number tabular: fees, times, dates, references, phones.",
+      "Do use the stamp-red fill for the one decisive action per surface — elsewhere the accent is a tinted tag or an icon, not a wall of red.",
+      "Do compose confirmations as documents: letterhead rule, sheet, stamp-ring verdict, carbon copy.",
+      "Do keep the ruled cadence at 28px with the mode-appropriate --color-ruled-rule token.",
+      "Do let the night desk stay slate: muted fills and placeholders derive from the surface family, not neutral gray."
     ],
     "donts": [
-      "Don't introduce a second font family or a new accent color as a local flourish — both are system-level decisions.",
-      "Don't shade or shadow a card to make it pop; use the tonal surface family and the hairline ring instead.",
-      "Don't use status colors decoratively (no green checkmarks for cosmetic success, no red for flavor).",
-      "Don't surface an action the workflow cannot perform (no booking buttons on past dates, no reviews before completion) — inventing affordances is a product lie.",
-      "Don't duplicate light token values into .dark and call it dark mode — a real dark palette is pending, not present."
+      "Don't introduce a second text family for UI copy; Kalam is the hand, and the hand only annotates.",
+      "Don't shadow a resting card to make it pop — hairline ring, and elevation only for sheets, selection, and floating notes.",
+      "Don't render destructive actions as a solid red button — tinted fill, red text.",
+      "Don't surface an action the workflow cannot perform (no booking buttons on past dates, no reviews before completion) — inventing affordances is a lie on the document.",
+      "Don't duplicate the day-sheet values into .dark or ship a third mode — the pad is one document with two ink/paper states.",
+      "Don't add an oversized display register; the page-sheet title (24px) is the top of the hierarchy."
     ]
   }
 }

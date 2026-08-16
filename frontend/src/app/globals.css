@@ -94,8 +94,12 @@ html {
   color: var(--color-on-surface);
 }
 
-html {
+:root {
   color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
 }
 
 :root {
@@ -134,6 +138,8 @@ html {
   --color-stamp: #d9553d;
   --color-ink-rule: rgba(22, 50, 92, 0.28);
   --color-carbon: rgba(139, 148, 166, 0.35);
+  /* Ruled writing lines: faint ink under bright day-paper */
+  --color-ruled-rule: rgba(22, 50, 92, 0.14);
 
   /* Paper */
   --surface-container-lowest: #fffdf8;
@@ -204,6 +210,8 @@ html {
   --color-stamp: #e0614a;
   --color-ink-rule: rgba(243, 239, 226, 0.22);
   --color-carbon: rgba(182, 188, 201, 0.28);
+  /* Ruled writing lines: faint light-ink under the night desk */
+  --color-ruled-rule: rgba(243, 239, 226, 0.12);
 
   /* Paper — the night desk */
   --surface-container-lowest: #1c2440;
@@ -312,8 +320,8 @@ html {
     to bottom,
     transparent 0,
     transparent 27px,
-    rgba(22, 50, 92, 0.14) 27px,
-    rgba(22, 50, 92, 0.14) 28px
+    var(--color-ruled-rule, rgba(22, 50, 92, 0.14)) 27px,
+    var(--color-ruled-rule, rgba(22, 50, 92, 0.14)) 28px
   );
 }
 
@@ -369,4 +377,14 @@ html {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* Night-desk skeletons: tonal slate, derived from the surface family */
+.dark .shimmer {
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklch, var(--surface-container-lowest), var(--surface-container-highest) 18%) 25%,
+    var(--surface-container-high) 50%,
+    color-mix(in oklch, var(--surface-container-lowest), var(--surface-container-highest) 18%) 75%
+  );
 }

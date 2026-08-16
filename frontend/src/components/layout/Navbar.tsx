@@ -5,6 +5,7 @@ import { Menu } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Logo } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./UserMenu";
 
 interface NavbarProps {
@@ -33,6 +34,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
       </div>
 
       <div className="relative flex items-center gap-2">
+        <ThemeToggle />
         {isAuthenticated ? (
           <UserMenu />
         ) : (
