@@ -3,6 +3,7 @@
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./UserMenu";
 
 interface AdminNavbarProps {
@@ -31,6 +32,7 @@ export function AdminNavbar({ onMenuClick }: AdminNavbarProps) {
       </div>
 
       <div className="relative flex items-center gap-2">
+        <ThemeToggle />
         <UserMenu profileHref="/admin/dashboard" />
       </div>
     </header>
