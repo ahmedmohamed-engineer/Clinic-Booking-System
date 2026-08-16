@@ -133,7 +133,8 @@ export default function BookAppointmentPage() {
               {[1, 2].map((i) => (
                 <div
                   key={i}
-                  className="h-32 animate-pulse rounded-lg bg-surface-container-high"
+                  className="shimmer h-32 rounded-lg"
+                  aria-hidden="true"
                 />
               ))}
             </div>

@@ -93,7 +93,7 @@ export const AppointmentCard = memo(function AppointmentCard({
             <Button
               variant="destructive"
               size="sm"
-              className="w-full cursor-pointer transition-all duration-200 hover:scale-105 hover:bg-red-600 hover:text-white hover:shadow-lg sm:w-auto"
+              className="w-full sm:w-auto"
               onClick={() => setConfirmOpen(true)}
               disabled={isCancelling}
             >

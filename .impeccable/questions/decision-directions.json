@@ -1,0 +1,80 @@
+{
+  "title": "MediCare — choose the visual world",
+  "question": "The roll assigned The Prescription Pad. Keep it, take an alternate, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "The Prescription Pad (Roshita)",
+      "kicker": "THE ROLL",
+      "lineage": "The Egyptian doctor's روزتة — ruled sheet, Rx mark, pharmacy stamp",
+      "thesis": "Booking is a prescription: an explicit, trustworthy document that converts care into action.",
+      "palette": ["#f7f3ea", "#16325c", "#0f9d68", "#d9553d", "#9aa4ad"],
+      "materials": ["ruled prescription sheet", "doctor's ink", "rubber stamp", "carbon copy", "paperclip"],
+      "viewport": "A prescription sheet fills the hero: MediCare as the letterhead, the booking steps as ruled lines being written, a rubber-stamp primary action.",
+      "risk": "Reads decorative if the 'hand' becomes chrome instead of the actual booking act.",
+      "raised": [
+        { "from": "The Hall Catalog", "raise": "The pen circle: selected cards circled in biro, visited struck through" },
+        { "from": "Datamatics", "raise": "The ruled column: hairline rules and tabular numerics for fees and times" }
+      ]
+    },
+    {
+      "id": "pick-ledger",
+      "label": "The Appointment Ledger",
+      "kicker": "IMPECCABLE'S PICK",
+      "lineage": "The clinic's paper diary of open slots",
+      "thesis": "The mechanism made literal: real open times written in the book, your name penciled into a slot.",
+      "palette": ["#f6f3ea", "#8a8f98", "#16325c"],
+      "materials": ["lined ledger", "pencil", "inked date stamp"],
+      "viewport": "The clinic's appointment book: pages of open times, a pencil in your hand.",
+      "risk": "Familiar: the calendar-and-list register every booking site already ships."
+    },
+    {
+      "id": "challenger-cutting-bench",
+      "label": "The Film Cutting Bench",
+      "lineage": "A film editor's select rail: perforated strip, punched frames, folded tape flag",
+      "thesis": "The booking wizard as a film strip: steps are frames, state is a mark, the place you stopped is flagged.",
+      "palette": ["#0a0a0a", "#e8532a", "#f4f1e8"],
+      "materials": ["film grain", "perforation", "grease mark", "tape band"],
+      "viewport": "A black strip runs the page; each booking step a punched frame, the current step a folded orange flag.",
+      "case": "Competitive: state-as-a-mark is the wizard made legible, but a film editor's bench is foreign to this audience.",
+      "verdict": "competitive",
+      "hero": "https://impeccable.style/worlds/cards/operate-a-cutting-bench-select-rail-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/operate-a-cutting-bench-select-rail.webp"
+    },
+    {
+      "id": "challenger-orienteering",
+      "label": "The Orienteering Course",
+      "lineage": "International orienteering maps: iso colors, contours, a purple course over everything",
+      "thesis": "Availability is fixed terrain; the booking journey is a numbered purple course riding over it.",
+      "palette": ["#f4f1e8", "#5a6b3c", "#e3c96b", "#5b3a8e", "#3b7ba6"],
+      "materials": ["map ink", "contour lines", "control circles", "numbered legend"],
+      "viewport": "Doctors and slots as mapped terrain; the patient's path numbered control-to-control.",
+      "case": "Competitive on clarity: course-over-terrain matches wizard-over-availability, but a map is a niche object, not this audience's daily world.",
+      "verdict": "competitive",
+      "hero": "https://impeccable.style/worlds/cards/notation-diagram-systems-orienteering-map-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/notation-diagram-systems-orienteering-map.webp"
+    },
+    {
+      "id": "challenger-hall-catalog",
+      "label": "The Hall Catalog",
+      "lineage": "A convention's printed catalog: stamp-size thumbnails in a numbered hall grid",
+      "thesis": "The whole doctor directory as one packed catalog sheet, selected cells circled in pen.",
+      "palette": ["#111111", "#f0ece2", "#c23a2a"],
+      "materials": ["newsprint", "biro ink", "hall map"],
+      "viewport": "A folded hall map keyed to a dense catalog grid; your route circled in biro.",
+      "case": "Declined: a foreign artifact to an Egyptian patient audience, and the grid is less clear than the rail; kept the pen-circled selection mark.",
+      "verdict": "declined",
+      "kept": "The pen circle: selected cards circled in biro, visited struck through.",
+      "hero": "https://impeccable.style/worlds/cards/pop-culture-shelf-doujin-event-catalog-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/pop-culture-shelf-doujin-event-catalog.webp"
+    }
+  ],
+  "reroll": { "registers": ["safer", "bolder"] },
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "What doctor-booking ships: a doctor-list grid, search bar, and blue accents, executed impeccably.",
+    "viewport": "The familiar browse-and-book arrangement at full craft."
+  },
+  "steer": true
+}

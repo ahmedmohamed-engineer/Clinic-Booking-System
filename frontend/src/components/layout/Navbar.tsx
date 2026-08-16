@@ -16,7 +16,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
   const router = useRouter();
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-border bg-surface-container-low px-4">
+    <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur-sm">
       <div className="flex items-center gap-3">
         {onMenuClick && (
           <Button

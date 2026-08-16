@@ -1,0 +1,24 @@
+{
+  "title": "MediCare frontend redesign — scope",
+  "question": "This redesign replaces the visual world of the entire frontend (landing, auth, booking wizard, patient dashboards, doctor schedule, admin). How far does the new world run in this pass?",
+  "options": [
+    {
+      "id": "full",
+      "label": "Whole frontend, patient-first",
+      "kicker": "SCOPE",
+      "body": "The new world commits everywhere: public landing, login/register, booking wizard, patient dashboard, appointments, payments, reviews, profile, doctor schedule surfaces, and the admin tables. Admin inherits the world at quieter density — rebuilt in the same vocabulary, never stock."
+    },
+    {
+      "id": "patient",
+      "label": "Patient-facing surfaces first",
+      "body": "The new world lands on everything a patient sees: landing, auth, booking wizard, dashboard, appointments, payments, reviews, profile. The admin section stays on the incumbent system for a later pass."
+    },
+    {
+      "id": "landing-wizard",
+      "label": "Landing + booking wizard only",
+      "body": "The public face and the decision point get the full new world now; authenticated dashboards and admin keep the incumbent look for a later pass."
+    }
+  ],
+  "followup": true,
+  "steer": true
+}

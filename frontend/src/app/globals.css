@@ -4,35 +4,54 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* =====================================================================
+   The Prescription Pad (Roshita)
+   Cream paper ground, ink-blue print, one red rubber stamp, pharmacy
+   green for availability. Every screen is a document: where am I,
+   what is happening, what do I do next — in that order.
+   ===================================================================== */
+
 @theme inline {
-  --color-background: #f8fafc;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f8fafc;
-  --color-surface-container: #ffffff;
-  --color-surface-container-high: #f1f5f9;
-  --color-surface-container-highest: #e7ecf3;
-  --color-surface-bright: #eef2f7;
-  --color-on-background: #0f172a;
-  --color-on-surface: #0f172a;
-  --color-on-surface-variant: #64748b;
-  --color-primary: #0f6cbd;
-  --color-primary-container: #dbeafe;
-  --color-on-primary: #ffffff;
-  --color-secondary: #0fb9a6;
-  --color-on-secondary: #062e27;
-  --color-tertiary: #7c3aed;
-  --color-on-tertiary: #ffffff;
-  --color-outline: #94a3b8;
-  --color-outline-variant: #cbd5e1;
-  --color-error: #dc2626;
-  --color-success: #16a34a;
-  --color-status-success: #16a34a;
-  --color-status-info: #0f6cbd;
-  --color-status-warning: #d97706;
-  --color-status-danger: #dc2626;
-  --color-status-neutral: #64748b;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-heading: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Paper (light values; .dark overrides the raw vars below) */
+  --color-background: var(--background);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-surface-bright: var(--surface-bright);
+
+  /* Ink */
+  --color-on-background: var(--on-background);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+
+  /* The stamp */
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary: var(--on-primary);
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary: var(--on-tertiary);
+
+  /* Rules & strokes */
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
+  --color-error: var(--error);
+  --color-success: var(--success);
+  --color-status-success: var(--status-success);
+  --color-status-info: var(--status-info);
+  --color-status-warning: var(--status-warning);
+  --color-status-danger: var(--status-danger);
+  --color-status-neutral: var(--status-neutral);
+
+  /* Type */
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: var(--font-archivo), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-ink: var(--font-kalam), ui-sans-serif, system-ui, sans-serif;
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -80,73 +99,143 @@ html {
 }
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #0f6cbd;
-  --primary-foreground: #ffffff;
-  --secondary: #0fb9a6;
-  --secondary-foreground: #062e27;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #eef2f7;
-  --accent-foreground: #0f172a;
-  --destructive: #dc2626;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #0f6cbd;
-  --chart-1: #0f6cbd;
-  --chart-2: #0fb9a6;
-  --chart-3: #7c3aed;
-  --chart-4: #16a34a;
-  --chart-5: #d97706;
-  --radius: 0.625rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #0f6cbd;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #0f172a;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #0f6cbd;
+  --background: #f7f3ea;
+  --foreground: #16325c;
+  --card: #fffdf8;
+  --card-foreground: #16325c;
+  --popover: #fffdf8;
+  --popover-foreground: #16325c;
+  --primary: #c2412c;
+  --primary-foreground: #fffdf8;
+  --secondary: #16325c;
+  --secondary-foreground: #f7f3ea;
+  --muted: #f0ead9;
+  --muted-foreground: #55617a;
+  --accent: #ede7d8;
+  --accent-foreground: #16325c;
+  --destructive: #b3261e;
+  --border: #d8d2c2;
+  --input: #cfc8b8;
+  --ring: #16325c;
+  --chart-1: #c2412c;
+  --chart-2: #0f9d68;
+  --chart-3: #16325c;
+  --chart-4: #0b7d55;
+  --chart-5: #b45309;
+  --radius: 0.5rem;
+  --sidebar: #fffdf8;
+  --sidebar-foreground: #16325c;
+  --sidebar-primary: #c2412c;
+  --sidebar-primary-foreground: #fffdf8;
+  --sidebar-accent: #f0ead9;
+  --sidebar-accent-foreground: #16325c;
+  --sidebar-border: #d8d2c2;
+  --sidebar-ring: #16325c;
+  --color-stamp: #d9553d;
+  --color-ink-rule: rgba(22, 50, 92, 0.28);
+  --color-carbon: rgba(139, 148, 166, 0.35);
+
+  /* Paper */
+  --surface-container-lowest: #fffdf8;
+  --surface-container-low: #f4efe3;
+  --surface-container: #fffdf8;
+  --surface-container-high: #ede7d8;
+  --surface-container-highest: #e4ddca;
+  --surface-bright: #fffdf8;
+
+  /* Ink */
+  --on-background: #16325c;
+  --on-surface: #16325c;
+  --on-surface-variant: #55617a;
+
+  /* The stamp */
+  --primary-container: #f7e3dd;
+  --on-primary: #fffdf8;
+  --on-secondary: #f7f3ea;
+  --tertiary: #0f9d68;
+  --on-tertiary: #f7f3ea;
+
+  /* Rules & strokes */
+  --outline: #8b94a6;
+  --outline-variant: #cfc8b8;
+
+  --error: #b3261e;
+  --success: #0b7d55;
+  --status-success: #0b7d55;
+  --status-info: #16325c;
+  --status-warning: #b45309;
+  --status-danger: #b3261e;
+  --status-neutral: #55617a;
 }
 
 .dark {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #0f6cbd;
-  --primary-foreground: #ffffff;
-  --secondary: #0fb9a6;
-  --secondary-foreground: #062e27;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #eef2f7;
-  --accent-foreground: #0f172a;
-  --destructive: #dc2626;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #0f6cbd;
-  --chart-1: #0f6cbd;
-  --chart-2: #0fb9a6;
-  --chart-3: #7c3aed;
-  --chart-4: #16a34a;
-  --chart-5: #d97706;
-  --radius: 0.625rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #0f6cbd;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #0f172a;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #0f6cbd;
+  --background: #141b2e;
+  --foreground: #f3efe2;
+  --card: #1c2440;
+  --card-foreground: #f3efe2;
+  --popover: #1c2440;
+  --popover-foreground: #f3efe2;
+  --primary: #e0614a;
+  --primary-foreground: #10131f;
+  --secondary: #8fb0e8;
+  --secondary-foreground: #10131f;
+  --muted: #232c4c;
+  --muted-foreground: #b6bcc9;
+  --accent: #232c4c;
+  --accent-foreground: #f3efe2;
+  --destructive: #e07a68;
+  --border: #2b3652;
+  --input: #3a4666;
+  --ring: #8fb0e8;
+  --chart-1: #e0614a;
+  --chart-2: #2fc29b;
+  --chart-3: #8fb0e8;
+  --chart-4: #4cd6ac;
+  --chart-5: #e8a24c;
+  --radius: 0.5rem;
+  --sidebar: #1c2440;
+  --sidebar-foreground: #f3efe2;
+  --sidebar-primary: #e0614a;
+  --sidebar-primary-foreground: #10131f;
+  --sidebar-accent: #232c4c;
+  --sidebar-accent-foreground: #f3efe2;
+  --sidebar-border: #2b3652;
+  --sidebar-ring: #8fb0e8;
+  --color-stamp: #e0614a;
+  --color-ink-rule: rgba(243, 239, 226, 0.22);
+  --color-carbon: rgba(182, 188, 201, 0.28);
+
+  /* Paper — the night desk */
+  --surface-container-lowest: #1c2440;
+  --surface-container-low: #1a2138;
+  --surface-container: #1c2440;
+  --surface-container-high: #232c4c;
+  --surface-container-highest: #2b3652;
+  --surface-bright: #232c4c;
+
+  /* Ink */
+  --on-background: #f3efe2;
+  --on-surface: #f3efe2;
+  --on-surface-variant: #b6bcc9;
+
+  /* The stamp */
+  --primary-container: #4a2b33;
+  --on-primary: #10131f;
+  --on-secondary: #10131f;
+  --tertiary: #2fc29b;
+  --on-tertiary: #10131f;
+
+  /* Rules & strokes */
+  --outline: #8b94a6;
+  --outline-variant: #3a4666;
+
+  --error: #e07a68;
+  --success: #2fc29b;
+  --status-success: #2fc29b;
+  --status-info: #8fb0e8;
+  --status-warning: #e8a24c;
+  --status-danger: #e07a68;
+  --status-neutral: #b6bcc9;
 }
 
 @layer base {
@@ -161,18 +250,29 @@ html {
   }
 }
 
-/* ===== UI/UX finishing utility classes (additive only) ===== */
+/* =====================================================================
+   Paper & ink utility classes (additive only)
+   ===================================================================== */
+
+/* The prescription letterhead: thick + thin double rule */
+.letterhead-rule {
+  border-bottom: 3px double var(--color-ink-rule, #16325c);
+}
+
+/* Page-level heading (the printed sheet title) */
 .heading-1 {
   font-size: 1.5rem; /* 24px */
-  font-weight: 600;
-  line-height: 2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
   color: var(--color-on-surface);
 }
 
+/* Form-field label voice: printed, tracked, uppercase */
 .heading-2 {
-  font-size: 0.75rem; /* 12px */
-  font-weight: 500;
-  letter-spacing: 0.05em;
+  font-size: 0.72rem; /* 11.5px */
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
 }
@@ -180,7 +280,8 @@ html {
 .body-text {
   font-size: 0.875rem; /* 14px */
   font-weight: 400;
-  color: #475569;
+  line-height: 1.6;
+  color: var(--color-muted-foreground);
 }
 
 .container-custom {
@@ -203,6 +304,41 @@ html {
     padding-left: 2rem;
     padding-right: 2rem;
   }
+}
+
+/* Horizontal pad rules — the lined writing field */
+.ruled {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 27px,
+    rgba(22, 50, 92, 0.14) 27px,
+    rgba(22, 50, 92, 0.14) 28px
+  );
+}
+
+/* Tabular figures for fees, times and references */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* A sheet of paper: bright stock, hairline ink edge, tiny corner */
+.paper-sheet {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) * 1.2);
+}
+
+/* The rubber stamp ring: double border, red ink, slightly askew */
+.stamp-ring {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-stamp, #d9553d);
+  outline: 1px solid var(--color-stamp, #d9553d);
+  outline-offset: -5px;
+  color: var(--color-stamp, #d9553d);
+  border-radius: 6px;
 }
 
 @keyframes fadeIn {

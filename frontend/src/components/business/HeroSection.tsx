@@ -2,14 +2,12 @@ import Link from "next/link";
 import {
   ArrowRight,
   CalendarDays,
-  Check,
-  CircleCheck,
   Clock,
   CreditCard,
-  HeartPulse,
   ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { RxMark } from "@/components/layout/Logo";
 import { cn } from "@/lib/utils";
 
 interface HeroSectionProps {
@@ -22,46 +20,45 @@ const trustPoints = [
   { icon: CreditCard, label: "Simple payments" },
 ];
 
-const bookingSteps = [
-  { label: "Choose a doctor", hint: "Today" },
-  { label: "Pick a time", hint: "10:30 AM" },
-  { label: "Confirm", hint: "Instant" },
+/* The lines written onto the pad — the first two inked, the last one
+   still being written. Kalam only here, where the hand is the story. */
+const padLines = [
+  { label: "Specialist", value: "Dr. Maya Hassan", meta: "Cardiology", inked: true },
+  { label: "Visit", value: "Thu, Aug 21", meta: "10:30 AM", inked: true },
+  { label: "Clinic", value: "Downtown branch", meta: "Branch 04", inked: false },
 ];
 
 export function HeroSection({ className }: HeroSectionProps) {
   return (
-    <section className={cn("relative flex-1 overflow-hidden", className)}>
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 left-1/2 h-[30rem] w-[42rem] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute -right-24 -bottom-24 h-80 w-80 rounded-full bg-secondary/10 blur-3xl" />
-        <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
-      </div>
-
-      <div className="container-custom relative flex w-full flex-col items-center justify-center gap-14 py-16 sm:py-20 lg:flex-row lg:gap-20 lg:py-24">
+    <section className={cn("flex-1", className)}>
+      <div className="container-custom relative flex w-full flex-col items-center justify-center gap-14 py-16 sm:py-20 lg:flex-row lg:items-start lg:gap-20 lg:py-24">
+        {/* ---- The pitch, spoken by the desk ---- */}
         <div className="flex max-w-xl flex-col items-center text-center lg:items-start lg:text-left">
-          <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5 text-xs font-medium text-primary">
-            <span className="relative flex size-1.5">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary/60" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-primary" />
-            </span>
-            Modern care, simple booking
+          <span className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-primary">
+            <RxMark className="size-5 text-sm" />
+            Appointment prescription
           </span>
 
-          <h1 className="mt-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
-            Your health journey,{" "}
-            <span className="text-primary">simplified</span>
+          <h1 className="mt-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.08]">
+            Your appointment,{" "}
+            <span className="text-primary">written and stamped</span>
           </h1>
 
-          <p className="mt-5 max-w-lg text-base text-muted-foreground sm:text-lg">
-            Book appointments with top doctors, manage your schedule, and take
-            control of your healthcare — all in one place.
+          <p className="body-text mt-5 max-w-lg text-base sm:text-lg">
+            Booking care should be as clear as a prescription: line by line,
+            in writing, sealed with certainty. Choose your clinic, your
+            specialist, and the time that works — the rest is on the sheet.
           </p>
 
           <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
             <Link href="/register" className="sm:inline-flex">
               <Button size="lg" className="w-full sm:w-auto">
                 Get started
-                <ArrowRight className="size-4" data-icon="inline-end" aria-hidden="true" />
+                <ArrowRight
+                  className="size-4 transition-transform duration-200 group-hover/button:translate-x-0.5"
+                  data-icon="inline-end"
+                  aria-hidden="true"
+                />
               </Button>
             </Link>
             <Link href="/login" className="sm:inline-flex">
@@ -86,82 +83,105 @@ export function HeroSection({ className }: HeroSectionProps) {
           </ul>
         </div>
 
+        {/* ---- The pad itself: the first viewport ---- */}
         <div className="relative w-full max-w-md">
+          {/* Carbon copy, tucked behind and offset */}
           <div
             aria-hidden="true"
-            className="absolute -inset-8 rounded-[3rem] bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 blur-2xl"
-          />
+            className="absolute inset-x-4 -top-3 bottom-2 hidden rotate-2 rounded-lg border border-border/70 bg-card/60 px-6 py-4 opacity-70 sm:block"
+          >
+            <div className="heading-2 text-muted-foreground/50">
+              MediCare — Appointment prescription
+            </div>
+            <div className="mt-4 space-y-3">
+              {padLines.map((line) => (
+                <div key={line.label} className="flex justify-between text-sm">
+                  <span className="text-muted-foreground/40">{line.label}</span>
+                  <span className="tabular text-muted-foreground/40">
+                    {line.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 inline-block rotate-[-6deg] border border-destructive/30 px-3 py-0.5 text-xs font-bold uppercase tracking-widest text-destructive/40">
+              Copy
+            </div>
+          </div>
 
-          <div className="relative rounded-3xl border border-border bg-surface-container-lowest p-6 shadow-2xl">
-            <div className="flex items-center gap-3">
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <HeartPulse className="size-6" aria-hidden="true" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground">MediCare</p>
-                <p className="text-xs text-muted-foreground">
-                  Online appointment booking
+          {/* The sheet being filled in */}
+          <div className="paper-sheet relative z-10 px-7 py-6 shadow-lg">
+            {/* Letterhead */}
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="flex items-center gap-2 text-lg font-bold tracking-tight text-foreground">
+                  <RxMark className="size-6 text-sm" />
+                  MediCare
                 </p>
+                <p className="heading-2 mt-1.5">Appointment prescription</p>
               </div>
-              <span className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-xs font-medium text-status-success">
-                <span className="size-1.5 rounded-full bg-status-success" />
-                Online
+              <span className="tabular heading-2 text-muted-foreground">
+                No. 02481
               </span>
             </div>
+            <div className="letterhead-rule mt-4" />
 
-            <div className="mt-6 space-y-3">
-              {bookingSteps.map(({ label, hint }, i) => (
+            {/* Ruled writing field */}
+            <div className="ruled mt-4 pb-1">
+              {padLines.map((line, i) => (
                 <div
-                  key={label}
-                  className="flex items-center gap-3 rounded-2xl border border-border/70 px-4 py-3.5"
+                  key={line.label}
+                  className="animate-fade-in flex items-baseline justify-between gap-4 py-[0.35rem]"
+                  style={{ animationDelay: `${0.25 + i * 0.3}s` }}
                 >
-                  <span
-                    className={cn(
-                      "flex size-8 shrink-0 items-center justify-center rounded-xl",
-                      i === 0
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-surface-container-high text-muted-foreground",
-                    )}
-                  >
-                    {i === 0 ? (
-                      <CalendarDays className="size-4" aria-hidden="true" />
-                    ) : i === 1 ? (
-                      <Clock className="size-4" aria-hidden="true" />
-                    ) : (
-                      <Check className="size-4" aria-hidden="true" />
-                    )}
+                  <span className="heading-2 shrink-0 text-muted-foreground">
+                    {line.label}
                   </span>
-                  <span className="text-sm font-medium text-foreground">{label}</span>
-                  <span className="ml-auto text-xs text-muted-foreground">{hint}</span>
+                  {line.inked ? (
+                    <span className="font-ink text-base leading-snug font-bold text-secondary sm:text-lg">
+                      {line.value}
+                      <span className="ml-2 inline-block align-baseline text-[0.65rem] font-normal tracking-wide text-muted-foreground sm:ml-3">
+                        {line.meta}
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="flex min-w-0 flex-1 items-center justify-end gap-2">
+                      <span className="font-ink text-base leading-snug text-muted-foreground/80 sm:text-lg">
+                        {line.value}
+                      </span>
+                      <span className="inline-block h-[1.1em] w-[2px] animate-pulse bg-primary align-middle" />
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
 
-            <div className="mt-6 flex items-center justify-between rounded-2xl bg-primary px-5 py-4 text-primary-foreground">
-              <span className="text-sm font-semibold">Confirm booking</span>
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </div>
+            {/* The stamp falls here */}
+            <Link href="/register" className="mt-6 block">
+              <Button
+                size="lg"
+                className="w-full font-bold uppercase tracking-widest transition-transform duration-150 hover:-rotate-1 active:translate-y-0.5"
+              >
+                Confirm booking
+                <span className="ml-2 inline-block size-2 rounded-full border border-current" />
+              </Button>
+            </Link>
+
+            <p className="mt-3 text-center text-[0.7rem] text-muted-foreground">
+              Written today · Valid for you,{" "}
+              <span className="tabular">24h</span>
+            </p>
           </div>
 
-          <div className="absolute -left-3 top-12 hidden items-center gap-2.5 rounded-2xl border border-border bg-surface-container-lowest px-4 py-3 shadow-lg sm:flex">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-success/10 text-status-success">
-              <CircleCheck className="size-4" aria-hidden="true" />
+          {/* Desk notes floating around the pad */}
+          <div className="absolute -right-3 top-8 hidden items-center gap-2.5 rounded-lg border border-border bg-card px-4 py-3 shadow-md sm:flex">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-status-success/10 text-status-success">
+              <CalendarDays className="size-4" aria-hidden="true" />
             </span>
             <div>
               <p className="text-xs font-semibold text-foreground">
                 Appointment confirmed
               </p>
-              <p className="text-[0.7rem] text-muted-foreground">See you soon</p>
-            </div>
-          </div>
-
-          <div className="absolute -right-3 bottom-12 hidden items-center gap-2.5 rounded-2xl border border-border bg-surface-container-lowest px-4 py-3 shadow-lg sm:flex">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <ShieldCheck className="size-4" aria-hidden="true" />
-            </span>
-            <div>
-              <p className="text-xs font-semibold text-foreground">Trusted care</p>
-              <p className="text-[0.7rem] text-muted-foreground">Verified doctors</p>
+              <p className="text-xs text-muted-foreground">See you soon</p>
             </div>
           </div>
         </div>

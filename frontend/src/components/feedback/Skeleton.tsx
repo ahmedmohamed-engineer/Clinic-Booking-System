@@ -17,7 +17,7 @@ export function Skeleton({ variant = "text", className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "animate-pulse bg-surface-container-high",
+        "shimmer",
         variantClasses[variant] ?? variantClasses.text,
         className,
       )}
