@@ -24,7 +24,10 @@ export function EmptyState({
         className,
       )}
     >
-      <div className="text-muted-foreground" aria-hidden="true">
+      <div
+        className="flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary"
+        aria-hidden="true"
+      >
         {icon ?? <Inbox className="size-12" />}
       </div>
       <h3 className="text-lg font-semibold text-foreground">{title}</h3>

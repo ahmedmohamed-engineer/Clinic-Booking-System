@@ -18,10 +18,24 @@ export const updateDoctorSchema = z.object({
 });
 
 export const updateMyDoctorSchema = z.object({
-  fullName: z.string().trim().min(1).max(255).optional(),
-  consultationFee: z.number().min(0).optional(),
+  fullName: z
+    .string()
+    .trim()
+    .min(1, "Full name is required")
+    .max(255, "Full name must be 255 characters or fewer")
+    .optional(),
+  consultationFee: z
+    .number()
+    .finite("Consultation fee must be a valid number")
+    .min(0, "Consultation fee cannot be negative")
+    .optional(),
   bio: z.string().trim().nullable().optional(),
-  experienceYears: z.number().int().min(0).optional(),
+  experienceYears: z
+    .number()
+    .int("Experience must be a whole number")
+    .finite("Experience must be a valid number")
+    .min(0, "Experience cannot be negative")
+    .optional(),
 });
 
 export type CreateDoctorInput = z.infer<typeof createDoctorSchema>;

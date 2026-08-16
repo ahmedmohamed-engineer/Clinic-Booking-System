@@ -67,6 +67,7 @@ export function ProfileForm({
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (isSubmitting) return;
     setFieldErrors({});
     setFormError(null);
 
@@ -111,13 +112,22 @@ export function ProfileForm({
         <Input
           id="fullName"
           name="fullName"
+          maxLength={255}
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           hasError={Boolean(fieldErrors.fullName)}
           disabled={isSubmitting}
+          aria-describedby={
+            fieldErrors.fullName ? `${formId ?? "profile-form"}-fullName-error` : undefined
+          }
         />
         {fieldErrors.fullName && (
-          <p className="text-xs text-destructive">{fieldErrors.fullName}</p>
+          <p
+            id={`${formId ?? "profile-form"}-fullName-error`}
+            className="text-xs text-destructive"
+          >
+            {fieldErrors.fullName}
+          </p>
         )}
       </div>
 
@@ -127,13 +137,22 @@ export function ProfileForm({
           id="phone"
           name="phone"
           type="tel"
+          maxLength={50}
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           hasError={Boolean(fieldErrors.phone)}
           disabled={isSubmitting}
+          aria-describedby={
+            fieldErrors.phone ? `${formId ?? "profile-form"}-phone-error` : undefined
+          }
         />
         {fieldErrors.phone && (
-          <p className="text-xs text-destructive">{fieldErrors.phone}</p>
+          <p
+            id={`${formId ?? "profile-form"}-phone-error`}
+            className="text-xs text-destructive"
+          >
+            {fieldErrors.phone}
+          </p>
         )}
       </div>
 
@@ -179,6 +198,7 @@ export function ProfileForm({
               captionLayout="dropdown"
               startMonth={new Date(1900, 0)}
               endMonth={new Date(new Date().getFullYear(), 11)}
+              disabled={{ after: new Date() }}
             />
           </PopoverContent>
         </Popover>

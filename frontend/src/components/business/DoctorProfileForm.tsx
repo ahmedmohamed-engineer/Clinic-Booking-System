@@ -41,12 +41,19 @@ export function DoctorProfileForm({
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (isSubmitting) return;
     setFieldErrors({});
     setFormError(null);
 
+    const fee = consultationFee.trim();
+    if (fee === "") {
+      setFieldErrors({ consultationFee: "Consultation fee is required" });
+      return;
+    }
+
     const result = updateMyDoctorSchema.safeParse({
       fullName,
-      consultationFee: Number(consultationFee),
+      consultationFee: Number(fee),
       experienceYears: experienceYears === "" ? undefined : Number(experienceYears),
       bio: bio.trim() === "" ? null : bio.trim(),
     });
@@ -85,13 +92,22 @@ export function DoctorProfileForm({
         <Input
           id="fullName"
           name="fullName"
+          maxLength={255}
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           hasError={Boolean(fieldErrors.fullName)}
           disabled={isSubmitting}
+          aria-describedby={
+            fieldErrors.fullName ? `${formId ?? "doctor-profile-form"}-fullName-error` : undefined
+          }
         />
         {fieldErrors.fullName && (
-          <p className="text-xs text-destructive">{fieldErrors.fullName}</p>
+          <p
+            id={`${formId ?? "doctor-profile-form"}-fullName-error`}
+            className="text-xs text-destructive"
+          >
+            {fieldErrors.fullName}
+          </p>
         )}
       </div>
 
@@ -103,14 +119,25 @@ export function DoctorProfileForm({
             name="consultationFee"
             type="number"
             min="0"
+            max="1000000"
             step="0.01"
             value={consultationFee}
             onChange={(e) => setConsultationFee(e.target.value)}
             hasError={Boolean(fieldErrors.consultationFee)}
             disabled={isSubmitting}
+            aria-describedby={
+              fieldErrors.consultationFee
+                ? `${formId ?? "doctor-profile-form"}-consultationFee-error`
+                : undefined
+            }
           />
           {fieldErrors.consultationFee && (
-            <p className="text-xs text-destructive">{fieldErrors.consultationFee}</p>
+            <p
+              id={`${formId ?? "doctor-profile-form"}-consultationFee-error`}
+              className="text-xs text-destructive"
+            >
+              {fieldErrors.consultationFee}
+            </p>
           )}
         </div>
 
@@ -121,14 +148,25 @@ export function DoctorProfileForm({
             name="experienceYears"
             type="number"
             min="0"
+            max="100"
             step="1"
             value={experienceYears}
             onChange={(e) => setExperienceYears(e.target.value)}
             hasError={Boolean(fieldErrors.experienceYears)}
             disabled={isSubmitting}
+            aria-describedby={
+              fieldErrors.experienceYears
+                ? `${formId ?? "doctor-profile-form"}-experienceYears-error`
+                : undefined
+            }
           />
           {fieldErrors.experienceYears && (
-            <p className="text-xs text-destructive">{fieldErrors.experienceYears}</p>
+            <p
+              id={`${formId ?? "doctor-profile-form"}-experienceYears-error`}
+              className="text-xs text-destructive"
+            >
+              {fieldErrors.experienceYears}
+            </p>
           )}
         </div>
       </div>
@@ -138,12 +176,18 @@ export function DoctorProfileForm({
         <Textarea
           id="bio"
           name="bio"
+          maxLength={1000}
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           disabled={isSubmitting}
         />
         {fieldErrors.bio && (
-          <p className="text-xs text-destructive">{fieldErrors.bio}</p>
+          <p
+            id={`${formId ?? "doctor-profile-form"}-bio-error`}
+            className="text-xs text-destructive"
+          >
+            {fieldErrors.bio}
+          </p>
         )}
       </div>
 

@@ -20,7 +20,9 @@ function getInitialTheme(): Theme {
       if (stored === "dark" || stored === "light") return stored;
     } catch {}
   }
-  return "dark";
+  // The Prescription Pad is a light-native world: the paper desk is the ground
+  // truth, and dark is the night shift. Unset visitors start on the desk.
+  return "light";
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

@@ -4,6 +4,7 @@ import type { ClinicRecord } from "@/types/models/clinic";
 import { Card, CardContent } from "@/components/ui/card";
 import { Building2, MapPin, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BiroCircle } from "@/components/business/BiroCircle";
 
 interface ClinicSelectorProps {
   clinics: ClinicRecord[];
@@ -24,7 +25,8 @@ export function ClinicSelector({
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="h-36 animate-pulse rounded-lg bg-surface-container-high"
+            className="shimmer h-36 rounded-lg"
+            aria-hidden="true"
           />
         ))}
       </div>
@@ -59,18 +61,24 @@ export function ClinicSelector({
             className={cn(
               "cursor-pointer transition-all hover:border-primary focus-visible:ring-2 focus-visible:ring-ring",
               isSelected
-                ? "border-2 border-primary bg-primary/5 shadow-md"
-                : "border-border bg-surface-container-lowest",
+                ? "border-primary/60 bg-primary/[0.04] ring-1 ring-primary/30"
+                : "border-border bg-card",
             )}
           >
+            {isSelected && (
+              <BiroCircle
+                className="absolute top-3 right-3 text-primary"
+                data-testid="clinic-card-selected"
+              />
+            )}
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                     <Building2 className="size-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-on-surface">{clinic.name}</h3>
+                    <h3 className="font-semibold text-foreground">{clinic.name}</h3>
                     {clinic.city && (
                       <span className="text-xs text-muted-foreground">
                         {clinic.city}
@@ -90,7 +98,7 @@ export function ClinicSelector({
                 {clinic.phone && (
                   <div className="flex items-center gap-2">
                     <Phone className="size-4 shrink-0 text-primary" />
-                    <span>{clinic.phone}</span>
+                    <span className="tabular">{clinic.phone}</span>
                   </div>
                 )}
               </div>

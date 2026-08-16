@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Camera } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -24,12 +24,30 @@ export function AvatarUploader({
   buttonLabel = "Change Photo",
 }: AvatarUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const previewRef = useRef<string | null>(null);
   const { mutate: uploadAvatar, isPending } = useUploadAvatar();
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Revoke the object URL on unmount so a preview never leaks.
+  useEffect(() => {
+    return () => {
+      if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+    };
+  }, []);
+
   const displaySrc = preview ?? src;
+
+  function clearPreview() {
+    if (previewRef.current) {
+      URL.revokeObjectURL(previewRef.current);
+      previewRef.current = null;
+    }
+    setPreview(null);
+    setSelectedFile(null);
+    setError(null);
+  }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -48,7 +66,10 @@ export function AvatarUploader({
 
     setError(null);
     setSelectedFile(file);
-    setPreview(URL.createObjectURL(file));
+    if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+    const url = URL.createObjectURL(file);
+    previewRef.current = url;
+    setPreview(url);
   };
 
   const handleSave = () => {
@@ -56,10 +77,14 @@ export function AvatarUploader({
 
     uploadAvatar(selectedFile, {
       onSuccess: (user) => {
-        setPreview(null);
-        setSelectedFile(null);
+        clearPreview();
         onSuccess?.(user.avatarUrl ?? null);
         showToast("Avatar updated successfully", "success");
+      },
+      // If the upload fails, drop the uncommitted preview so the UI never
+      // shows a photo the server doesn't have. The error toast comes from the hook.
+      onError: () => {
+        clearPreview();
       },
     });
   };
@@ -69,7 +94,8 @@ export function AvatarUploader({
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="group relative cursor-pointer rounded-full focus-visible:ring-2 focus-visible:ring-ring"
+        disabled={isPending}
+        className="group relative cursor-pointer rounded-full focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
         aria-label="Upload avatar"
       >
         <Avatar
@@ -106,10 +132,7 @@ export function AvatarUploader({
           <Button
             size="sm"
             variant="outline"
-            onClick={() => {
-              setPreview(null);
-              setError(null);
-            }}
+            onClick={clearPreview}
             disabled={isPending}
           >
             Cancel

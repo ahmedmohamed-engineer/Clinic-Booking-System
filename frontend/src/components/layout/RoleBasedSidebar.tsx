@@ -14,6 +14,7 @@ import {
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { usePrefetchBookingData } from "@/hooks/usePrefetchBookingData";
 import { cn, isPathActive } from "@/lib/utils";
+import { BiroCircle } from "@/components/business/BiroCircle";
 
 interface NavItem {
   label: string;
@@ -71,9 +72,9 @@ export function RoleBasedSidebar({
             )}
           >
             {isActive && (
-              <span
+              <BiroCircle
                 aria-hidden="true"
-                className="size-1.5 shrink-0 rounded-full bg-primary"
+                className="size-4 shrink-0 text-primary"
               />
             )}
             <Icon className="size-4 shrink-0" />

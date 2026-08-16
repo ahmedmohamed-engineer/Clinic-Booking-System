@@ -23,9 +23,11 @@ export function WeeklyCalendar({ schedules, className }: WeeklyCalendarProps) {
         return (
           <div
             key={day}
-            className="rounded-xl border border-border bg-card p-4"
+            className="paper-sheet p-4"
           >
-            <h3 className="mb-3 text-sm font-semibold text-foreground">{day}</h3>
+            <h3 className="mb-3 border-b border-border pb-2 text-sm font-semibold text-foreground">
+              {day}
+            </h3>
             {entries.length > 0 ? (
               <div className="flex flex-col gap-2">
                 {entries.map((schedule) => (

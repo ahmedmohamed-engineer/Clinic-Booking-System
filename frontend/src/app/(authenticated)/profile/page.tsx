@@ -31,9 +31,9 @@ function InfoRow({
   children?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex min-w-0 flex-col gap-1">
       <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
-      <dd className="text-sm text-foreground">
+      <dd className="min-w-0 break-words text-sm text-foreground">
         {children ?? value ?? (
           <span className="inline-flex items-center gap-1.5 rounded-md border border-dashed border-border px-2 py-1 text-xs text-muted-foreground" aria-label={`${label} not set`}>
             <Plus className="size-3" aria-hidden="true" />
@@ -57,7 +57,7 @@ function formatRole(role: string): string {
 function PatientProfileContent() {
   const { user, updateUser } = useAuth();
   const { data: patient, isPending, isError, refetch } = usePatientProfile();
-  const { mutate: updateProfile, isPending: isSaving } = useUpdateProfile();
+  const { mutateAsync: updateProfile, isPending: isSaving } = useUpdateProfile();
   const [isEditing, setIsEditing] = useState(false);
 
   if (isError) {
@@ -101,7 +101,7 @@ function PatientProfileContent() {
             fallback={displayName}
             onSuccess={(avatarUrl) => updateUser({ avatarUrl })}
           />
-          <h2 className="heading-1">{displayName}</h2>
+          <h2 className="heading-1 max-w-full break-words text-center">{displayName}</h2>
         </section>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
@@ -130,8 +130,11 @@ function PatientProfileContent() {
                     patient={patient}
                     formId="profile-form"
                     hideActions
-                    onSubmit={(data) => {
-                      updateProfile(data);
+                    onSubmit={async (data) => {
+                      // Await the save so the form only closes (and the header
+                      // name only changes) after the server confirms — otherwise
+                      // a failed save would silently discard the edit.
+                      await updateProfile(data);
                       if (data.fullName !== patient.fullName) {
                         updateUser({ fullName: data.fullName });
                       }
@@ -192,7 +195,7 @@ function PatientProfileContent() {
 function DoctorProfileContent() {
   const { user, updateUser } = useAuth();
   const { data: doctor, isPending, isError, refetch } = useDoctorProfile();
-  const { mutate: updateProfile, isPending: isSaving } = useUpdateDoctorProfile();
+  const { mutateAsync: updateProfile, isPending: isSaving } = useUpdateDoctorProfile();
   const [isEditing, setIsEditing] = useState(false);
 
   if (isError) {
@@ -236,7 +239,7 @@ function DoctorProfileContent() {
             fallback={displayName}
             onSuccess={(avatarUrl) => updateUser({ avatarUrl })}
           />
-          <h2 className="heading-1">{displayName}</h2>
+          <h2 className="heading-1 max-w-full break-words text-center">{displayName}</h2>
         </section>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
@@ -265,8 +268,10 @@ function DoctorProfileContent() {
                     doctor={doctor}
                     formId="doctor-profile-form"
                     hideActions
-                    onSubmit={(update) => {
-                      updateProfile(update);
+                    onSubmit={async (update) => {
+                      // Await the save so the form only closes (and the header
+                      // name only changes) after the server confirms.
+                      await updateProfile(update);
                       if (update.fullName !== doctor.doctor.displayName && user) {
                         updateUser({ fullName: update.fullName });
                       }
@@ -301,21 +306,21 @@ function DoctorProfileContent() {
                 <dl className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
                   <InfoRow label="Full name" value={displayName} />
                   <InfoRow label="Specialty">
-                    <span className="flex items-center gap-2">
+                    <span className="flex min-w-0 items-center gap-2">
                       <Stethoscope
-                        className="size-4 text-muted-foreground"
+                        className="size-4 shrink-0 text-muted-foreground"
                         aria-hidden="true"
                       />
-                      {doctor.doctor.specialtyName}
+                      <span className="min-w-0 break-words">{doctor.doctor.specialtyName}</span>
                     </span>
                   </InfoRow>
                   <InfoRow label="Clinic">
-                    <span className="flex items-center gap-2">
+                    <span className="flex min-w-0 items-center gap-2">
                       <Building2
-                        className="size-4 text-muted-foreground"
+                        className="size-4 shrink-0 text-muted-foreground"
                         aria-hidden="true"
                       />
-                      {doctor.doctor.clinicName}
+                      <span className="min-w-0 break-words">{doctor.doctor.clinicName}</span>
                     </span>
                   </InfoRow>
                   <InfoRow
@@ -349,12 +354,18 @@ function AccountCard() {
       <CardContent>
         <dl className="flex flex-col gap-5">
           <InfoRow label="Email">
-            <span className="flex items-center gap-2">
-              <Mail className="size-4 text-muted-foreground" aria-hidden="true" />
-              {user?.email ?? "—"}
+            <span className="flex min-w-0 items-center gap-2">
+              <Mail
+                className="size-4 shrink-0 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <span className="min-w-0 break-words">{user?.email?.trim() || "—"}</span>
             </span>
           </InfoRow>
-          <InfoRow label="Role" value={user ? formatRole(user.role) : undefined} />
+          <InfoRow
+            label="Role"
+            value={user?.role ? formatRole(user.role) : "—"}
+          />
         </dl>
       </CardContent>
     </Card>

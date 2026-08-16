@@ -41,14 +41,15 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center px-4">
-      <div className="w-full max-w-sm space-y-6">
+    <div className="flex flex-1 items-center justify-center px-4 py-10">
+      <div className="paper-sheet w-full max-w-sm space-y-6 px-8 py-8 shadow-md">
         <div className="space-y-1 text-center">
-          <h1 className="text-2xl font-bold text-foreground">Create account</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="heading-1">Create account</h1>
+          <p className="body-text">
             Get started with MediCare
           </p>
         </div>
+        <div className="letterhead-rule" />
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
           <div className="space-y-2">

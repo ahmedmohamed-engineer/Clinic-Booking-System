@@ -112,7 +112,7 @@ export function DataTable<T extends object>({
               <tr key={i} className="border-b border-border last:border-0">
                 {columns.map((col) => (
                   <td key={col.key} className="px-4 py-3">
-                    <div className="h-4 w-3/4 animate-pulse rounded bg-surface-container-high" />
+                    <div className="shimmer h-4 w-3/4 rounded" />
                   </td>
                 ))}
               </tr>

@@ -1,11 +1,14 @@
 "use client";
 
+import { memo } from "react";
+
 import type { AppointmentSlotRecord } from "@/types/models/slot";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar as CalendarIcon, Clock, Info } from "lucide-react";
 import { cn, formatTime, toISODateString } from "@/lib/utils";
+import { BiroCircle } from "@/components/business/BiroCircle";
 
 interface SlotPickerProps {
   slots: AppointmentSlotRecord[];
@@ -15,6 +18,59 @@ interface SlotPickerProps {
   onDateChange: (date: string) => void;
   isLoading?: boolean;
 }
+
+interface SlotButtonProps {
+  slot: AppointmentSlotRecord;
+  isSelected: boolean;
+  onSelect: (slotId: string) => void;
+}
+
+function SlotButton({ slot, isSelected, onSelect }: SlotButtonProps) {
+  const isAvailable = slot.status === "available";
+  return (
+    <Button
+      type="button"
+      variant={isSelected ? "default" : "outline"}
+      disabled={!isAvailable}
+      aria-pressed={isSelected}
+      onClick={() => onSelect(slot.id)}
+      className={cn(
+        "relative h-12 flex-col justify-center text-xs font-medium transition-colors",
+        isSelected
+          ? "bg-primary text-primary-foreground shadow-md"
+          : "border-status-success/25 bg-status-success/10 text-on-surface hover:border-primary hover:bg-status-success/15",
+      )}
+    >
+      <span className="tabular">{formatTime(slot.startTime)}</span>
+      <span className="tabular text-[10px] opacity-75">
+        {formatTime(slot.endTime)}
+      </span>
+      {isSelected && (
+        <BiroCircle className="absolute -top-2 -right-2 size-5 bg-card rounded-full text-primary" />
+      )}
+    </Button>
+  );
+}
+
+const areSlotButtonPropsEqual = (
+  prev: SlotButtonProps,
+  next: SlotButtonProps,
+): boolean => {
+  // The parent hands down a fresh `onSelect` closure on every render, so it is
+  // deliberately excluded from the comparison (its behavior is stable — it only
+  // captures the slot id). Compare the data that actually changes the button's
+  // rendered output; picking a slot then re-renders just the affected buttons
+  // instead of the whole grid.
+  return (
+    prev.slot.id === next.slot.id &&
+    prev.slot.status === next.slot.status &&
+    prev.slot.startTime === next.slot.startTime &&
+    prev.slot.endTime === next.slot.endTime &&
+    prev.isSelected === next.isSelected
+  );
+};
+
+const MemoizedSlotButton = memo(SlotButton, areSlotButtonPropsEqual);
 
 export function SlotPicker({
   slots,
@@ -28,9 +84,9 @@ export function SlotPicker({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-lg bg-surface-container-low p-4">
+      <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <Label htmlFor="slot-date" className="text-sm font-medium text-on-surface">
+          <Label htmlFor="slot-date" className="text-sm font-medium text-foreground">
             Select Date
           </Label>
           <p className="text-xs text-muted-foreground">
@@ -45,13 +101,13 @@ export function SlotPicker({
             min={todayStr}
             value={selectedDate}
             onChange={(e) => onDateChange(e.target.value)}
-            className="w-full bg-surface-container-lowest sm:w-auto"
+            className="w-full bg-card sm:w-auto"
           />
         </div>
       </div>
 
       <div className="space-y-3">
-        <div className="flex items-center gap-2 text-sm font-semibold text-on-surface">
+        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
           <Clock className="size-4 text-primary" />
           <span>Available Time Slots</span>
         </div>
@@ -61,7 +117,8 @@ export function SlotPicker({
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="h-12 animate-pulse rounded-md bg-surface-container-high"
+                className="shimmer h-12 rounded-md"
+                aria-hidden="true"
               />
             ))}
           </div>
@@ -71,30 +128,14 @@ export function SlotPicker({
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
-            {slots.map((slot) => {
-              const isSelected = selectedSlotId === slot.id;
-              const isAvailable = slot.status === "available";
-              return (
-                <Button
-                  key={slot.id}
-                  type="button"
-                  variant={isSelected ? "default" : "outline"}
-                  disabled={!isAvailable}
-                  onClick={() => onSelectSlot(slot.id)}
-                  className={cn(
-                    "h-12 flex-col justify-center text-xs font-medium transition-all",
-                    isSelected
-                      ? "bg-primary text-on-primary shadow-md"
-                      : "border-border bg-surface-container-lowest text-on-surface hover:border-primary",
-                  )}
-                >
-                  <span>{formatTime(slot.startTime)}</span>
-                  <span className="text-[10px] opacity-75">
-                    {formatTime(slot.endTime)}
-                  </span>
-                </Button>
-              );
-            })}
+            {slots.map((slot) => (
+              <MemoizedSlotButton
+                key={slot.id}
+                slot={slot}
+                isSelected={selectedSlotId === slot.id}
+                onSelect={onSelectSlot}
+              />
+            ))}
           </div>
         )}
       </div>

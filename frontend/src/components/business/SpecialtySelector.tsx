@@ -4,6 +4,7 @@ import type { SpecialtyRecord } from "@/types/models/specialty";
 import { Card, CardContent } from "@/components/ui/card";
 import { Stethoscope } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BiroCircle } from "@/components/business/BiroCircle";
 
 interface SpecialtySelectorProps {
   specialties: SpecialtyRecord[];
@@ -24,7 +25,8 @@ export function SpecialtySelector({
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="h-28 animate-pulse rounded-lg bg-surface-container-high"
+            className="shimmer h-28 rounded-lg"
+            aria-hidden="true"
           />
         ))}
       </div>
@@ -59,16 +61,22 @@ export function SpecialtySelector({
             className={cn(
               "cursor-pointer transition-all hover:border-primary focus-visible:ring-2 focus-visible:ring-ring",
               isSelected
-                ? "border-2 border-primary bg-primary/5 shadow-md"
-                : "border-border bg-surface-container-lowest",
+                ? "border-primary/60 bg-primary/[0.04] ring-1 ring-primary/30"
+                : "border-border bg-card",
             )}
           >
+            {isSelected && (
+              <BiroCircle
+                className="absolute top-3 right-3 text-primary"
+                data-testid="specialty-card-selected"
+              />
+            )}
             <CardContent className="flex items-center gap-4 p-5">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Stethoscope className="size-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-on-surface">{specialty.name}</h3>
+                <h3 className="font-semibold text-foreground">{specialty.name}</h3>
                 <p className="text-xs text-muted-foreground">
                   Select to view specialized doctors
                 </p>

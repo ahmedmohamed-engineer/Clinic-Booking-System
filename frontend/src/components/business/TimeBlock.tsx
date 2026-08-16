@@ -18,12 +18,12 @@ export const TimeBlock = memo(function TimeBlock({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-sm font-medium text-primary",
+        "flex items-center gap-2 rounded-lg border border-status-success/25 bg-status-success/10 px-3 py-2 text-sm font-medium text-foreground",
         className,
       )}
     >
-      <Clock className="size-4 shrink-0" aria-hidden="true" />
-      <span>
+      <Clock className="size-4 shrink-0 text-status-success" aria-hidden="true" />
+      <span className="tabular">
         {formatTime(startTime)} – {formatTime(endTime)}
       </span>
     </div>
