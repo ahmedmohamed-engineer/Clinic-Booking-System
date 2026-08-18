@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import { useLocale, useTranslations } from "next-intl";
 import { Pencil, Plus, Trash2, UserRound } from "lucide-react";
 import type { Column, DataTableProps } from "@/components/data/DataTable";
 import { Pagination } from "@/components/data/Pagination";
@@ -46,13 +47,14 @@ const pillBase =
   "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium";
 
 function StatusBadge({ deletedAt }: { deletedAt: string | null }) {
+  const ts = useTranslations("adminShared");
   return deletedAt ? (
     <span className={`${pillBase} border-status-danger/25 bg-status-danger/10 text-status-danger`}>
-      Deleted
+      {ts("deleted")}
     </span>
   ) : (
     <span className={`${pillBase} border-status-success/25 bg-status-success/10 text-status-success`}>
-      Active
+      {ts("active")}
     </span>
   );
 }
@@ -66,14 +68,15 @@ function DoctorActions({
   onEdit: (doctor: DoctorReadModel) => void;
   onDelete: (doctor: DoctorReadModel) => void;
 }) {
+  const ts = useTranslations("adminShared");
   return (
     <div className="flex shrink-0 items-center gap-1">
       <Button
         variant="ghost"
         size="xs"
         onClick={() => onEdit(doctor)}
-        aria-label={`Edit doctor ${doctor.doctor.displayName}`}
-        title={`Edit doctor ${doctor.doctor.displayName}`}
+        aria-label={ts("editName", { name: doctor.doctor.displayName })}
+        title={ts("editName", { name: doctor.doctor.displayName })}
       >
         <Pencil className="size-4" />
       </Button>
@@ -81,8 +84,8 @@ function DoctorActions({
         variant="ghost"
         size="xs"
         onClick={() => onDelete(doctor)}
-        aria-label={`Delete doctor ${doctor.doctor.displayName}`}
-        title={`Delete doctor ${doctor.doctor.displayName}`}
+        aria-label={ts("deleteName", { name: doctor.doctor.displayName })}
+        title={ts("deleteName", { name: doctor.doctor.displayName })}
       >
         <Trash2 className="size-4" />
       </Button>
@@ -91,6 +94,9 @@ function DoctorActions({
 }
 
 export default function AdminDoctorsPage() {
+  const t = useTranslations("adminDoctors");
+  const ts = useTranslations("adminShared");
+  const locale = useLocale();
   const {
     data: doctors,
     isPending,
@@ -174,7 +180,7 @@ export default function AdminDoctorsPage() {
     () => [
       {
         key: "userId",
-        header: "Doctor",
+        header: ts("doctor"),
         render: (doctor) => (
           <div className="flex min-w-0 items-center gap-2.5">
             <Avatar
@@ -190,7 +196,7 @@ export default function AdminDoctorsPage() {
       },
       {
         key: "email",
-        header: "Email",
+        header: ts("email"),
         render: (doctor) => {
           const email = userById.get(doctor.userId)?.email;
           return email ? (
@@ -202,12 +208,12 @@ export default function AdminDoctorsPage() {
       },
       {
         key: "specialtyId",
-        header: "Specialty",
+        header: ts("specialty"),
         render: (doctor) => doctor.doctor.specialtyName,
       },
       {
         key: "clinicId",
-        header: "Clinic",
+        header: ts("clinic"),
         render: (doctor) => (
           <span className="block max-w-[12rem] truncate" title={doctor.doctor.clinicName}>
             {doctor.doctor.clinicName}
@@ -216,19 +222,19 @@ export default function AdminDoctorsPage() {
       },
       {
         key: "consultationFee",
-        header: "Fee",
+        header: ts("fee"),
         sortable: true,
-        render: (doctor) => formatCurrency(Number(doctor.consultationFee)),
+        render: (doctor) => formatCurrency(Number(doctor.consultationFee), locale),
       },
       {
         key: "experienceYears",
-        header: "Experience",
+        header: ts("experience"),
         sortable: true,
-        render: (doctor) => `${doctor.experienceYears} yrs`,
+        render: (doctor) => ts("experienceYrs", { years: doctor.experienceYears }),
       },
       {
         key: "bio",
-        header: "Bio",
+        header: ts("bio"),
         render: (doctor) =>
           doctor.bio ? (
             <span className="block max-w-[18rem] truncate text-muted-foreground" title={doctor.bio}>
@@ -240,7 +246,7 @@ export default function AdminDoctorsPage() {
       },
       {
         key: "status",
-        header: "Status",
+        header: ts("status"),
         render: (doctor) => <StatusBadge deletedAt={userById.get(doctor.userId)?.deletedAt ?? null} />,
       },
       {
@@ -254,25 +260,25 @@ export default function AdminDoctorsPage() {
         ),
       },
     ],
-    [userById],
+    [userById, ts, locale],
   );
 
   if (isError) {
-    return <ErrorBanner message="Could not load doctors." onRetry={refetch} />;
+    return <ErrorBanner message={t("error")} onRetry={refetch} />;
   }
 
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Doctors</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("title")}</h1>
           <p className="text-lg text-muted-foreground">
-            Manage doctor profiles, clinics, and consultation fees.
+            {t("subtitle")}
           </p>
         </div>
         <Button onClick={() => setCreating(true)}>
           <Plus className="size-4" />
-          Add doctor
+          {t("add")}
         </Button>
       </header>
 
@@ -281,22 +287,22 @@ export default function AdminDoctorsPage() {
           <SearchInput
             value={search}
             onChange={handleSearch}
-            placeholder="Search by doctor, specialty, clinic..."
+            placeholder={t("searchBy")}
           />
         </div>
         <FilterDropdown
           options={specialtyOptions}
           value={specialtyId}
           onChange={handleSpecialtyChange}
-          label="Specialty"
-          placeholder="All specialties"
+          label={ts("specialty")}
+          placeholder={ts("allSpecialties")}
         />
         <FilterDropdown
           options={clinicOptions}
           value={clinicId}
           onChange={handleClinicChange}
-          label="Clinic"
-          placeholder="All clinics"
+          label={ts("clinic")}
+          placeholder={ts("allClinics")}
         />
       </div>
 
@@ -311,8 +317,8 @@ export default function AdminDoctorsPage() {
           <div className="rounded-xl border border-border">
             <EmptyState
               icon={<UserRound className="size-12" />}
-              title="No doctors found"
-              description="No doctors match the current search and filters."
+              title={t("emptyTitle")}
+              description={t("emptyDesc")}
             />
           </div>
         ) : (
@@ -355,12 +361,12 @@ export default function AdminDoctorsPage() {
                   )}
                   <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
                     <div className="flex flex-col">
-                      <dt className="text-muted-foreground">Fee</dt>
-                      <dd className="text-foreground">{formatCurrency(Number(doctor.consultationFee))}</dd>
+                      <dt className="text-muted-foreground">{ts("fee")}</dt>
+                      <dd className="text-foreground">{formatCurrency(Number(doctor.consultationFee), locale)}</dd>
                     </div>
                     <div className="flex flex-col">
-                      <dt className="text-muted-foreground">Experience</dt>
-                      <dd className="text-foreground">{doctor.experienceYears} yrs</dd>
+                      <dt className="text-muted-foreground">{ts("experience")}</dt>
+                      <dd className="text-foreground">{ts("experienceYrs", { years: doctor.experienceYears })}</dd>
                     </div>
                   </dl>
                 </CardContent>
@@ -379,8 +385,8 @@ export default function AdminDoctorsPage() {
           emptyState={
             <EmptyState
               icon={<UserRound className="size-12" />}
-              title="No doctors found"
-              description="No doctors match the current search and filters."
+              title={t("emptyTitle")}
+              description={t("emptyDesc")}
             />
           }
         />
@@ -431,9 +437,9 @@ export default function AdminDoctorsPage() {
           onConfirm={() =>
             deleteDoctor(deleting.id, { onSuccess: () => setDeleting(null) })
           }
-          title="Delete doctor"
-          message={`Delete doctor ${deleting.doctor.displayName}? Schedules and slots for this doctor will also be deleted.`}
-          confirmLabel="Delete"
+          title={t("deleteTitle")}
+          message={t("deleteMessage", { name: deleting.doctor.displayName })}
+          confirmLabel={ts("delete")}
           isLoading={isDeleting}
         />
       )}

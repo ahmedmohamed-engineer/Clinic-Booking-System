@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import { useLocale, useTranslations } from "next-intl";
 import { Star } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { useMyReviews, useCreateReview } from "@/features/reviews";
@@ -28,6 +29,8 @@ const ReviewForm = dynamic(
 );
 
 function PatientReviewsContent() {
+  const t = useTranslations("reviewsPage");
+  const locale = useLocale();
   const { data: reviews, isPending, isError, refetch } = useMyReviews();
   const { data: appointments } = useMyAppointments();
   const { mutate: createReview, isPending: isSubmitting } = useCreateReview();
@@ -67,7 +70,7 @@ function PatientReviewsContent() {
   if (isError) {
     return (
       <div className="p-6">
-        <ErrorBanner message="Could not load your reviews." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       </div>
     );
   }
@@ -85,9 +88,9 @@ function PatientReviewsContent() {
   return (
     <div className="container-custom flex flex-col gap-8 p-6">
       <header className="animate-fade-in flex flex-col gap-2">
-        <h1 className="heading-1">Reviews</h1>
+        <h1 className="heading-1">{t("title")}</h1>
         <p className="body-text">
-          Share your experience after a completed appointment.
+          {t("patientSubtitle")}
         </p>
       </header>
 
@@ -95,7 +98,7 @@ function PatientReviewsContent() {
       {eligibleForReview.length > 0 && (
         <section className="flex flex-col gap-3">
           <h2 className="heading-2">
-            Write a Review ({eligibleForReview.length})
+            {t("writeSection", { count: eligibleForReview.length })}
           </h2>
           {eligibleForReview.map((appointment) => (
             <div
@@ -111,7 +114,7 @@ function PatientReviewsContent() {
                   {appointment.doctor.clinicName}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {formatDateTime(appointment.slot.date, appointment.slot.startTime)}
+                  {formatDateTime(appointment.slot.date, appointment.slot.startTime, locale)}
                 </p>
               </div>
               <Button
@@ -119,7 +122,7 @@ function PatientReviewsContent() {
                 onClick={() => setSelected(appointment)}
               >
                 <Star />
-                Leave Review
+                {t("leaveReview")}
               </Button>
             </div>
           ))}
@@ -129,7 +132,7 @@ function PatientReviewsContent() {
       {reviewedAppointments.length > 0 && (
         <section className="flex flex-col gap-3">
           <h2 className="heading-2">
-            Your Reviews ({reviewedAppointments.length})
+            {t("yoursSection", { count: reviewedAppointments.length })}
           </h2>
           {reviewedAppointments.map((appointment) => {
             const review = reviewedByAppointment.get(appointment.id);
@@ -147,7 +150,7 @@ function PatientReviewsContent() {
                     {appointment.doctor.clinicName}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {formatDateTime(appointment.slot.date, appointment.slot.startTime)}
+                    {formatDateTime(appointment.slot.date, appointment.slot.startTime, locale)}
                   </p>
                 </div>
                 <Button
@@ -156,7 +159,7 @@ function PatientReviewsContent() {
                   onClick={() => setViewing(review ?? null)}
                 >
                   <Star />
-                  View Review
+                  {t("viewReview")}
                 </Button>
               </div>
             );
@@ -167,7 +170,7 @@ function PatientReviewsContent() {
       <Dialog open={selected !== null} onClose={() => setSelected(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Write a Review</DialogTitle>
+            <DialogTitle>{t("writeTitle")}</DialogTitle>
           </DialogHeader>
           {selected && (
             <div className="mt-4">
@@ -188,7 +191,7 @@ function PatientReviewsContent() {
       <Dialog open={viewing !== null} onClose={() => setViewing(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Your Review</DialogTitle>
+            <DialogTitle>{t("yoursTitle")}</DialogTitle>
           </DialogHeader>
           {viewing && (
             <div className="mt-4">
@@ -203,12 +206,13 @@ function PatientReviewsContent() {
 }
 
 function DoctorReviewsContent() {
+  const t = useTranslations("reviewsPage");
   const { data: reviews, isPending, isError, refetch } = useMyReviews();
 
   if (isError) {
     return (
       <div className="p-6">
-        <ErrorBanner message="Could not load your reviews." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       </div>
     );
   }
@@ -226,9 +230,9 @@ function DoctorReviewsContent() {
   return (
     <div className="container-custom flex flex-col gap-8 p-6">
       <header className="animate-fade-in flex flex-col gap-2">
-        <h1 className="heading-1">Reviews</h1>
+        <h1 className="heading-1">{t("title")}</h1>
         <p className="body-text">
-          Reviews left by patients for your appointments.
+          {t("doctorSubtitle")}
         </p>
       </header>
 
@@ -238,8 +242,8 @@ function DoctorReviewsContent() {
           <div className="rounded-xl border border-border bg-card">
             <EmptyState
               icon={<Star className="size-12" />}
-              title="No reviews yet"
-              description="Reviews left by patients for your appointments will appear here."
+              title={t("emptyTitle")}
+              description={t("emptyDesc")}
             />
           </div>
         ) : (

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Camera } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { showToast } from "@/lib/toast-store";
@@ -21,8 +22,10 @@ export function AvatarUploader({
   src,
   fallback,
   onSuccess,
-  buttonLabel = "Change Photo",
+  buttonLabel,
 }: AvatarUploaderProps) {
+  const t = useTranslations("business.avatarUploader");
+  const tc = useTranslations("common");
   const inputRef = useRef<HTMLInputElement>(null);
   const previewRef = useRef<string | null>(null);
   const { mutate: uploadAvatar, isPending } = useUploadAvatar();
@@ -56,11 +59,11 @@ export function AvatarUploader({
     if (!file) return;
 
     if (!ACCEPTED_TYPES.includes(file.type)) {
-      setError("Only JPEG, PNG, or WebP images are supported.");
+      setError(t("typeError"));
       return;
     }
     if (file.size > MAX_SIZE) {
-      setError("Image must be smaller than 2MB.");
+      setError(t("sizeError"));
       return;
     }
 
@@ -79,7 +82,7 @@ export function AvatarUploader({
       onSuccess: (user) => {
         clearPreview();
         onSuccess?.(user.avatarUrl ?? null);
-        showToast("Avatar updated successfully", "success");
+        showToast(t("updated"), "success");
       },
       // If the upload fails, drop the uncommitted preview so the UI never
       // shows a photo the server doesn't have. The error toast comes from the hook.
@@ -96,7 +99,7 @@ export function AvatarUploader({
         onClick={() => inputRef.current?.click()}
         disabled={isPending}
         className="group relative cursor-pointer rounded-full focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
-        aria-label="Upload avatar"
+        aria-label={t("uploadAvatar")}
       >
         <Avatar
           src={displaySrc}
@@ -127,7 +130,7 @@ export function AvatarUploader({
       {preview && (
         <div className="flex items-center gap-2">
           <Button size="sm" onClick={handleSave} disabled={isPending}>
-            {isPending ? "Saving..." : "Save Avatar"}
+            {isPending ? t("saving") : t("saveAvatar")}
           </Button>
           <Button
             size="sm"
@@ -135,7 +138,7 @@ export function AvatarUploader({
             onClick={clearPreview}
             disabled={isPending}
           >
-            Cancel
+            {tc("cancel")}
           </Button>
         </div>
       )}
@@ -148,15 +151,15 @@ export function AvatarUploader({
             size="sm"
             onClick={() => inputRef.current?.click()}
             disabled={isPending}
-            aria-label="Change profile photo"
-            title="Change profile photo"
+            aria-label={t("changeProfilePhoto")}
+            title={t("changeProfilePhoto")}
             className="cursor-pointer shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
           >
             <Camera className="size-3.5" aria-hidden="true" />
-            {buttonLabel}
+            {buttonLabel ?? t("changePhoto")}
           </Button>
           <p className="text-xs text-muted-foreground">
-            JPEG, PNG, or WebP up to 2MB.
+            {t("hint")}
           </p>
         </>
       )}

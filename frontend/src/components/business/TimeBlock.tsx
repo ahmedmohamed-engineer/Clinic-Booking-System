@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import { useLocale } from "next-intl";
 import { Clock } from "lucide-react";
 import { cn, formatTime } from "@/lib/utils";
 
@@ -15,6 +16,7 @@ export const TimeBlock = memo(function TimeBlock({
   endTime,
   className,
 }: TimeBlockProps) {
+  const locale = useLocale();
   return (
     <div
       className={cn(
@@ -24,7 +26,7 @@ export const TimeBlock = memo(function TimeBlock({
     >
       <Clock className="size-4 shrink-0 text-status-success" aria-hidden="true" />
       <span className="tabular">
-        {formatTime(startTime)} – {formatTime(endTime)}
+        {formatTime(startTime, locale)} – {formatTime(endTime, locale)}
       </span>
     </div>
   );

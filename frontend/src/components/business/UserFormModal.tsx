@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +38,8 @@ export function UserFormModal({
   onSubmit,
   isSubmitting,
 }: UserFormModalProps) {
+  const t = useTranslations("adminForm");
+  const tc = useTranslations("common");
   const { parse } = useApiError();
   const [email, setEmail] = useState(user.email);
   const [role, setRole] = useState(user.role);
@@ -71,7 +74,7 @@ export function UserFormModal({
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit user</DialogTitle>
+          <DialogTitle>{t("editUser")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4" noValidate>
           {formError && (
@@ -84,7 +87,7 @@ export function UserFormModal({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
               type="email"
@@ -99,14 +102,14 @@ export function UserFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="role">Role</Label>
+            <Label htmlFor="role">{t("role")}</Label>
             <Select
               value={role}
               onValueChange={(value) => setRole(value as UserRecord["role"])}
               disabled={isSubmitting}
             >
               <SelectTrigger id="role" className="w-full">
-                <SelectValue placeholder="Select role" />
+                <SelectValue placeholder={t("selectRole")} />
               </SelectTrigger>
               <SelectContent>
                 {USER_ROLES.map((option) => (
@@ -122,18 +125,18 @@ export function UserFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="isVerified">Verified</Label>
+            <Label htmlFor="isVerified">{t("verified")}</Label>
             <Select
               value={String(isVerified)}
               onValueChange={(value) => setIsVerified(value === "true")}
               disabled={isSubmitting}
             >
               <SelectTrigger id="isVerified" className="w-full">
-                <SelectValue placeholder="Select verification status" />
+                <SelectValue placeholder={t("selectVerification")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="true">Verified</SelectItem>
-                <SelectItem value="false">Not verified</SelectItem>
+                <SelectItem value="true">{t("verified")}</SelectItem>
+                <SelectItem value="false">{t("notVerified")}</SelectItem>
               </SelectContent>
             </Select>
             {fieldErrors.isVerified && (
@@ -143,10 +146,10 @@ export function UserFormModal({
 
           <div className="mt-6 flex justify-end gap-3">
             <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save changes"}
+              {isSubmitting ? tc("saving") : tc("save")}
             </Button>
           </div>
         </form>

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import { useLocale, useTranslations } from "next-intl";
 import { CreditCard, Pencil, Trash2 } from "lucide-react";
 import type { Column, DataTableProps } from "@/components/data/DataTable";
 import { Pagination } from "@/components/data/Pagination";
@@ -41,6 +42,10 @@ import type { PaymentReadModel } from "@/types/models/payment";
 import type { UpdatePaymentInput } from "@/schemas/payment";
 
 export default function AdminPaymentsPage() {
+  const t = useTranslations("adminPayments");
+  const ts = useTranslations("adminShared");
+  const tp = useTranslations("admin");
+  const locale = useLocale();
   const [page, setPage] = useState<number>(PAGINATION_DEFAULTS.page);
   const { data, isPending, isError, refetch } = usePaymentsAdmin({
     page,
@@ -66,7 +71,7 @@ export default function AdminPaymentsPage() {
   const columns: Column<PaymentReadModel>[] = useMemo(() => [
     {
       key: "patientId",
-      header: "Patient",
+      header: ts("patient"),
       render: (payment) => (
         <div className="flex min-w-0 items-center gap-2.5">
           <Avatar
@@ -82,37 +87,37 @@ export default function AdminPaymentsPage() {
     },
     {
       key: "appointmentId",
-      header: "Appointment",
+      header: ts("appointment"),
       render: (payment) => (
         <div>
           <span className="block truncate font-medium">{payment.doctor.displayName}</span>
           <span className="block whitespace-nowrap text-xs text-muted-foreground">
-            {formatDateTime(payment.slot.date, payment.slot.startTime)}
+            {formatDateTime(payment.slot.date, payment.slot.startTime, locale)}
           </span>
         </div>
       ),
     },
     {
       key: "amount",
-      header: "Amount",
-      render: (payment) => formatCurrency(payment.amount),
+      header: ts("amount"),
+      render: (payment) => formatCurrency(payment.amount, locale),
     },
     {
       key: "method",
-      header: "Method",
+      header: ts("method"),
       render: (payment) => {
-        const label = payment.method.replace(/_/g, " ");
+        const label = tp(`payMethods.${payment.method}`);
         return <span className="capitalize">{label}</span>;
       },
     },
     {
       key: "status",
-      header: "Status",
+      header: ts("status"),
       render: (payment) => <StatusBadge status={payment.status} />,
     },
     {
       key: "transactionReference",
-      header: "Reference",
+      header: ts("reference"),
       render: (payment) =>
         payment.transactionReference ?? (
           <span className="text-muted-foreground">—</span>
@@ -128,8 +133,8 @@ export default function AdminPaymentsPage() {
             variant="ghost"
             size="xs"
             onClick={() => setEditing(payment)}
-            aria-label={`Edit payment for ${payment.doctor.displayName}`}
-            title={`Edit payment for ${payment.doctor.displayName}`}
+            aria-label={ts("editName", { name: payment.doctor.displayName })}
+            title={ts("editName", { name: payment.doctor.displayName })}
           >
             <Pencil className="size-4" />
           </Button>
@@ -137,27 +142,27 @@ export default function AdminPaymentsPage() {
             variant="ghost"
             size="xs"
             onClick={() => setDeleting(payment)}
-            aria-label={`Delete payment for ${payment.doctor.displayName}`}
-            title={`Delete payment for ${payment.doctor.displayName}`}
+            aria-label={ts("deleteName", { name: payment.doctor.displayName })}
+            title={ts("deleteName", { name: payment.doctor.displayName })}
           >
             <Trash2 className="size-4" />
           </Button>
         </div>
       ),
     },
-  ], []);
+  ], [ts, tp, locale]);
 
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Payments</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("title")}</h1>
         <p className="text-lg text-muted-foreground">
-          Review payments and update their status.
+          {t("subtitle")}
         </p>
       </header>
 
       {isError ? (
-        <ErrorBanner message="Could not load payments." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       ) : (
         <>
           <div className="flex flex-col gap-4 md:hidden">
@@ -171,8 +176,8 @@ export default function AdminPaymentsPage() {
               <div className="rounded-xl border border-border">
                 <EmptyState
                   icon={<CreditCard className="size-12" />}
-                  title="No payments yet"
-                  description="Payments made for appointments will appear here."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               </div>
             ) : (
@@ -202,8 +207,8 @@ export default function AdminPaymentsPage() {
                           variant="ghost"
                           size="xs"
                           onClick={() => setEditing(payment)}
-                          aria-label={`Edit payment for ${payment.doctor.displayName}`}
-                          title={`Edit payment for ${payment.doctor.displayName}`}
+                          aria-label={ts("editName", { name: payment.doctor.displayName })}
+                          title={ts("editName", { name: payment.doctor.displayName })}
                         >
                           <Pencil className="size-4" />
                         </Button>
@@ -211,8 +216,8 @@ export default function AdminPaymentsPage() {
                           variant="ghost"
                           size="xs"
                           onClick={() => setDeleting(payment)}
-                          aria-label={`Delete payment for ${payment.doctor.displayName}`}
-                          title={`Delete payment for ${payment.doctor.displayName}`}
+                          aria-label={ts("deleteName", { name: payment.doctor.displayName })}
+                          title={ts("deleteName", { name: payment.doctor.displayName })}
                         >
                           <Trash2 className="size-4" />
                         </Button>
@@ -220,23 +225,23 @@ export default function AdminPaymentsPage() {
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <StatusBadge status={payment.status} />
-                      <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium capitalize text-muted-foreground">
-                        {payment.method.replace(/_/g, " ")}
+                      <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                        {tp(`payMethods.${payment.method}`)}
                       </span>
                     </div>
                     <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Amount</dt>
-                        <dd className="text-foreground">{formatCurrency(payment.amount)}</dd>
+                        <dt className="text-muted-foreground">{ts("amount")}</dt>
+                        <dd className="text-foreground">{formatCurrency(payment.amount, locale)}</dd>
                       </div>
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Date</dt>
+                        <dt className="text-muted-foreground">{ts("date")}</dt>
                         <dd className="whitespace-nowrap text-foreground">
-                          {formatDateTime(payment.slot.date, payment.slot.startTime)}
+                          {formatDateTime(payment.slot.date, payment.slot.startTime, locale)}
                         </dd>
                       </div>
                       <div className="col-span-2 flex flex-col">
-                        <dt className="text-muted-foreground">Reference</dt>
+                        <dt className="text-muted-foreground">{ts("reference")}</dt>
                         <dd className="truncate text-foreground">
                           {payment.transactionReference ?? "—"}
                         </dd>
@@ -257,8 +262,8 @@ export default function AdminPaymentsPage() {
               emptyState={
                 <EmptyState
                   icon={<CreditCard className="size-12" />}
-                  title="No payments yet"
-                  description="Payments made for appointments will appear here."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               }
             />
@@ -294,9 +299,9 @@ export default function AdminPaymentsPage() {
           onConfirm={() =>
             deletePayment(deleting.id, { onSuccess: () => setDeleting(null) })
           }
-          title="Delete payment"
-          message={`Delete payment for ${deleting.doctor.displayName}? This cannot be undone.`}
-          confirmLabel="Delete"
+          title={t("deleteTitle")}
+          message={t("deleteMessage", { name: deleting.doctor.displayName })}
+          confirmLabel={ts("delete")}
           isLoading={isDeleting}
         />
       )}

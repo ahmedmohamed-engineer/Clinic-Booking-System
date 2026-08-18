@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
+import { useLocale, useTranslations } from "next-intl";
 import { ClipboardList, Pencil, Plus, Trash2 } from "lucide-react";
 import type { Column, DataTableProps } from "@/components/data/DataTable";
 import { Pagination } from "@/components/data/Pagination";
@@ -42,6 +43,9 @@ import type { PatientRecord } from "@/types/models/patient";
 import type { CreatePatientInput, UpdatePatientInput } from "@/schemas/patient";
 
 export default function AdminPatientsPage() {
+  const t = useTranslations("adminPatients");
+  const ts = useTranslations("adminShared");
+  const locale = useLocale();
   const [page, setPage] = useState<number>(PAGINATION_DEFAULTS.page);
   const { data, isPending, isError, refetch } = usePatientsAdmin({
     page,
@@ -74,7 +78,7 @@ export default function AdminPatientsPage() {
 
     {
       key: "fullName",
-      header: "Full name",
+      header: ts("fullName"),
       sortable: true,
       render: (patient) => (
         <div className="flex items-center gap-2.5">
@@ -91,20 +95,20 @@ export default function AdminPatientsPage() {
     },
     {
       key: "phone",
-      header: "Phone",
+      header: ts("phone"),
       render: (patient) => patient.phone ?? <span className="text-muted-foreground">—</span>,
     },
     {
       key: "gender",
-      header: "Gender",
+      header: ts("gender"),
       render: (patient) => patient.gender ?? <span className="text-muted-foreground">—</span>,
     },
     {
       key: "birthDate",
-      header: "Date of birth",
+      header: ts("dateOfBirth"),
       render: (patient) =>
         patient.birthDate ? (
-          formatDate(patient.birthDate)
+          formatDate(patient.birthDate, locale)
         ) : (
           <span className="text-muted-foreground">—</span>
         ),
@@ -119,8 +123,8 @@ export default function AdminPatientsPage() {
             variant="ghost"
             size="xs"
             onClick={() => setEditing(patient)}
-            aria-label={`Edit ${patient.fullName}`}
-            title={`Edit ${patient.fullName}`}
+            aria-label={ts("editName", { name: patient.fullName })}
+            title={ts("editName", { name: patient.fullName })}
           >
             <Pencil className="size-4" />
           </Button>
@@ -128,8 +132,8 @@ export default function AdminPatientsPage() {
             variant="ghost"
             size="xs"
             onClick={() => setDeleting(patient)}
-            aria-label={`Delete ${patient.fullName}`}
-            title={`Delete ${patient.fullName}`}
+            aria-label={ts("deleteName", { name: patient.fullName })}
+            title={ts("deleteName", { name: patient.fullName })}
           >
             <Trash2 className="size-4" />
           </Button>
@@ -137,26 +141,26 @@ export default function AdminPatientsPage() {
       ),
     },
     ],
-    [],
+    [ts, locale],
   );
 
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Patients</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("title")}</h1>
           <p className="text-lg text-muted-foreground">
-            Manage patient profiles.
+            {t("subtitle")}
           </p>
         </div>
         <Button onClick={() => setCreating(true)}>
           <Plus className="size-4" />
-          Add patient
+          {t("add")}
         </Button>
       </header>
 
       {isError ? (
-        <ErrorBanner message="Could not load patients." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       ) : (
         <>
           <div className="flex flex-col gap-4 md:hidden">
@@ -170,8 +174,8 @@ export default function AdminPatientsPage() {
               <div className="rounded-xl border border-border">
                 <EmptyState
                   icon={<ClipboardList className="size-12" />}
-                  title="No patients yet"
-                  description="Patient profiles will appear here once they register."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               </div>
             ) : (
@@ -201,8 +205,8 @@ export default function AdminPatientsPage() {
                           variant="ghost"
                           size="xs"
                           onClick={() => setEditing(patient)}
-                          aria-label={`Edit ${patient.fullName}`}
-                          title={`Edit ${patient.fullName}`}
+                          aria-label={ts("editName", { name: patient.fullName })}
+                          title={ts("editName", { name: patient.fullName })}
                         >
                           <Pencil className="size-4" />
                         </Button>
@@ -210,8 +214,8 @@ export default function AdminPatientsPage() {
                           variant="ghost"
                           size="xs"
                           onClick={() => setDeleting(patient)}
-                          aria-label={`Delete ${patient.fullName}`}
-                          title={`Delete ${patient.fullName}`}
+                          aria-label={ts("deleteName", { name: patient.fullName })}
+                          title={ts("deleteName", { name: patient.fullName })}
                         >
                           <Trash2 className="size-4" />
                         </Button>
@@ -219,13 +223,13 @@ export default function AdminPatientsPage() {
                     </div>
                     <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Phone</dt>
+                        <dt className="text-muted-foreground">{ts("phone")}</dt>
                         <dd className="truncate text-foreground">{patient.phone ?? "—"}</dd>
                       </div>
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Date of birth</dt>
+                        <dt className="text-muted-foreground">{ts("dateOfBirth")}</dt>
                         <dd className="text-foreground">
-                          {patient.birthDate ? formatDate(patient.birthDate) : "—"}
+                          {patient.birthDate ? formatDate(patient.birthDate, locale) : "—"}
                         </dd>
                       </div>
                     </dl>
@@ -244,8 +248,8 @@ export default function AdminPatientsPage() {
               emptyState={
                 <EmptyState
                   icon={<ClipboardList className="size-12" />}
-                  title="No patients yet"
-                  description="Patient profiles will appear here once they register."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               }
             />
@@ -294,9 +298,9 @@ export default function AdminPatientsPage() {
           onConfirm={() =>
             deletePatient(deleting.id, { onSuccess: () => setDeleting(null) })
           }
-          title="Delete patient"
-          message={`Delete patient profile for ${deleting.fullName}? This cannot be undone.`}
-          confirmLabel="Delete"
+          title={t("deleteTitle")}
+          message={t("deleteMessage", { name: deleting.fullName })}
+          confirmLabel={ts("delete")}
           isLoading={isDeleting}
         />
       )}

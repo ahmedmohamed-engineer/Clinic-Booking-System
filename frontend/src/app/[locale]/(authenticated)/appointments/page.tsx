@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { CalendarPlus, CalendarDays, Inbox } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { useMyAppointments, useCancelAppointment } from "@/features/appointments";
@@ -22,6 +23,7 @@ const PAST_STATUSES = new Set<AppointmentStatus>([
 ]);
 
 function PatientAppointmentsContent() {
+  const t = useTranslations("appointmentsPage");
   const { data: appointments, isPending, isError, refetch } = useMyAppointments();
   const { mutate: cancelAppointment, isPending: isCancelling } =
     useCancelAppointment();
@@ -49,7 +51,7 @@ function PatientAppointmentsContent() {
   if (isError) {
     return (
       <div className="p-6">
-        <ErrorBanner message="Could not load your appointments." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       </div>
     );
   }
@@ -70,8 +72,8 @@ function PatientAppointmentsContent() {
     <div className="container-custom flex flex-col gap-8 p-6">
       <header className="animate-fade-in flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="flex flex-col gap-2">
-          <h1 className="heading-1">Appointments</h1>
-          <p className="body-text">View and manage all of your appointments.</p>
+          <h1 className="heading-1">{t("title")}</h1>
+          <p className="body-text">{t("patientSubtitle")}</p>
         </div>
         <Link
           href="/book"
@@ -81,7 +83,7 @@ function PatientAppointmentsContent() {
         >
           <Button className="w-full md:w-auto">
             <CalendarPlus />
-            Book Appointment
+            {t("book")}
           </Button>
         </Link>
       </header>
@@ -91,8 +93,8 @@ function PatientAppointmentsContent() {
         <div className="rounded-xl border border-border bg-card">
           <EmptyState
             icon={<CalendarDays className="size-12" />}
-            title="No appointments yet"
-            description="Book your first appointment to get started."
+            title={t("emptyTitle")}
+            description={t("emptyDesc")}
             action={
               <Link
                 href="/book"
@@ -102,7 +104,7 @@ function PatientAppointmentsContent() {
               >
                 <Button className="w-full md:w-auto">
                   <CalendarPlus />
-                  Book Appointment
+                  {t("book")}
                 </Button>
               </Link>
             }
@@ -112,17 +114,17 @@ function PatientAppointmentsContent() {
         <Tabs defaultValue="upcoming">
           <TabsList className="w-full sm:w-auto">
             <TabsTrigger value="upcoming">
-              Upcoming ({upcoming.length})
+              {t("upcomingTab", { count: upcoming.length })}
             </TabsTrigger>
-            <TabsTrigger value="past">Past ({past.length})</TabsTrigger>
+            <TabsTrigger value="past">{t("pastTab", { count: past.length })}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="upcoming" className="mt-4">
             {upcoming.length === 0 ? (
               <EmptyState
                 icon={<Inbox className="size-12" />}
-                title="No upcoming appointments"
-                description="When you book an appointment, it will appear here."
+                title={t("noUpcomingTitle")}
+                description={t("noUpcomingPatientDesc")}
               />
             ) : (
               <div className="flex flex-col gap-3">
@@ -142,8 +144,8 @@ function PatientAppointmentsContent() {
             {past.length === 0 ? (
               <EmptyState
                 icon={<Inbox className="size-12" />}
-                title="No past appointments"
-                description="Completed and cancelled appointments will appear here."
+                title={t("noPastTitle")}
+                description={t("noPastDesc")}
               />
             ) : (
               <div className="flex flex-col gap-3">
@@ -161,6 +163,7 @@ function PatientAppointmentsContent() {
 }
 
 function DoctorAppointmentsContent() {
+  const t = useTranslations("appointmentsPage");
   const { data: appointments, isPending, isError, refetch } = useMyAppointments();
   const { mutate: cancelAppointment, isPending: isCancelling } =
     useCancelAppointment();
@@ -187,7 +190,7 @@ function DoctorAppointmentsContent() {
   if (isError) {
     return (
       <div className="p-6">
-        <ErrorBanner message="Could not load your appointments." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       </div>
     );
   }
@@ -207,8 +210,8 @@ function DoctorAppointmentsContent() {
   return (
     <div className="container-custom flex flex-col gap-8 p-6">
       <header className="animate-fade-in flex flex-col gap-2">
-        <h1 className="heading-1">Appointments</h1>
-        <p className="body-text">Appointments booked by your patients.</p>
+        <h1 className="heading-1">{t("title")}</h1>
+        <p className="body-text">{t("doctorSubtitle")}</p>
       </header>
 
       <div className="animate-fade-in">
@@ -216,25 +219,25 @@ function DoctorAppointmentsContent() {
         <div className="rounded-xl border border-border bg-card">
           <EmptyState
             icon={<CalendarDays className="size-12" />}
-            title="No appointments"
-            description="When patients book appointments, they will appear here."
+            title={t("emptyDoctorTitle")}
+            description={t("emptyDoctorDesc")}
           />
         </div>
       ) : (
         <Tabs defaultValue="upcoming">
           <TabsList className="w-full sm:w-auto">
             <TabsTrigger value="upcoming">
-              Upcoming ({upcoming.length})
+              {t("upcomingTab", { count: upcoming.length })}
             </TabsTrigger>
-            <TabsTrigger value="past">Past ({past.length})</TabsTrigger>
+            <TabsTrigger value="past">{t("pastTab", { count: past.length })}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="upcoming" className="mt-4">
             {upcoming.length === 0 ? (
               <EmptyState
                 icon={<Inbox className="size-12" />}
-                title="No upcoming appointments"
-                description="Appointments scheduled for your patients will appear here."
+                title={t("noUpcomingTitle")}
+                description={t("noUpcomingDoctorDesc")}
               />
             ) : (
               <div className="flex flex-col gap-3">
@@ -255,8 +258,8 @@ function DoctorAppointmentsContent() {
             {past.length === 0 ? (
               <EmptyState
                 icon={<Inbox className="size-12" />}
-                title="No past appointments"
-                description="Completed and cancelled appointments will appear here."
+                title={t("noPastTitle")}
+                description={t("noPastDesc")}
               />
             ) : (
               <div className="flex flex-col gap-3">

@@ -100,7 +100,7 @@ export function DataTable<T extends object>({
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={cn("whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase", col.className)}
+                  className={cn("whitespace-nowrap px-4 py-3 text-start text-xs font-medium text-muted-foreground uppercase", col.className)}
                 >
                   {col.header}
                 </th>
@@ -142,7 +142,7 @@ export function DataTable<T extends object>({
                 <th
                   key={col.key}
                   className={cn(
-                    "whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase",
+                    "whitespace-nowrap px-4 py-3 text-start text-xs font-medium text-muted-foreground uppercase",
                     canSort && "cursor-pointer select-none hover:text-foreground",
                     col.className,
                   )}

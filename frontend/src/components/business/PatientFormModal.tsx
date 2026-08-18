@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,6 +49,8 @@ export function PatientFormModal({
   isSubmitting,
 }: PatientFormModalProps) {
   const { parse } = useApiError();
+  const t = useTranslations("adminForm");
+  const tc = useTranslations("common");
   const [userId, setUserId] = useState(patient?.userId ?? "");
   const [fullName, setFullName] = useState(patient?.fullName ?? "");
   const [phone, setPhone] = useState(patient?.phone ?? "");
@@ -92,7 +95,7 @@ export function PatientFormModal({
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{patient ? "Edit patient" : "Create patient"}</DialogTitle>
+          <DialogTitle>{patient ? t("editPatient") : t("createPatient")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4" noValidate>
           {formError && (
@@ -106,10 +109,10 @@ export function PatientFormModal({
 
           {!patient && (
             <div className="space-y-2">
-              <Label htmlFor="userId">User</Label>
+              <Label htmlFor="userId">{t("user")}</Label>
               <Select value={userId} onValueChange={(value) => setUserId(value ?? "")} disabled={isSubmitting}>
                 <SelectTrigger id="userId" className="w-full">
-                  <SelectValue placeholder="Select user" />
+                  <SelectValue placeholder={t("selectUser")} />
                 </SelectTrigger>
                 <SelectContent>
                   {users.map((user) => (
@@ -126,7 +129,7 @@ export function PatientFormModal({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="fullName">Full name</Label>
+            <Label htmlFor="fullName">{t("fullName")}</Label>
             <Input
               id="fullName"
               value={fullName}
@@ -141,7 +144,7 @@ export function PatientFormModal({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone (optional)</Label>
+              <Label htmlFor="phone">{t("phoneOptional")}</Label>
               <Input
                 id="phone"
                 value={phone}
@@ -155,7 +158,7 @@ export function PatientFormModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="gender">Gender (optional)</Label>
+              <Label htmlFor="gender">{t("genderOptional")}</Label>
               <Input
                 id="gender"
                 value={gender}
@@ -170,7 +173,7 @@ export function PatientFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="birthDate">Date of birth (optional)</Label>
+            <Label htmlFor="birthDate">{t("birthDateOptional")}</Label>
             <Input
               id="birthDate"
               type="date"
@@ -186,10 +189,10 @@ export function PatientFormModal({
 
           <div className="mt-6 flex justify-end gap-3">
             <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : patient ? "Save changes" : "Create patient"}
+              {isSubmitting ? tc("saving") : patient ? tc("save") : t("createPatient")}
             </Button>
           </div>
         </form>

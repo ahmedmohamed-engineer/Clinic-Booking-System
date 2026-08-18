@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import { useLocale, useTranslations } from "next-intl";
 import { CalendarClock, Pencil, Plus, Trash2 } from "lucide-react";
 import type { Column, DataTableProps } from "@/components/data/DataTable";
 import { ErrorBanner } from "@/components/feedback/ErrorBanner";
@@ -42,9 +43,10 @@ const ConfirmDialog = dynamic(
   { loading: () => <Skeleton variant="form" /> },
 );
 
-const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
 export default function DoctorSchedulePage() {
+  const t = useTranslations("schedulePage");
+  const td = useTranslations("weekdays");
+  const locale = useLocale();
   const { data: schedules, isPending, isError, refetch } = useMySchedule();
   const { mutate: createSchedule, isPending: isCreating } = useCreateMySchedule();
   const { mutate: updateSchedule, isPending: isUpdating } = useUpdateMySchedule();
@@ -56,58 +58,75 @@ export default function DoctorSchedulePage() {
 
   const scheduleList = schedules ?? [];
 
+  const dayLabels = useMemo(
+    () => [
+      td("sunday"),
+      td("monday"),
+      td("tuesday"),
+      td("wednesday"),
+      td("thursday"),
+      td("friday"),
+      td("saturday"),
+    ],
+    [td],
+  );
+
   const columns: Column<DoctorScheduleReadModel>[] = useMemo(() => [
     {
       key: "weekday",
-      header: "Day",
-      render: (schedule) => DAYS[schedule.weekday],
+      header: t("day"),
+      render: (schedule) => dayLabels[schedule.weekday],
     },
     {
       key: "startTime",
-      header: "Start",
-      render: (schedule) => formatTime(schedule.startTime),
+      header: t("start"),
+      render: (schedule) => formatTime(schedule.startTime, locale),
     },
     {
       key: "endTime",
-      header: "End",
-      render: (schedule) => formatTime(schedule.endTime),
+      header: t("end"),
+      render: (schedule) => formatTime(schedule.endTime, locale),
     },
     {
       key: "slotDuration",
-      header: "Slot duration",
-      render: (schedule) => `${schedule.slotDuration} min`,
+      header: t("slotDuration"),
+      render: (schedule) =>
+        t("slotDurationValue", { minutes: schedule.slotDuration }),
     },
     {
       key: "actions",
       header: "",
       className: "text-right",
-      render: (schedule) => (
-        <div className="flex items-center justify-end gap-1">
-          <Button
-            variant="ghost"
-            size="xs"
-            onClick={() => setEditing(schedule)}
-            aria-label={`Edit schedule for ${DAYS[schedule.weekday]}`}
-            title={`Edit schedule for ${DAYS[schedule.weekday]}`}
-          >
-            <Pencil className="size-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="xs"
-            onClick={() => setDeleting(schedule)}
-            aria-label={`Delete schedule for ${DAYS[schedule.weekday]}`}
-            title={`Delete schedule for ${DAYS[schedule.weekday]}`}
-          >
-            <Trash2 className="size-4" />
-          </Button>
-        </div>
-      ),
+      render: (schedule) => {
+        const day = dayLabels[schedule.weekday];
+        return (
+          <div className="flex items-center justify-end gap-1">
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={() => setEditing(schedule)}
+              aria-label={t("editScheduleAria", { day })}
+              title={t("editScheduleAria", { day })}
+            >
+              <Pencil className="size-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={() => setDeleting(schedule)}
+              aria-label={t("deleteScheduleAria", { day })}
+              title={t("deleteScheduleAria", { day })}
+            >
+              <Trash2 className="size-4" />
+            </Button>
+          </div>
+        );
+      },
     },
-  ], []);
+  ], [t, dayLabels, locale]);
 
   if (isError) {
-    return <ErrorBanner message="Could not load your schedule." onRetry={refetch} />;
+    return <ErrorBanner message={t("error")} onRetry={refetch} />;
   }
 
   return (
@@ -115,15 +134,15 @@ export default function DoctorSchedulePage() {
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            My Schedule
+            {t("title")}
           </h1>
           <p className="text-lg text-muted-foreground">
-            Set your weekly availability so patients can book you.
+            {t("subtitle")}
           </p>
         </div>
         <Button onClick={() => setCreating(true)}>
           <Plus className="size-4" />
-          Add schedule
+          {t("add")}
         </Button>
       </header>
 
@@ -133,70 +152,75 @@ export default function DoctorSchedulePage() {
         <div className="rounded-xl border border-border bg-card">
           <EmptyState
             icon={<CalendarClock className="size-12" />}
-            title="No schedule defined"
-            description="Add your weekly availability so patients know when they can book you."
+            title={t("emptyTitle")}
+            description={t("emptyDesc")}
           />
         </div>
       ) : (
         <>
           <div className="rounded-xl border border-border bg-card p-6">
             <h2 className="mb-4 text-sm font-semibold text-foreground">
-              Weekly calendar
+              {t("weeklyCalendar")}
             </h2>
             <WeeklyCalendar schedules={scheduleList} />
           </div>
 
           <div className="flex flex-col gap-4 md:hidden">
-            {scheduleList.map((schedule) => (
-              <Card key={schedule.id}>
-                <CardContent className="flex flex-col gap-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-foreground">
-                        {DAYS[schedule.weekday]}
-                      </p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {formatTime(schedule.startTime)} – {formatTime(schedule.endTime)}
-                      </p>
+            {scheduleList.map((schedule) => {
+              const day = dayLabels[schedule.weekday];
+              return (
+                <Card key={schedule.id}>
+                  <CardContent className="flex flex-col gap-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-foreground">
+                          {day}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {formatTime(schedule.startTime, locale)} – {formatTime(schedule.endTime, locale)}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => setEditing(schedule)}
+                          aria-label={t("editScheduleAria", { day })}
+                          title={t("editScheduleAria", { day })}
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => setDeleting(schedule)}
+                          aria-label={t("deleteScheduleAria", { day })}
+                          title={t("deleteScheduleAria", { day })}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex shrink-0 items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        onClick={() => setEditing(schedule)}
-                        aria-label={`Edit schedule for ${DAYS[schedule.weekday]}`}
-                        title={`Edit schedule for ${DAYS[schedule.weekday]}`}
-                      >
-                        <Pencil className="size-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        onClick={() => setDeleting(schedule)}
-                        aria-label={`Delete schedule for ${DAYS[schedule.weekday]}`}
-                        title={`Delete schedule for ${DAYS[schedule.weekday]}`}
-                      >
-                        <Trash2 className="size-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
-                    <div className="flex flex-col">
-                      <dt className="text-muted-foreground">Start</dt>
-                      <dd className="text-foreground">{formatTime(schedule.startTime)}</dd>
-                    </div>
-                    <div className="flex flex-col">
-                      <dt className="text-muted-foreground">End</dt>
-                      <dd className="text-foreground">{formatTime(schedule.endTime)}</dd>
-                    </div>
-                    <div className="col-span-2 flex flex-col">
-                      <dt className="text-muted-foreground">Slot duration</dt>
-                      <dd className="text-foreground">{schedule.slotDuration} min</dd>
-                    </div>
-                  </dl>
-                </CardContent>
-              </Card>
-            ))}
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
+                      <div className="flex flex-col">
+                        <dt className="text-muted-foreground">{t("start")}</dt>
+                        <dd className="text-foreground">{formatTime(schedule.startTime, locale)}</dd>
+                      </div>
+                      <div className="flex flex-col">
+                        <dt className="text-muted-foreground">{t("end")}</dt>
+                        <dd className="text-foreground">{formatTime(schedule.endTime, locale)}</dd>
+                      </div>
+                      <div className="col-span-2 flex flex-col">
+                        <dt className="text-muted-foreground">{t("slotDuration")}</dt>
+                        <dd className="text-foreground">
+                          {t("slotDurationValue", { minutes: schedule.slotDuration })}
+                        </dd>
+                      </div>
+                    </dl>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           <div className="hidden md:block">
@@ -207,8 +231,8 @@ export default function DoctorSchedulePage() {
               emptyState={
                 <EmptyState
                   icon={<CalendarClock className="size-12" />}
-                  title="No schedule defined"
-                  description="Add your weekly availability so patients know when they can book you."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               }
             />
@@ -253,9 +277,9 @@ export default function DoctorSchedulePage() {
           onConfirm={() =>
             deleteSchedule(deleting.id, { onSuccess: () => setDeleting(null) })
           }
-          title="Delete schedule"
-          message="Delete this schedule entry? Any slots created from it will also be deleted."
-          confirmLabel="Delete"
+          title={t("deleteTitle")}
+          message={t("deleteMessage")}
+          confirmLabel={t("deleteTitle")}
           isLoading={isDeleting}
         />
       )}

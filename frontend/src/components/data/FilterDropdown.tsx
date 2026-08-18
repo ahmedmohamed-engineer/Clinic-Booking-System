@@ -2,6 +2,7 @@
 
 import { Check, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 export interface FilterOption {
@@ -23,9 +24,10 @@ export function FilterDropdown({
   value,
   onChange,
   label,
-  placeholder = "All",
+  placeholder,
   className,
 }: FilterDropdownProps) {
+  const t = useTranslations("dataTable");
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const listId = "filter-listbox";
@@ -50,6 +52,7 @@ export function FilterDropdown({
   }, []);
 
   const selected = options.find((o) => o.value === value);
+  const placeholderText = placeholder ?? t("all");
 
   return (
     <div ref={ref} className={cn("relative", className)}>
@@ -65,7 +68,7 @@ export function FilterDropdown({
         aria-labelledby={label ? labelId : undefined}
       >
         <span className={value ? "" : "text-muted-foreground"}>
-          {selected?.label ?? placeholder}
+          {selected?.label ?? placeholderText}
         </span>
         <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")} />
       </button>
@@ -83,7 +86,7 @@ export function FilterDropdown({
             onClick={() => { onChange(undefined); setOpen(false); }}
             className="flex w-full items-center justify-between rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:bg-muted"
           >
-            {placeholder}
+            {placeholderText}
             {!value && <Check className="size-4 text-primary" />}
           </button>
           {options.map((opt) => (

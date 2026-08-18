@@ -1,11 +1,11 @@
-import Link from "next/link";
 import {
   ArrowRight,
   CalendarDays,
-  Clock,
   CreditCard,
   ShieldCheck,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { RxMark } from "@/components/layout/Logo";
 import { cn } from "@/lib/utils";
@@ -14,21 +14,25 @@ interface HeroSectionProps {
   className?: string;
 }
 
-const trustPoints = [
-  { icon: CalendarDays, label: "Book online" },
-  { icon: ShieldCheck, label: "Trusted doctors" },
-  { icon: CreditCard, label: "Simple payments" },
-];
-
 /* The lines written onto the pad — the first two inked, the last one
-   still being written. Kalam only here, where the hand is the story. */
-const padLines = [
-  { label: "Specialist", value: "Dr. Maya Hassan", meta: "Cardiology", inked: true },
-  { label: "Visit", value: "Thu, Aug 21", meta: "10:30 AM", inked: true },
-  { label: "Clinic", value: "Downtown branch", meta: "Branch 04", inked: false },
-];
-
+   still being written. Kalam only here, where the hand is the story.
+   The labels are doc chrome (translated); the values are the patient's
+   data, which reads as written content in either language. */
 export function HeroSection({ className }: HeroSectionProps) {
+  const t = useTranslations("hero");
+
+  const trustPoints = [
+    { icon: CalendarDays, label: t("bookOnline") },
+    { icon: ShieldCheck, label: t("trustedDoctors") },
+    { icon: CreditCard, label: t("simplePayments") },
+  ];
+
+  const padLines = [
+    { label: t("labels.specialist"), value: "Dr. Maya Hassan", meta: "Cardiology", inked: true },
+    { label: t("labels.visit"), value: "Thu, Aug 21", meta: "10:30 AM", inked: true },
+    { label: t("labels.clinic"), value: "Downtown branch", meta: "Branch 04", inked: false },
+  ];
+
   return (
     <section className={cn("flex-1", className)}>
       <div className="container-custom relative flex w-full flex-col items-center justify-center gap-14 py-16 sm:py-20 lg:flex-row lg:items-start lg:gap-20 lg:py-24">
@@ -36,26 +40,23 @@ export function HeroSection({ className }: HeroSectionProps) {
         <div className="flex max-w-xl flex-col items-center text-center lg:items-start lg:text-left">
           <span className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-primary">
             <RxMark className="size-5 text-sm" />
-            Appointment prescription
+            {t("eyebrow")}
           </span>
 
           <h1 className="mt-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.08]">
-            Your appointment,{" "}
-            <span className="text-primary">written and stamped</span>
+            {t("h1a")} <span className="text-primary">{t("h1b")}</span>
           </h1>
 
           <p className="body-text mt-5 max-w-lg text-base sm:text-lg">
-            Booking care should be as clear as a prescription: line by line,
-            in writing, sealed with certainty. Choose your clinic, your
-            specialist, and the time that works — the rest is on the sheet.
+            {t("paragraph")}
           </p>
 
           <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
             <Link href="/register" className="sm:inline-flex">
               <Button size="lg" className="w-full sm:w-auto">
-                Get started
+                {t("getStarted")}
                 <ArrowRight
-                  className="size-4 transition-transform duration-200 group-hover/button:translate-x-0.5"
+                  className="size-4 transition-transform duration-200 group-hover/button:translate-x-0.5 rtl:-translate-x-0.5 rtl:rotate-180"
                   data-icon="inline-end"
                   aria-hidden="true"
                 />
@@ -63,7 +64,7 @@ export function HeroSection({ className }: HeroSectionProps) {
             </Link>
             <Link href="/login" className="sm:inline-flex">
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                Sign in
+                {t("signIn")}
               </Button>
             </Link>
           </div>
@@ -91,7 +92,7 @@ export function HeroSection({ className }: HeroSectionProps) {
             className="absolute inset-x-4 -top-3 bottom-2 hidden rotate-2 rounded-lg border border-border/70 bg-card/60 px-6 py-4 opacity-70 sm:block"
           >
             <div className="heading-2 text-muted-foreground/50">
-              MediCare — Appointment prescription
+              {t("eyebrow")}
             </div>
             <div className="mt-4 space-y-3">
               {padLines.map((line) => (
@@ -104,7 +105,7 @@ export function HeroSection({ className }: HeroSectionProps) {
               ))}
             </div>
             <div className="mt-4 inline-block rotate-[-6deg] border border-destructive/30 px-3 py-0.5 text-xs font-bold uppercase tracking-widest text-destructive/40">
-              Copy
+              {t("copy")}
             </div>
           </div>
 
@@ -117,10 +118,10 @@ export function HeroSection({ className }: HeroSectionProps) {
                   <RxMark className="size-6 text-sm" />
                   MediCare
                 </p>
-                <p className="heading-2 mt-1.5">Appointment prescription</p>
+                <p className="heading-2 mt-1.5">{t("eyebrow")}</p>
               </div>
               <span className="tabular heading-2 text-muted-foreground">
-                No. 02481
+                {t("no")}
               </span>
             </div>
             <div className="letterhead-rule mt-4" />
@@ -139,7 +140,7 @@ export function HeroSection({ className }: HeroSectionProps) {
                   {line.inked ? (
                     <span className="font-ink text-base leading-snug font-bold text-secondary sm:text-lg">
                       {line.value}
-                      <span className="ml-2 inline-block align-baseline text-[0.65rem] font-normal tracking-wide text-muted-foreground sm:ml-3">
+                      <span className="ms-2 inline-block align-baseline text-[0.65rem] font-normal tracking-wide text-muted-foreground sm:ms-3">
                         {line.meta}
                       </span>
                     </span>
@@ -161,14 +162,13 @@ export function HeroSection({ className }: HeroSectionProps) {
                 size="lg"
                 className="w-full font-bold uppercase tracking-widest transition-transform duration-150 hover:-rotate-1 active:translate-y-0.5"
               >
-                Confirm booking
-                <span className="ml-2 inline-block size-2 rounded-full border border-current" />
+                {t("confirmBooking")}
+                <span className="ms-2 inline-block size-2 rounded-full border border-current" />
               </Button>
             </Link>
 
             <p className="mt-3 text-center text-[0.7rem] text-muted-foreground">
-              Written today · Valid for you,{" "}
-              <span className="tabular">24h</span>
+              {t("written", { hours: t("hours") })}
             </p>
           </div>
 
@@ -179,9 +179,9 @@ export function HeroSection({ className }: HeroSectionProps) {
             </span>
             <div>
               <p className="text-xs font-semibold text-foreground">
-                Appointment confirmed
+                {t("confirmed")}
               </p>
-              <p className="text-xs text-muted-foreground">See you soon</p>
+              <p className="text-xs text-muted-foreground">{t("seeYouSoon")}</p>
             </div>
           </div>
         </div>

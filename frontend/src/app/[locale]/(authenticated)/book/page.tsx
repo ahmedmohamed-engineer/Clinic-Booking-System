@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useClinicsList } from "@/features/clinics/hooks/useClinicsList";
 import { useSpecialtiesList } from "@/features/specialties/hooks/useSpecialtiesList";
@@ -24,6 +25,7 @@ const SlotPicker = dynamic(
 
 export default function BookAppointmentPage() {
   const router = useRouter();
+  const t = useTranslations("book");
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedClinicId, setSelectedClinicId] = useState<string | null>(null);
   const [selectedSpecialtyId, setSelectedSpecialtyId] = useState<string | null>(null);
@@ -97,7 +99,7 @@ export default function BookAppointmentPage() {
 
   const steps = [
     {
-      title: "Select Clinic",
+      title: t("stepClinic"),
       content: (
         <ClinicSelector
           clinics={clinics}
@@ -111,7 +113,7 @@ export default function BookAppointmentPage() {
       ),
     },
     {
-      title: "Select Specialty",
+      title: t("stepSpecialty"),
       content: (
         <SpecialtySelector
           specialties={specialties}
@@ -125,7 +127,7 @@ export default function BookAppointmentPage() {
       ),
     },
     {
-      title: "Select Doctor",
+      title: t("stepDoctor"),
       content: (
         <div className="space-y-4">
           {isLoadingDoctors ? (
@@ -140,7 +142,7 @@ export default function BookAppointmentPage() {
             </div>
           ) : doctors.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
-              No doctors available matching the selected clinic and specialty.
+              {t("noDoctors")}
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
@@ -158,7 +160,7 @@ export default function BookAppointmentPage() {
       ),
     },
     {
-      title: "Date & Time",
+      title: t("stepDateTime"),
       content: (
         <SlotPicker
           slots={slots}
@@ -175,9 +177,9 @@ export default function BookAppointmentPage() {
   return (
     <div className="container-custom flex flex-col gap-8 p-6">
       <header className="animate-fade-in flex flex-col gap-2">
-        <h1 className="heading-1">Book an Appointment</h1>
+        <h1 className="heading-1">{t("title")}</h1>
         <p className="body-text">
-          Follow the steps below to schedule your visit with a specialist.
+          {t("subtitle")}
         </p>
       </header>
 

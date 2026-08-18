@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,6 +33,10 @@ export function ReviewDetailModal({
   isSubmitting,
 }: ReviewDetailModalProps) {
   const { parse } = useApiError();
+  const t = useTranslations("adminForm");
+  const tc = useTranslations("common");
+  const ts = useTranslations("adminShared");
+  const locale = useLocale();
   const [rating, setRating] = useState(review.rating);
   const [comment, setComment] = useState(review.comment ?? "");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -67,15 +72,15 @@ export function ReviewDetailModal({
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Review details</DialogTitle>
+          <DialogTitle>{t("reviewDetails")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4">
           <p className="mb-4 text-sm text-muted-foreground">
-            Doctor{" "}
+            {ts("doctor")}{" "}
             <span className="font-medium text-foreground">
               {review.doctor.displayName}
             </span>{" "}
-            · {formatDateTime(review.slot.date, review.slot.startTime)}
+            · {formatDateTime(review.slot.date, review.slot.startTime, locale)}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -89,7 +94,7 @@ export function ReviewDetailModal({
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="rating">Rating</Label>
+              <Label htmlFor="rating">{t("rating")}</Label>
               <div id="rating" className="flex items-center gap-2">
                 <StarRating rating={rating} onChange={setRating} />
                 {fieldErrors.rating && (
@@ -99,7 +104,7 @@ export function ReviewDetailModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="comment">Comment (optional)</Label>
+              <Label htmlFor="comment">{t("commentOptional")}</Label>
               <Textarea
                 id="comment"
                 value={comment}
@@ -115,10 +120,10 @@ export function ReviewDetailModal({
 
             <div className="flex justify-end gap-3">
               <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
-                Close
+                {tc("close")}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save changes"}
+                {isSubmitting ? tc("saving") : tc("save")}
               </Button>
             </div>
           </form>

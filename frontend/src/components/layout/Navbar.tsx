@@ -1,12 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Menu } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/features/auth/hooks/use-auth";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./UserMenu";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 interface NavbarProps {
   onMenuClick?: () => void;
@@ -14,7 +16,7 @@ interface NavbarProps {
 
 export function Navbar({ onMenuClick }: NavbarProps) {
   const { isAuthenticated } = useAuth();
-  const router = useRouter();
+  const t = useTranslations();
 
   return (
     <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur-sm">
@@ -24,7 +26,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
             variant="ghost"
             size="icon"
             onClick={onMenuClick}
-            aria-label="Toggle menu"
+            aria-label={t("common.toggleMenu")}
             className="lg:hidden"
           >
             <Menu className="size-5" />
@@ -34,12 +36,17 @@ export function Navbar({ onMenuClick }: NavbarProps) {
       </div>
 
       <div className="relative flex items-center gap-2">
+        <LanguageSwitcher />
         <ThemeToggle />
         {isAuthenticated ? (
           <UserMenu />
         ) : (
-          <Button variant="default" size="sm" onClick={() => router.push("/login")}>
-            Sign in
+          <Button
+            variant="default"
+            size="sm"
+            render={<Link href="/login" />}
+          >
+            {t("common.signIn")}
           </Button>
         )}
       </div>

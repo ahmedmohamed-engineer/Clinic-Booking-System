@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,13 +32,13 @@ import { useApiError } from "@/hooks/useApiError";
 import { toHHmm } from "@/lib/utils";
 
 const DAYS = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
 ] as const;
 
 interface ScheduleFormModalProps {
@@ -61,6 +62,10 @@ export function ScheduleFormModal({
   onSubmit,
   isSubmitting,
 }: ScheduleFormModalProps) {
+  const t = useTranslations("adminForm");
+  const td = useTranslations("weekdays");
+  const tc = useTranslations("common");
+  const dayLabels = DAYS.map((day) => td(day));
   const { parse } = useApiError();
   const [doctorId, setDoctorId] = useState(schedule?.doctorId ?? "");
   const [weekday, setWeekday] = useState(
@@ -112,7 +117,7 @@ export function ScheduleFormModal({
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{schedule ? "Edit schedule" : "Create schedule"}</DialogTitle>
+          <DialogTitle>{schedule ? t("editSchedule") : t("createSchedule")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4" noValidate>
           {formError && (
@@ -126,10 +131,10 @@ export function ScheduleFormModal({
 
           {withDoctorField && (
             <div className="space-y-2">
-              <Label htmlFor="doctorId">Doctor</Label>
+              <Label htmlFor="doctorId">{t("doctor")}</Label>
               <Select value={doctorId} onValueChange={(value) => setDoctorId(value ?? "")} disabled={isSubmitting}>
                 <SelectTrigger id="doctorId" className="w-full">
-                  <SelectValue placeholder="Select doctor" />
+                  <SelectValue placeholder={t("selectDoctor")} />
                 </SelectTrigger>
                 <SelectContent>
                   {doctors.map((doctor) => (
@@ -146,17 +151,17 @@ export function ScheduleFormModal({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="weekday">Day</Label>
+            <Label htmlFor="weekday">{t("weekday")}</Label>
             <Select
               value={weekday}
               onValueChange={(value) => setWeekday(value ?? "")}
               disabled={isSubmitting}
             >
               <SelectTrigger id="weekday" className="w-full">
-                <SelectValue placeholder="Select day" />
+                <SelectValue placeholder={t("selectDay")} />
               </SelectTrigger>
               <SelectContent>
-                {DAYS.map((day, index) => (
+                {dayLabels.map((day, index) => (
                   <SelectItem key={day} value={String(index)}>
                     {day}
                   </SelectItem>
@@ -170,7 +175,7 @@ export function ScheduleFormModal({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="startTime">Start time</Label>
+              <Label htmlFor="startTime">{t("startTime")}</Label>
               <Input
                 id="startTime"
                 type="time"
@@ -185,7 +190,7 @@ export function ScheduleFormModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="endTime">End time</Label>
+              <Label htmlFor="endTime">{t("endTime")}</Label>
               <Input
                 id="endTime"
                 type="time"
@@ -201,7 +206,7 @@ export function ScheduleFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="slotDuration">Slot duration (minutes)</Label>
+            <Label htmlFor="slotDuration">{t("slotDurationMinutes")}</Label>
             <Input
               id="slotDuration"
               type="number"
@@ -219,10 +224,14 @@ export function ScheduleFormModal({
 
           <div className="mt-6 flex justify-end gap-3">
             <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : schedule ? "Save changes" : "Create schedule"}
+              {isSubmitting
+                ? tc("saving")
+                : schedule
+                  ? tc("save")
+                  : t("createSchedule")}
             </Button>
           </div>
         </form>

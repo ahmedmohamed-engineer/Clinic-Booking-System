@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertTriangle, CheckCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,6 +32,7 @@ export function ConfirmDialog({
   confirmLabel,
   isLoading,
 }: ConfirmDialogProps) {
+  const t = useTranslations("common");
   const Icon = variant === "danger" ? AlertTriangle : CheckCircle;
   const iconColor = variant === "danger" ? "text-destructive" : "text-success";
 
@@ -45,14 +47,17 @@ export function ConfirmDialog({
           </DialogHeader>
           <div className="mt-2 flex gap-3">
             <Button variant="outline" onClick={onClose} disabled={isLoading}>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button
               variant={variant === "danger" ? "destructive" : "default"}
               onClick={onConfirm}
               disabled={isLoading}
             >
-              {isLoading ? "Loading..." : confirmLabel ?? (variant === "danger" ? "Delete" : "Confirm")}
+              {isLoading
+                ? t("loading")
+                : confirmLabel ??
+                  (variant === "danger" ? t("delete") : t("confirm"))}
             </Button>
           </div>
         </div>

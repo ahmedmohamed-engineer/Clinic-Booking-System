@@ -1,11 +1,24 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { type Locale } from "@/i18n/config";
 import { HeroSection } from "@/components/business/HeroSection";
 
-export const metadata: Metadata = {
-  title: "MediCare — Your  health journey, simplified",
-  description:
-    "Book appointments with top doctors, manage your schedule, and take control of your healthcare — all in one place.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({
+    locale: locale as Locale,
+    namespace: "meta",
+  });
+
+  return {
+    title: t("landingTitle"),
+    description: t("landingDescription"),
+  };
+}
 
 export default function LandingPage() {
   return (

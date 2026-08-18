@@ -24,26 +24,29 @@ import { formatCurrency, formatDate, resolveDisplayName } from "@/lib/utils";
 /* The edit forms bundle the date-picker calendar, popover, and select
    controls — a large chunk that only matters while the user is editing.
    They are split into their own chunk and fetched on first click of
-   "Edit", so the read view of the profile stays light. */
-const ProfileForm = dynamic(
-  () =>
-    import("@/components/business/ProfileForm").then((mod) => mod.ProfileForm),
-  {
-    loading: () => <Skeleton variant="form" className="h-56" />,
-    ssr: false,
-  },
-);
+   "Edit", so the read view of the profile stays light.
 
-const DoctorProfileForm = dynamic(
-  () =>
-    import("@/components/business/DoctorProfileForm").then(
-      (mod) => mod.DoctorProfileForm,
-    ),
-  {
-    loading: () => <Skeleton variant="form" className="h-56" />,
-    ssr: false,
-  },
-);
+   The loaders are hoisted so the "Edit" button can warm the chunk on
+   hover/focus (via loadProfileForm / loadDoctorProfileForm): by the time
+   the user clicks, the module is already in the Turbopack chunk cache and
+   the form swaps in without a network round-trip. */
+const loadProfileForm = () =>
+  import("@/components/business/ProfileForm").then((mod) => mod.ProfileForm);
+
+const ProfileForm = dynamic(loadProfileForm, {
+  loading: () => <Skeleton variant="form" className="h-56" />,
+  ssr: false,
+});
+
+const loadDoctorProfileForm = () =>
+  import("@/components/business/DoctorProfileForm").then(
+    (mod) => mod.DoctorProfileForm,
+  );
+
+const DoctorProfileForm = dynamic(loadDoctorProfileForm, {
+  loading: () => <Skeleton variant="form" className="h-56" />,
+  ssr: false,
+});
 
 function InfoRow({
   label,
@@ -138,6 +141,8 @@ function PatientProfileContent() {
                     type="button"
                     variant="outline"
                     size="sm"
+                    onPointerEnter={() => void loadProfileForm()}
+                    onFocus={() => void loadProfileForm()}
                     onClick={() => setIsEditing(true)}
                   >
                     <Pencil className="size-3.5" aria-hidden="true" />
@@ -278,6 +283,8 @@ function DoctorProfileContent() {
                     type="button"
                     variant="outline"
                     size="sm"
+                    onPointerEnter={() => void loadDoctorProfileForm()}
+                    onFocus={() => void loadDoctorProfileForm()}
                     onClick={() => setIsEditing(true)}
                   >
                     <Pencil className="size-3.5" aria-hidden="true" />

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import { useLocale, useTranslations } from "next-intl";
 import { Pencil, Star, Trash2 } from "lucide-react";
 import type { Column, DataTableProps } from "@/components/data/DataTable";
 import { Pagination } from "@/components/data/Pagination";
@@ -44,6 +45,9 @@ const truncate = (value: string, length = 40) =>
   value.length > length ? `${value.slice(0, length)}…` : value;
 
 export default function AdminReviewsPage() {
+  const t = useTranslations("adminReviews");
+  const ts = useTranslations("adminShared");
+  const locale = useLocale();
   const [page, setPage] = useState<number>(PAGINATION_DEFAULTS.page);
   const { data, isPending, isError, refetch } = useReviewsAdmin({
     page,
@@ -69,7 +73,7 @@ export default function AdminReviewsPage() {
   const columns: Column<ReviewReadModel>[] = useMemo(() => [
     {
       key: "patientId",
-      header: "Patient",
+      header: ts("patient"),
       render: (review) => (
         <div className="flex min-w-0 items-center gap-2.5">
           <Avatar
@@ -85,24 +89,24 @@ export default function AdminReviewsPage() {
     },
     {
       key: "appointmentId",
-      header: "Appointment",
+      header: ts("appointment"),
       render: (review) => (
         <div>
           <span className="block truncate font-medium">{review.doctor.displayName}</span>
           <span className="block whitespace-nowrap text-xs text-muted-foreground">
-            {formatDateTime(review.slot.date, review.slot.startTime)}
+            {formatDateTime(review.slot.date, review.slot.startTime, locale)}
           </span>
         </div>
       ),
     },
     {
       key: "rating",
-      header: "Rating",
+      header: ts("rating"),
       render: (review) => <StarRating rating={review.rating} readonly size="sm" />,
     },
     {
       key: "comment",
-      header: "Comment",
+      header: ts("comment"),
       render: (review) =>
         review.comment ? (
           <span className="text-muted-foreground">{truncate(review.comment)}</span>
@@ -120,8 +124,8 @@ export default function AdminReviewsPage() {
             variant="ghost"
             size="xs"
             onClick={() => setEditing(review)}
-            aria-label={`Edit review for ${review.doctor.displayName}`}
-            title={`Edit review for ${review.doctor.displayName}`}
+            aria-label={t("editAria", { name: review.doctor.displayName })}
+            title={t("editAria", { name: review.doctor.displayName })}
           >
             <Pencil className="size-4" />
           </Button>
@@ -129,27 +133,27 @@ export default function AdminReviewsPage() {
             variant="ghost"
             size="xs"
             onClick={() => setDeleting(review)}
-            aria-label={`Delete review for ${review.doctor.displayName}`}
-            title={`Delete review for ${review.doctor.displayName}`}
+            aria-label={t("deleteAria", { name: review.doctor.displayName })}
+            title={t("deleteAria", { name: review.doctor.displayName })}
           >
             <Trash2 className="size-4" />
           </Button>
         </div>
       ),
     },
-  ], []);
+  ], [ts, t, locale]);
 
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Reviews</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("title")}</h1>
         <p className="text-lg text-muted-foreground">
-          Moderate patient reviews across the platform.
+          {t("subtitle")}
         </p>
       </header>
 
       {isError ? (
-        <ErrorBanner message="Could not load reviews." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       ) : (
         <>
           <div className="flex flex-col gap-4 md:hidden">
@@ -163,8 +167,8 @@ export default function AdminReviewsPage() {
               <div className="rounded-xl border border-border">
                 <EmptyState
                   icon={<Star className="size-12" />}
-                  title="No reviews yet"
-                  description="Reviews left by patients will appear here."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               </div>
             ) : (
@@ -194,8 +198,8 @@ export default function AdminReviewsPage() {
                           variant="ghost"
                           size="xs"
                           onClick={() => setEditing(review)}
-                          aria-label={`Edit review for ${review.doctor.displayName}`}
-                          title={`Edit review for ${review.doctor.displayName}`}
+                          aria-label={t("editAria", { name: review.doctor.displayName })}
+                          title={t("editAria", { name: review.doctor.displayName })}
                         >
                           <Pencil className="size-4" />
                         </Button>
@@ -203,8 +207,8 @@ export default function AdminReviewsPage() {
                           variant="ghost"
                           size="xs"
                           onClick={() => setDeleting(review)}
-                          aria-label={`Delete review for ${review.doctor.displayName}`}
-                          title={`Delete review for ${review.doctor.displayName}`}
+                          aria-label={t("deleteAria", { name: review.doctor.displayName })}
+                          title={t("deleteAria", { name: review.doctor.displayName })}
                         >
                           <Trash2 className="size-4" />
                         </Button>
@@ -214,18 +218,18 @@ export default function AdminReviewsPage() {
                     {review.comment ? (
                       <p className="line-clamp-3 text-xs text-muted-foreground">{review.comment}</p>
                     ) : (
-                      <span className="text-xs text-muted-foreground">No comment</span>
+                      <span className="text-xs text-muted-foreground">{t("noComment")}</span>
                     )}
                     <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Date</dt>
+                        <dt className="text-muted-foreground">{ts("date")}</dt>
                         <dd className="whitespace-nowrap text-foreground">
-                          {formatDateTime(review.slot.date, review.slot.startTime)}
+                          {formatDateTime(review.slot.date, review.slot.startTime, locale)}
                         </dd>
                       </div>
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Rating</dt>
-                        <dd className="text-foreground">{review.rating} / 5</dd>
+                        <dt className="text-muted-foreground">{ts("rating")}</dt>
+                        <dd className="text-foreground">{t("ratingOf", { rating: review.rating })}</dd>
                       </div>
                     </dl>
                   </CardContent>
@@ -243,8 +247,8 @@ export default function AdminReviewsPage() {
               emptyState={
                 <EmptyState
                   icon={<Star className="size-12" />}
-                  title="No reviews yet"
-                  description="Reviews left by patients will appear here."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               }
             />
@@ -280,9 +284,9 @@ export default function AdminReviewsPage() {
           onConfirm={() =>
             deleteReview(deleting.id, { onSuccess: () => setDeleting(null) })
           }
-          title="Delete review"
-          message="Delete this review? This cannot be undone."
-          confirmLabel="Delete"
+          title={t("deleteTitle")}
+          message={t("deleteMessage")}
+          confirmLabel={ts("delete")}
           isLoading={isDeleting}
         />
       )}

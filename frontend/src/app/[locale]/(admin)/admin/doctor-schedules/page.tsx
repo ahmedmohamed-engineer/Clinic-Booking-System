@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import { useLocale, useTranslations } from "next-intl";
 import { Clock, Pencil, Plus, Trash2 } from "lucide-react";
 import type { Column, DataTableProps } from "@/components/data/DataTable";
 import { ErrorBanner } from "@/components/feedback/ErrorBanner";
@@ -51,9 +52,19 @@ import type {
   UpdateDoctorScheduleInput,
 } from "@/schemas/schedule";
 
-const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
 export default function AdminDoctorSchedulesPage() {
+  const t = useTranslations("adminSchedules");
+  const ts = useTranslations("adminShared");
+  const tf = useTranslations("adminForm");
+  const tp = useTranslations("schedulePage");
+  const td = useTranslations("weekdays");
+  const locale = useLocale();
+
+  const days = useMemo(
+    () => [td("sunday"), td("monday"), td("tuesday"), td("wednesday"), td("thursday"), td("friday"), td("saturday")],
+    [td],
+  );
+
   const {
     data: schedulesData,
     isPending,
@@ -83,23 +94,23 @@ export default function AdminDoctorSchedulesPage() {
   const columns: Column<DoctorScheduleReadModel>[] = useMemo(() => [
     {
       key: "weekday",
-      header: "Day",
-      render: (schedule) => DAYS[schedule.weekday],
+      header: tf("weekday"),
+      render: (schedule) => days[schedule.weekday],
     },
     {
       key: "startTime",
-      header: "Start",
-      render: (schedule) => formatTime(schedule.startTime),
+      header: tp("start"),
+      render: (schedule) => formatTime(schedule.startTime, locale),
     },
     {
       key: "endTime",
-      header: "End",
-      render: (schedule) => formatTime(schedule.endTime),
+      header: tp("end"),
+      render: (schedule) => formatTime(schedule.endTime, locale),
     },
     {
       key: "slotDuration",
-      header: "Slot duration",
-      render: (schedule) => `${schedule.slotDuration} min`,
+      header: tp("slotDuration"),
+      render: (schedule) => tp("slotDurationValue", { minutes: schedule.slotDuration }),
     },
     {
       key: "actions",
@@ -111,8 +122,8 @@ export default function AdminDoctorSchedulesPage() {
             variant="ghost"
             size="xs"
             onClick={() => setEditing(schedule)}
-            aria-label={`Edit schedule for ${schedule.doctor.displayName}`}
-            title={`Edit schedule for ${schedule.doctor.displayName}`}
+            aria-label={t("editAria", { name: schedule.doctor.displayName })}
+            title={t("editAria", { name: schedule.doctor.displayName })}
           >
             <Pencil className="size-4" />
           </Button>
@@ -120,18 +131,18 @@ export default function AdminDoctorSchedulesPage() {
             variant="ghost"
             size="xs"
             onClick={() => setDeleting(schedule)}
-            aria-label={`Delete schedule for ${schedule.doctor.displayName}`}
-            title={`Delete schedule for ${schedule.doctor.displayName}`}
+            aria-label={t("deleteAria", { name: schedule.doctor.displayName })}
+            title={t("deleteAria", { name: schedule.doctor.displayName })}
           >
             <Trash2 className="size-4" />
           </Button>
         </div>
       ),
     },
-  ], []);
+  ], [tf, tp, t, days, locale]);
 
   if (isError) {
-    return <ErrorBanner message="Could not load schedules." onRetry={refetch} />;
+    return <ErrorBanner message={t("error")} onRetry={refetch} />;
   }
 
   return (
@@ -139,23 +150,23 @@ export default function AdminDoctorSchedulesPage() {
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Doctor Schedules
+            {t("title")}
           </h1>
           <p className="text-lg text-muted-foreground">
-            Define weekly availability for each doctor.
+            {t("subtitle")}
           </p>
         </div>
         <Button onClick={() => setCreating(true)}>
           <Plus className="size-4" />
-          Add schedule
+          {t("add")}
         </Button>
       </header>
 
       <div className="w-full max-w-xs space-y-2">
-        <Label htmlFor="doctorFilter">Doctor</Label>
+        <Label htmlFor="doctorFilter">{ts("doctor")}</Label>
         <Select value={selectedDoctor} onValueChange={(value) => setSelectedDoctor(value ?? "")}>
           <SelectTrigger id="doctorFilter" className="w-full">
-            <SelectValue placeholder="All doctors" />
+            <SelectValue placeholder={ts("allDoctors")} />
           </SelectTrigger>
           <SelectContent>
             {(doctors ?? []).map((doctor) => (
@@ -173,16 +184,16 @@ export default function AdminDoctorSchedulesPage() {
         <div className="rounded-xl border border-border bg-card">
           <EmptyState
             icon={<Clock className="size-12" />}
-            title="No schedules yet"
-            description="Add a weekly schedule for a doctor to get started."
+            title={t("emptyTitle")}
+            description={t("emptyDesc")}
           />
         </div>
       ) : !selectedDoctor ? (
         <div className="rounded-xl border border-border bg-card">
           <EmptyState
             icon={<Clock className="size-12" />}
-            title="Select a doctor"
-            description="Choose a doctor above to view their weekly calendar."
+            title={t("selectDoctorTitle")}
+            description={t("selectDoctorDesc")}
             className="py-10"
           />
         </div>
@@ -190,7 +201,7 @@ export default function AdminDoctorSchedulesPage() {
         <>
           <div className="rounded-xl border border-border bg-card p-6">
             <h2 className="mb-4 text-sm font-semibold text-foreground">
-              Weekly calendar
+              {t("weeklyCalendar")}
             </h2>
             <WeeklyCalendar schedules={doctorSchedules} />
           </div>
@@ -200,8 +211,8 @@ export default function AdminDoctorSchedulesPage() {
               <div className="rounded-xl border border-border">
                 <EmptyState
                   icon={<Clock className="size-12" />}
-                  title="No schedules for this doctor"
-                  description="Add a schedule to define this doctor's availability."
+                  title={t("noDoctorSchedulesTitle")}
+                  description={t("noDoctorSchedulesDesc")}
                 />
               </div>
             ) : (
@@ -211,10 +222,10 @@ export default function AdminDoctorSchedulesPage() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium text-foreground">
-                          {DAYS[schedule.weekday]}
+                          {days[schedule.weekday]}
                         </p>
                         <p className="truncate text-xs text-muted-foreground">
-                          {formatTime(schedule.startTime)} – {formatTime(schedule.endTime)}
+                          {formatTime(schedule.startTime, locale)} – {formatTime(schedule.endTime, locale)}
                         </p>
                       </div>
                       <div className="flex shrink-0 items-center gap-1">
@@ -222,8 +233,8 @@ export default function AdminDoctorSchedulesPage() {
                           variant="ghost"
                           size="xs"
                           onClick={() => setEditing(schedule)}
-                          aria-label={`Edit schedule for ${schedule.doctor.displayName}`}
-                          title={`Edit schedule for ${schedule.doctor.displayName}`}
+                          aria-label={t("editAria", { name: schedule.doctor.displayName })}
+                          title={t("editAria", { name: schedule.doctor.displayName })}
                         >
                           <Pencil className="size-4" />
                         </Button>
@@ -231,8 +242,8 @@ export default function AdminDoctorSchedulesPage() {
                           variant="ghost"
                           size="xs"
                           onClick={() => setDeleting(schedule)}
-                          aria-label={`Delete schedule for ${schedule.doctor.displayName}`}
-                          title={`Delete schedule for ${schedule.doctor.displayName}`}
+                          aria-label={t("deleteAria", { name: schedule.doctor.displayName })}
+                          title={t("deleteAria", { name: schedule.doctor.displayName })}
                         >
                           <Trash2 className="size-4" />
                         </Button>
@@ -240,16 +251,16 @@ export default function AdminDoctorSchedulesPage() {
                     </div>
                     <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Start</dt>
-                        <dd className="text-foreground">{formatTime(schedule.startTime)}</dd>
+                        <dt className="text-muted-foreground">{tp("start")}</dt>
+                        <dd className="text-foreground">{formatTime(schedule.startTime, locale)}</dd>
                       </div>
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">End</dt>
-                        <dd className="text-foreground">{formatTime(schedule.endTime)}</dd>
+                        <dt className="text-muted-foreground">{tp("end")}</dt>
+                        <dd className="text-foreground">{formatTime(schedule.endTime, locale)}</dd>
                       </div>
                       <div className="col-span-2 flex flex-col">
-                        <dt className="text-muted-foreground">Slot duration</dt>
-                        <dd className="text-foreground">{schedule.slotDuration} min</dd>
+                        <dt className="text-muted-foreground">{tp("slotDuration")}</dt>
+                        <dd className="text-foreground">{tp("slotDurationValue", { minutes: schedule.slotDuration })}</dd>
                       </div>
                     </dl>
                   </CardContent>
@@ -266,8 +277,8 @@ export default function AdminDoctorSchedulesPage() {
               emptyState={
                 <EmptyState
                   icon={<Clock className="size-12" />}
-                  title="No schedules for this doctor"
-                  description="Add a schedule to define this doctor's availability."
+                  title={t("noDoctorSchedulesTitle")}
+                  description={t("noDoctorSchedulesDesc")}
                 />
               }
             />
@@ -312,9 +323,9 @@ export default function AdminDoctorSchedulesPage() {
           onConfirm={() =>
             deleteSchedule(deleting.id, { onSuccess: () => setDeleting(null) })
           }
-          title="Delete schedule"
-          message={`Delete this schedule entry? Any slots created from it will also be deleted.`}
-          confirmLabel="Delete"
+          title={t("deleteTitle")}
+          message={t("deleteMessage")}
+          confirmLabel={ts("delete")}
           isLoading={isDeleting}
         />
       )}

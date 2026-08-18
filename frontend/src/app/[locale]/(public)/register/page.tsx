@@ -2,9 +2,9 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
+import { useRouter, Link } from "@/i18n/navigation";
 import { registerSchema } from "@/schemas/auth";
 import { useRegister } from "@/features/auth/hooks/use-register";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,8 @@ type RegisterFormInput = z.infer<typeof registerFormSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
+  const t = useTranslations("auth");
+  const tc = useTranslations("common");
   const { submit, isPending, error } = useRegister();
 
   const {
@@ -44,20 +46,20 @@ export default function RegisterPage() {
     <div className="flex flex-1 items-center justify-center px-4 py-10">
       <div className="paper-sheet w-full max-w-sm space-y-6 px-8 py-8 shadow-md">
         <div className="space-y-1 text-center">
-          <h1 className="heading-1">Create account</h1>
+          <h1 className="heading-1">{t("registerTitle")}</h1>
           <p className="body-text">
-            Get started with MediCare
+            {t("registerSubtitle")}
           </p>
         </div>
         <div className="letterhead-rule" />
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="fullName">Full name</Label>
+            <Label htmlFor="fullName">{t("fullName")}</Label>
             <Input
               id="fullName"
               type="text"
-              placeholder="John Doe"
+              placeholder={t("fullNamePlaceholder")}
               autoComplete="name"
               hasError={!!errors.fullName}
               aria-describedby={errors.fullName ? "fullName-error" : undefined}
@@ -69,11 +71,11 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{tc("email")}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder={t("emailPlaceholder")}
               autoComplete="email"
               hasError={!!errors.email}
               aria-describedby={errors.email ? "email-error" : undefined}
@@ -85,11 +87,11 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{tc("password")}</Label>
             <Input
               id="password"
               type="password"
-              placeholder="Min. 8 characters"
+              placeholder={t("min8")}
               autoComplete="new-password"
               hasError={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
@@ -101,11 +103,11 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm password</Label>
+            <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
             <Input
               id="confirmPassword"
               type="password"
-              placeholder="Re-enter your password"
+              placeholder={t("confirmPasswordPlaceholder")}
               autoComplete="new-password"
               hasError={!!errors.confirmPassword}
               aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
@@ -121,17 +123,17 @@ export default function RegisterPage() {
           )}
 
           <Button type="submit" disabled={isPending} className="w-full">
-            {isPending ? "Creating account..." : "Create account"}
+            {isPending ? t("creatingAccount") : t("registerTitle")}
           </Button>
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
+          {t("hasAccount")}{" "}
           <Link
             href="/login"
             className="font-medium text-primary hover:underline"
           >
-            Sign in
+            {t("signInTitle")}
           </Link>
         </p>
       </div>

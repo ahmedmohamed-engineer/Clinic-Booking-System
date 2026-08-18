@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { RxMark } from "./Logo";
 
@@ -6,6 +7,7 @@ interface FooterProps {
 }
 
 export function Footer({ className }: FooterProps) {
+  const t = useTranslations("footer");
   const year = new Date().getFullYear();
 
   return (
@@ -18,10 +20,10 @@ export function Footer({ className }: FooterProps) {
       <div className="mb-3 flex justify-center">
         <span className="letterhead-rule inline-flex items-center gap-2 px-6 pb-3">
           <RxMark className="size-5 text-xs" />
-          <span className="heading-2">MediCare — Appointment prescription</span>
+          <span className="heading-2">{t("tagline")}</span>
         </span>
       </div>
-      &copy; {year} MediCare. All rights reserved.
+      &copy; {year} MediCare. {t("rights")}
     </footer>
   );
 }

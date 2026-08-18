@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
 import {
   LayoutDashboard,
   Calendar,
@@ -22,23 +22,6 @@ interface NavItem {
   icon: LucideIcon;
 }
 
-const patientLinks: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Appointments", href: "/appointments", icon: Calendar },
-  { label: "Book Appointment", href: "/book", icon: CalendarPlus },
-  { label: "Payments", href: "/payments", icon: CreditCard },
-  { label: "Reviews", href: "/reviews", icon: Star },
-  { label: "Profile", href: "/profile", icon: User },
-];
-
-const doctorLinks: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Appointments", href: "/appointments", icon: Calendar },
-  { label: "Schedule", href: "/schedule", icon: CalendarPlus },
-  { label: "Reviews", href: "/reviews", icon: Star },
-  { label: "Profile", href: "/profile", icon: User },
-];
-
 export function RoleBasedSidebar({
   className,
   onNavigate,
@@ -48,7 +31,25 @@ export function RoleBasedSidebar({
 }) {
   const { user } = useAuth();
   const pathname = usePathname();
+  const t = useTranslations();
   const prefetchBooking = usePrefetchBookingData();
+
+  const patientLinks: NavItem[] = [
+    { label: t("patientNav.dashboard"), href: "/dashboard", icon: LayoutDashboard },
+    { label: t("patientNav.appointments"), href: "/appointments", icon: Calendar },
+    { label: t("patientNav.bookAppointment"), href: "/book", icon: CalendarPlus },
+    { label: t("patientNav.payments"), href: "/payments", icon: CreditCard },
+    { label: t("patientNav.reviews"), href: "/reviews", icon: Star },
+    { label: t("patientNav.profile"), href: "/profile", icon: User },
+  ];
+
+  const doctorLinks: NavItem[] = [
+    { label: t("doctorNav.dashboard"), href: "/dashboard", icon: LayoutDashboard },
+    { label: t("doctorNav.appointments"), href: "/appointments", icon: Calendar },
+    { label: t("doctorNav.schedule"), href: "/schedule", icon: CalendarPlus },
+    { label: t("doctorNav.reviews"), href: "/reviews", icon: Star },
+    { label: t("doctorNav.profile"), href: "/profile", icon: User },
+  ];
 
   const links = user?.role === "doctor" ? doctorLinks : patientLinks;
 

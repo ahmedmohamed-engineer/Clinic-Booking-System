@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import { useLocale, useTranslations } from "next-intl";
 import { Pencil, Trash2, Users, Archive } from "lucide-react";
 import type { Column, DataTableProps } from "@/components/data/DataTable";
 import { Pagination } from "@/components/data/Pagination";
@@ -41,17 +42,6 @@ import { PAGINATION_DEFAULTS } from "@/config";
 import type { UserRecord } from "@/types/models/user";
 import type { UpdateUserInput } from "@/schemas/user";
 
-const roleOptions: FilterOption[] = [
-  { value: "patient", label: "Patient" },
-  { value: "doctor", label: "Doctor" },
-  { value: "admin", label: "Admin" },
-];
-
-const verifiedOptions: FilterOption[] = [
-  { value: "true", label: "Verified" },
-  { value: "false", label: "Not verified" },
-];
-
 const pillBase =
   "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium";
 
@@ -61,36 +51,39 @@ const roleBadgeClass: Record<string, string> = {
   admin: "border-primary/25 bg-primary/10 text-primary",
 };
 
-function RoleBadge({ role }: { role: string }) {
+function RoleBadge({ role }: { role: UserRecord["role"] }) {
+  const tr = useTranslations("admin");
   return (
     <span
       className={`${pillBase} capitalize ${roleBadgeClass[role] ?? "border-border text-muted-foreground"}`}
     >
-      {role}
+      {tr(`roles.${role}`)}
     </span>
   );
 }
 
 function VerifiedBadge({ isVerified }: { isVerified: boolean }) {
+  const ts = useTranslations("adminShared");
   return isVerified ? (
     <span className={`${pillBase} border-status-success/25 bg-status-success/10 text-status-success`}>
-      Verified
+      {ts("verified")}
     </span>
   ) : (
     <span className={`${pillBase} border-status-neutral/25 bg-status-neutral/10 text-status-neutral`}>
-      Not verified
+      {ts("notVerified")}
     </span>
   );
 }
 
 function StatusBadge({ deletedAt }: { deletedAt: string | null }) {
+  const ts = useTranslations("adminShared");
   return deletedAt ? (
     <span className={`${pillBase} border-status-danger/25 bg-status-danger/10 text-status-danger`}>
-      Deleted
+      {ts("deleted")}
     </span>
   ) : (
     <span className={`${pillBase} border-status-success/25 bg-status-success/10 text-status-success`}>
-      Active
+      {ts("active")}
     </span>
   );
 }
@@ -126,14 +119,15 @@ function UserActions({
   onEdit: (user: UserRecord) => void;
   onDelete: (user: UserRecord) => void;
 }) {
+  const ts = useTranslations("adminShared");
   return (
     <div className="flex shrink-0 items-center gap-1">
       <Button
         variant="ghost"
         size="xs"
         onClick={() => onEdit(user)}
-        aria-label={`Edit ${user.email}`}
-        title={`Edit ${user.email}`}
+        aria-label={ts("editName", { name: user.email })}
+        title={ts("editName", { name: user.email })}
       >
         <Pencil className="size-4" />
       </Button>
@@ -141,8 +135,8 @@ function UserActions({
         variant="ghost"
         size="xs"
         onClick={() => onDelete(user)}
-        aria-label={`Delete ${user.email}`}
-        title={`Delete ${user.email}`}
+        aria-label={ts("deleteName", { name: user.email })}
+        title={ts("deleteName", { name: user.email })}
       >
         <Trash2 className="size-4" />
       </Button>
@@ -151,6 +145,22 @@ function UserActions({
 }
 
 export default function AdminUsersPage() {
+  const t = useTranslations("adminUsers");
+  const ts = useTranslations("adminShared");
+  const tr = useTranslations("admin");
+  const locale = useLocale();
+
+  const roleOptions: FilterOption[] = [
+    { value: "patient", label: tr("roles.patient") },
+    { value: "doctor", label: tr("roles.doctor") },
+    { value: "admin", label: tr("roles.admin") },
+  ];
+
+  const verifiedOptions: FilterOption[] = [
+    { value: "true", label: ts("verified") },
+    { value: "false", label: ts("notVerified") },
+  ];
+
   const [page, setPage] = useState<number>(PAGINATION_DEFAULTS.page);
   const [search, setSearch] = useState("");
   const [role, setRole] = useState<string | undefined>(undefined);
@@ -212,38 +222,38 @@ export default function AdminUsersPage() {
     () => [
       {
         key: "fullName",
-        header: "User",
+        header: ts("user"),
         render: (user) => <UserCell user={user} />,
       },
       {
         key: "email",
-        header: "Email",
+        header: ts("email"),
         sortable: true,
         render: (user) => <span className="truncate">{user.email}</span>,
       },
       {
         key: "role",
-        header: "Role",
+        header: ts("role"),
         render: (user) => <RoleBadge role={user.role} />,
       },
       {
         key: "isVerified",
-        header: "Verification",
+        header: ts("verification"),
         render: (user) => <VerifiedBadge isVerified={user.isVerified} />,
       },
       {
         key: "createdAt",
-        header: "Created at",
-        render: (user) => formatDate(user.createdAt),
+        header: ts("createdAt"),
+        render: (user) => formatDate(user.createdAt, locale),
       },
       {
         key: "updatedAt",
-        header: "Updated at",
-        render: (user) => formatDate(user.updatedAt),
+        header: ts("updatedAt"),
+        render: (user) => formatDate(user.updatedAt, locale),
       },
       {
         key: "deletedAt",
-        header: "Status",
+        header: ts("status"),
         render: (user) => <StatusBadge deletedAt={user.deletedAt} />,
       },
       {
@@ -257,20 +267,20 @@ export default function AdminUsersPage() {
         ),
       },
     ],
-    [],
+    [ts, locale],
   );
 
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Users</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("title")}</h1>
         <p className="text-lg text-muted-foreground">
-          Manage user accounts, roles, and verification status.
+          {t("subtitle")}
         </p>
       </header>
 
       {isError ? (
-        <ErrorBanner message="Could not load users." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-3">
@@ -278,22 +288,22 @@ export default function AdminUsersPage() {
               <SearchInput
                 value={search}
                 onChange={handleSearch}
-                placeholder="Search by email..."
+                placeholder={ts("searchByEmail")}
               />
             </div>
             <FilterDropdown
               options={roleOptions}
               value={role}
               onChange={handleRoleChange}
-              label="Role"
-              placeholder="All roles"
+              label={ts("role")}
+              placeholder={ts("allRoles")}
             />
             <FilterDropdown
               options={verifiedOptions}
               value={isVerified === undefined ? undefined : String(isVerified)}
               onChange={handleVerifiedChange}
-              label="Verification"
-              placeholder="All"
+              label={ts("verification")}
+              placeholder={ts("all")}
             />
             <Button
               type="button"
@@ -304,7 +314,7 @@ export default function AdminUsersPage() {
               className="h-9"
             >
               <Archive className="size-4" aria-hidden="true" />
-              {deletedOnly ? "Showing deleted only" : "Show deleted only"}
+              {deletedOnly ? ts("showingDeletedOnly") : ts("showDeletedOnly")}
             </Button>
           </div>
 
@@ -319,8 +329,8 @@ export default function AdminUsersPage() {
               <div className="rounded-xl border border-border">
                 <EmptyState
                   icon={<Users className="size-12" />}
-                  title="No users found"
-                  description="No users match the current search and filters."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               </div>
             ) : (
@@ -354,12 +364,12 @@ export default function AdminUsersPage() {
                     </div>
                     <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Created at</dt>
-                        <dd className="text-foreground">{formatDate(user.createdAt)}</dd>
+                        <dt className="text-muted-foreground">{ts("createdAt")}</dt>
+                        <dd className="text-foreground">{formatDate(user.createdAt, locale)}</dd>
                       </div>
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Updated at</dt>
-                        <dd className="text-foreground">{formatDate(user.updatedAt)}</dd>
+                        <dt className="text-muted-foreground">{ts("updatedAt")}</dt>
+                        <dd className="text-foreground">{formatDate(user.updatedAt, locale)}</dd>
                       </div>
                     </dl>
                   </CardContent>
@@ -377,8 +387,8 @@ export default function AdminUsersPage() {
               emptyState={
                 <EmptyState
                   icon={<Users className="size-12" />}
-                  title="No users found"
-                  description="No users match the current search and filters."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               }
             />
@@ -415,9 +425,9 @@ export default function AdminUsersPage() {
           onConfirm={() =>
             deleteUser(deleting.id, { onSuccess: () => setDeleting(null) })
           }
-          title="Delete user"
-          message={`Delete ${deleting.email}? The account will be soft-deleted and can no longer sign in.`}
-          confirmLabel="Delete"
+          title={t("deleteTitle")}
+          message={t("deleteMessage", { email: deleting.email })}
+          confirmLabel={ts("delete")}
           isLoading={isDeleting}
         />
       )}

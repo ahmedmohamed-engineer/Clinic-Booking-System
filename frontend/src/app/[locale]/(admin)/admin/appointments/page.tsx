@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import { useLocale, useTranslations } from "next-intl";
 import { Calendar, Pencil, Trash2 } from "lucide-react";
 import type { Column, DataTableProps } from "@/components/data/DataTable";
 import { Pagination } from "@/components/data/Pagination";
@@ -35,27 +36,18 @@ const ConfirmDialog = dynamic(
 );
 import { useAppointmentsAdmin, useUpdateAppointment, useDeleteAppointment } from "@/features/appointments";
 
-const statusOptions: FilterOption[] = APPOINTMENT_STATUSES.map((status) => ({
-  value: status,
-  label: status.replace(/_/g, " "),
-}));
-
-const paymentOptions: FilterOption[] = [
-  ...PAYMENT_STATUSES.map((status) => ({ value: status, label: status })),
-  { value: "none", label: "No payment" },
-];
-
 const pillBase =
   "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium";
 
 function ReviewBadge({ hasReview }: { hasReview: boolean }) {
+  const ts = useTranslations("adminShared");
   return hasReview ? (
     <span className={`${pillBase} border-status-success/25 bg-status-success/10 text-status-success`}>
-      Reviewed
+      {ts("reviewed")}
     </span>
   ) : (
     <span className={`${pillBase} border-status-neutral/25 bg-status-neutral/10 text-status-neutral`}>
-      Not reviewed
+      {ts("notReviewed")}
     </span>
   );
 }
@@ -95,14 +87,15 @@ function AppointmentActions({
   onEdit: (appointment: AppointmentReadModel) => void;
   onDelete: (appointment: AppointmentReadModel) => void;
 }) {
+  const t = useTranslations("adminAppointments");
   return (
     <div className="flex shrink-0 items-center gap-1">
       <Button
         variant="ghost"
         size="xs"
         onClick={() => onEdit(appointment)}
-        aria-label={`Edit appointment for ${appointment.patient.fullName}`}
-        title={`Edit appointment for ${appointment.patient.fullName}`}
+        aria-label={t("editAria", { name: appointment.patient.fullName })}
+        title={t("editAria", { name: appointment.patient.fullName })}
       >
         <Pencil className="size-4" />
       </Button>
@@ -110,8 +103,8 @@ function AppointmentActions({
         variant="ghost"
         size="xs"
         onClick={() => onDelete(appointment)}
-        aria-label={`Delete appointment for ${appointment.patient.fullName}`}
-        title={`Delete appointment for ${appointment.patient.fullName}`}
+        aria-label={t("deleteAria", { name: appointment.patient.fullName })}
+        title={t("deleteAria", { name: appointment.patient.fullName })}
       >
         <Trash2 className="size-4" />
       </Button>
@@ -120,6 +113,21 @@ function AppointmentActions({
 }
 
 export default function AdminAppointmentsPage() {
+  const t = useTranslations("adminAppointments");
+  const ts = useTranslations("adminShared");
+  const tStatus = useTranslations("status");
+  const locale = useLocale();
+
+  const statusOptions: FilterOption[] = APPOINTMENT_STATUSES.map((status) => ({
+    value: status,
+    label: tStatus(status),
+  }));
+
+  const paymentOptions: FilterOption[] = [
+    ...PAYMENT_STATUSES.map((status) => ({ value: status, label: tStatus(status) })),
+    { value: "none", label: ts("noPayment") },
+  ];
+
   const { data, isPending, isError, refetch } = useAppointmentsAdmin({ page: 1, limit: 100 });
   const { mutate: updateAppointment, isPending: isUpdating } = useUpdateAppointment();
   const { mutate: deleteAppointment, isPending: isDeleting } = useDeleteAppointment();
@@ -183,7 +191,7 @@ export default function AdminAppointmentsPage() {
     () => [
       {
         key: "id",
-        header: "ID",
+        header: ts("id"),
         render: (appointment) => (
           <span className="block font-mono text-xs text-muted-foreground" title={appointment.id}>
             {appointment.id.slice(0, 8)}
@@ -192,7 +200,7 @@ export default function AdminAppointmentsPage() {
       },
       {
         key: "patientId",
-        header: "Patient",
+        header: ts("patient"),
         render: (appointment) => (
           <PersonCell
             name={appointment.patient?.fullName || "—"}
@@ -202,7 +210,7 @@ export default function AdminAppointmentsPage() {
       },
       {
         key: "slotId",
-        header: "Doctor",
+        header: ts("doctor"),
         render: (appointment) => (
           <PersonCell
             name={appointment.doctor?.displayName || "—"}
@@ -213,7 +221,7 @@ export default function AdminAppointmentsPage() {
       },
       {
         key: "specialty",
-        header: "Specialty",
+        header: ts("specialty"),
         render: (appointment) => (
           <span className="block max-w-[10rem] truncate" title={appointment.doctor.specialtyName}>
             {appointment.doctor.specialtyName}
@@ -222,44 +230,44 @@ export default function AdminAppointmentsPage() {
       },
       {
         key: "fee",
-        header: "Fee",
+        header: ts("fee"),
         render: (appointment) =>
-          appointment.doctor.consultationFee ? formatCurrency(Number(appointment.doctor.consultationFee)) : <span className="text-muted-foreground">—</span>,
+          appointment.doctor.consultationFee ? formatCurrency(Number(appointment.doctor.consultationFee), locale) : <span className="text-muted-foreground">—</span>,
       },
       {
         key: "date",
-        header: "Date & time",
+        header: ts("dateAndTime"),
         render: (appointment) => (
           <div>
-            <span className="block whitespace-nowrap">{formatDate(appointment.slot.date)}</span>
+            <span className="block whitespace-nowrap">{formatDate(appointment.slot.date, locale)}</span>
             <span className="block whitespace-nowrap text-xs text-muted-foreground">
-              {formatTime(appointment.slot.startTime)} – {formatTime(appointment.slot.endTime)}
+              {formatTime(appointment.slot.startTime, locale)} – {formatTime(appointment.slot.endTime, locale)}
             </span>
           </div>
         ),
       },
       {
         key: "status",
-        header: "Status",
+        header: ts("status"),
         sortable: true,
         render: (appointment) => <StatusBadge status={appointment.status} />,
       },
       {
         key: "paymentStatus",
-        header: "Payment",
+        header: ts("payment"),
         sortable: true,
         render: (appointment) =>
           appointment.paymentStatus ? <StatusBadge status={appointment.paymentStatus} /> : <span className="text-muted-foreground">—</span>,
       },
       {
         key: "reviewExists",
-        header: "Review",
+        header: ts("review"),
         sortable: true,
         render: (appointment) => <ReviewBadge hasReview={appointment.reviewExists} />,
       },
       {
         key: "notes",
-        header: "Notes",
+        header: ts("notes"),
         render: (appointment) =>
           appointment.notes ? (
             <span className="block max-w-[14rem] truncate text-muted-foreground" title={appointment.notes}>
@@ -280,22 +288,22 @@ export default function AdminAppointmentsPage() {
         ),
       },
     ],
-    [],
+    [ts, locale],
   );
 
   return (
     <div className="flex flex-col gap-6">
       <header>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Appointments
+          {t("title")}
         </h1>
         <p className="text-lg text-muted-foreground">
-          Review and update all appointments across the platform.
+          {t("subtitle")}
         </p>
       </header>
 
       {isError ? (
-        <ErrorBanner message="Could not load appointments." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-3">
@@ -303,22 +311,22 @@ export default function AdminAppointmentsPage() {
               <SearchInput
                 value={search}
                 onChange={handleSearch}
-                placeholder="Search by patient, doctor, clinic..."
+                placeholder={t("searchBy")}
               />
             </div>
             <FilterDropdown
               options={statusOptions}
               value={status}
               onChange={handleStatusChange}
-              label="Status"
-              placeholder="All statuses"
+              label={ts("status")}
+              placeholder={ts("allStatuses")}
             />
             <FilterDropdown
               options={paymentOptions}
               value={payment}
               onChange={handlePaymentChange}
-              label="Payment"
-              placeholder="All payments"
+              label={ts("payment")}
+              placeholder={ts("allPayments")}
             />
           </div>
 
@@ -333,8 +341,8 @@ export default function AdminAppointmentsPage() {
               <div className="rounded-xl border border-border">
                 <EmptyState
                   icon={<Calendar className="size-12" />}
-                  title="No appointments found"
-                  description="No appointments match the current search and filters."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               </div>
             ) : (
@@ -360,7 +368,7 @@ export default function AdminAppointmentsPage() {
                       {appointment.paymentStatus ? (
                         <StatusBadge status={appointment.paymentStatus} />
                       ) : (
-                        <span className={`${pillBase} border-border text-muted-foreground`}>No payment</span>
+                        <span className={`${pillBase} border-border text-muted-foreground`}>{ts("noPayment")}</span>
                       )}
                       <ReviewBadge hasReview={appointment.reviewExists} />
                     </div>
@@ -369,23 +377,23 @@ export default function AdminAppointmentsPage() {
                     )}
                     <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Date & time</dt>
+                        <dt className="text-muted-foreground">{ts("dateAndTime")}</dt>
                         <dd className="whitespace-nowrap text-foreground">
-                          {formatDate(appointment.slot.date)} • {formatTime(appointment.slot.startTime)}
+                          {formatDate(appointment.slot.date, locale)} • {formatTime(appointment.slot.startTime, locale)}
                         </dd>
                       </div>
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Specialty</dt>
+                        <dt className="text-muted-foreground">{ts("specialty")}</dt>
                         <dd className="truncate text-foreground">{appointment.doctor.specialtyName}</dd>
                       </div>
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Fee</dt>
+                        <dt className="text-muted-foreground">{ts("fee")}</dt>
                         <dd className="text-foreground">
-                          {appointment.doctor.consultationFee ? formatCurrency(Number(appointment.doctor.consultationFee)) : "—"}
+                          {appointment.doctor.consultationFee ? formatCurrency(Number(appointment.doctor.consultationFee), locale) : "—"}
                         </dd>
                       </div>
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">ID</dt>
+                        <dt className="text-muted-foreground">{ts("id")}</dt>
                         <dd className="truncate font-mono text-foreground" title={appointment.id}>
                           {appointment.id.slice(0, 8)}
                         </dd>
@@ -406,8 +414,8 @@ export default function AdminAppointmentsPage() {
               emptyState={
                 <EmptyState
                   icon={<Calendar className="size-12" />}
-                  title="No appointments found"
-                  description="No appointments match the current search and filters."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               }
             />
@@ -446,9 +454,9 @@ export default function AdminAppointmentsPage() {
           onConfirm={() =>
             deleteAppointment(deleting.id, { onSuccess: () => setDeleting(null) })
           }
-          title="Delete appointment"
-          message={`Delete appointment for ${deleting.patient.fullName}? Deleting fails if a payment record exists for it.`}
-          confirmLabel="Delete"
+          title={t("deleteTitle")}
+          message={t("deleteMessage", { name: deleting.patient.fullName })}
+          confirmLabel={ts("delete")}
           isLoading={isDeleting}
         />
       )}

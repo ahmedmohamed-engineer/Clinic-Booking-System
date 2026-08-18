@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import { useTranslations } from "next-intl";
 import type { DoctorReadModel } from "@/types/models/doctor";
 import { Card, CardContent } from "@/components/ui/card";
 import { StarRating } from "@/components/business/StarRating";
@@ -22,6 +23,7 @@ export const DoctorCard = memo(function DoctorCard({
   isSelected,
   onSelect,
 }: DoctorCardProps) {
+  const t = useTranslations("doctorCard");
   const { displayName, specialtyName, clinicName } = doctor.doctor;
 
   // Runtime data can arrive without a fee (optional on the summary model);
@@ -36,9 +38,9 @@ export const DoctorCard = memo(function DoctorCard({
       ? Math.min(5, Math.max(0, rating))
       : undefined;
 
-  const cardLabel = `Select ${displayName ?? ""}${
-    specialtyName ? `, ${specialtyName}` : ""
-  }`;
+  const cardLabel = specialtyName
+    ? t("selectNameSpecialty", { name: displayName ?? "", specialty: specialtyName })
+    : t("selectName", { name: displayName ?? "" });
 
   return (
     <Card
@@ -106,7 +108,9 @@ export const DoctorCard = memo(function DoctorCard({
                   <div className="flex min-w-0 items-center gap-1 text-xs">
                     <Award className="size-4 shrink-0 text-primary" />
                     <span className="break-words">
-                      {doctor.experienceYears} years experience
+                      {t("yearsExperience", {
+                        years: doctor.experienceYears,
+                      })}
                     </span>
                   </div>
                 )}

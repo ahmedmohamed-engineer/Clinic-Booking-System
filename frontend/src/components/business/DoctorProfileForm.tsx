@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +28,9 @@ export function DoctorProfileForm({
   formId,
   hideActions = false,
 }: DoctorProfileFormProps) {
+  const tp = useTranslations("profile");
+  const tf = useTranslations("adminForm");
+  const tc = useTranslations("common");
   const { parse } = useApiError();
   const [fullName, setFullName] = useState(doctor.doctor.displayName);
   const [consultationFee, setConsultationFee] = useState(
@@ -88,7 +92,7 @@ export function DoctorProfileForm({
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="fullName">Full name</Label>
+        <Label htmlFor="fullName">{tp("fullName")}</Label>
         <Input
           id="fullName"
           name="fullName"
@@ -113,7 +117,7 @@ export function DoctorProfileForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="consultationFee">Consultation fee</Label>
+          <Label htmlFor="consultationFee">{tf("consultationFee")}</Label>
           <Input
             id="consultationFee"
             name="consultationFee"
@@ -142,7 +146,7 @@ export function DoctorProfileForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="experienceYears">Experience (years)</Label>
+          <Label htmlFor="experienceYears">{tf("experienceYears")}</Label>
           <Input
             id="experienceYears"
             name="experienceYears"
@@ -172,7 +176,7 @@ export function DoctorProfileForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="bio">Bio (optional)</Label>
+        <Label htmlFor="bio">{tf("bio")}</Label>
         <Textarea
           id="bio"
           name="bio"
@@ -194,7 +198,7 @@ export function DoctorProfileForm({
       {!hideActions && (
         <div className="flex justify-end">
           <Button type="submit" form={formId} disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save changes"}
+            {isSubmitting ? tc("saving") : tc("save")}
           </Button>
         </div>
       )}

@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { ArrowLeft, Building2, Clock, Stethoscope, User } from "lucide-react";
 import { useMemo } from "react";
@@ -12,6 +13,8 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { formatDate, formatTime } from "@/lib/utils";
 
 export default function AppointmentDetailsPage() {
+  const t = useTranslations("appointmentDetail");
+  const locale = useLocale();
   const { id } = useParams<{ id: string }>();
   const { data: appointments, isPending } = useMyAppointments();
 
@@ -35,13 +38,13 @@ export default function AppointmentDetailsPage() {
         <div className="rounded-xl border border-border bg-card">
           <EmptyState
             icon={<Stethoscope className="size-12" />}
-            title="Appointment not found"
-            description="This appointment does not exist or is no longer available."
+            title={t("notFoundTitle")}
+            description={t("notFoundDesc")}
             action={
               <Link href="/dashboard">
                 <Button variant="outline">
-                  <ArrowLeft />
-                  Back to dashboard
+                  <ArrowLeft className="rtl:rotate-180" />
+                  {t("backToDashboard")}
                 </Button>
               </Link>
             }
@@ -57,29 +60,29 @@ export default function AppointmentDetailsPage() {
             href="/dashboard"
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80"
           >
-            <ArrowLeft className="size-4" />
-            Dashboard
+            <ArrowLeft className="size-4 rtl:rotate-180" />
+            {t("dashboard")}
           </Link>
         </div>
 
         <div className="flex flex-col gap-2">
-          <h1 className="heading-1">Appointment details</h1>
-          <p className="body-text">A summary of your upcoming appointment.</p>
+          <h1 className="heading-1">{t("title")}</h1>
+          <p className="body-text">{t("subtitle")}</p>
         </div>
 
         <Card className="animate-fade-in overflow-hidden border-t-4 border-t-primary">
           <CardContent className="flex flex-col gap-6">
               <div>
                 <h2 id="appointment-detail-heading" className="heading-2">
-                  Your appointment
+                  {t("yourAppointment")}
                 </h2>
                 <p className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
-                  {formatDate(appointment.slot.date)}
+                  {formatDate(appointment.slot.date, locale)}
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 text-lg font-medium text-muted-foreground">
                   <Clock className="size-4" aria-hidden="true" />
-                  {formatTime(appointment.slot.startTime)} –{" "}
-                  {formatTime(appointment.slot.endTime)}
+                  {formatTime(appointment.slot.startTime, locale)} –{" "}
+                  {formatTime(appointment.slot.endTime, locale)}
                 </p>
               </div>
 
@@ -89,7 +92,7 @@ export default function AppointmentDetailsPage() {
                   <User className="size-4" aria-hidden="true" />
                 </span>
                 <div>
-                  <dt className="text-xs text-muted-foreground">Doctor</dt>
+                  <dt className="text-xs text-muted-foreground">{t("doctor")}</dt>
                   <dd className="mt-0.5 font-medium text-foreground">
                     {appointment.doctor.displayName} ·{" "}
                     {appointment.doctor.specialtyName}
@@ -101,7 +104,7 @@ export default function AppointmentDetailsPage() {
                   <Building2 className="size-4" aria-hidden="true" />
                 </span>
                 <div>
-                  <dt className="text-xs text-muted-foreground">Clinic</dt>
+                  <dt className="text-xs text-muted-foreground">{t("clinic")}</dt>
                   <dd className="mt-0.5 font-medium text-foreground">
                     {appointment.doctor.clinicName}
                   </dd>

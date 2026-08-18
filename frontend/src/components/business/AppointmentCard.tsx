@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { CreditCard, Star, X } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusBadge } from "@/components/business/StatusBadge";
@@ -27,6 +28,8 @@ export const AppointmentCard = memo(function AppointmentCard({
   viewer = "patient",
 }: AppointmentCardProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const t = useTranslations("appointmentCard");
+  const locale = useLocale();
   const cancellable =
     onCancel && CANCELLABLE_STATUSES.has(appointment.status);
 
@@ -84,7 +87,7 @@ export const AppointmentCard = memo(function AppointmentCard({
       <div className="flex flex-col gap-3 sm:items-end sm:justify-between">
         <div className="flex items-center justify-between gap-4">
           <p className="text-sm font-medium text-foreground">
-            {formatDateTime(appointment.slot.date, appointment.slot.startTime)}
+            {formatDateTime(appointment.slot.date, appointment.slot.startTime, locale)}
           </p>
           <StatusBadge status={appointment.status} />
         </div>
@@ -98,14 +101,14 @@ export const AppointmentCard = memo(function AppointmentCard({
               disabled={isCancelling}
             >
               <X className="size-3.5" />
-              Cancel
+              {t("cancel")}
             </Button>
           )}
           {needsPayment && (
             <Link href="/payments" className="inline-flex w-full sm:w-auto">
               <Button size="sm" className="w-full sm:w-auto">
                 <CreditCard className="size-3.5" />
-                Pay
+                {t("pay")}
               </Button>
             </Link>
           )}
@@ -113,7 +116,7 @@ export const AppointmentCard = memo(function AppointmentCard({
             <Link href="/reviews" className="inline-flex w-full sm:w-auto">
               <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 <Star className="size-3.5" />
-                {canLeaveReview ? "Leave Review" : "View Review"}
+                {canLeaveReview ? t("leaveReview") : t("viewReview")}
               </Button>
             </Link>
           )}
@@ -127,9 +130,9 @@ export const AppointmentCard = memo(function AppointmentCard({
           if (onCancel) onCancel(appointment.id);
           setConfirmOpen(false);
         }}
-        title="Cancel appointment?"
-        message="This appointment will be cancelled and can no longer be attended."
-        confirmLabel="Cancel appointment"
+        title={t("cancelTitle")}
+        message={t("cancelMessage")}
+        confirmLabel={t("cancelConfirm")}
         isLoading={isCancelling}
       />
     </div>

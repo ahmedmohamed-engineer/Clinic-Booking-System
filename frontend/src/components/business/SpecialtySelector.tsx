@@ -1,6 +1,7 @@
 "use client";
 
 import type { SpecialtyRecord } from "@/types/models/specialty";
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Stethoscope } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,8 @@ export function SpecialtySelector({
   onSelect,
   isLoading,
 }: SpecialtySelectorProps) {
+  const t = useTranslations("specialtySelector");
+
   if (isLoading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -36,7 +39,7 @@ export function SpecialtySelector({
   if (specialties.length === 0) {
     return (
       <div className="py-12 text-center text-muted-foreground">
-        No specialties available.
+        {t("empty")}
       </div>
     );
   }
@@ -78,7 +81,7 @@ export function SpecialtySelector({
               <div>
                 <h3 className="font-semibold text-foreground">{specialty.name}</h3>
                 <p className="text-xs text-muted-foreground">
-                  Select to view specialized doctors
+                  {t("hint")}
                 </p>
               </div>
             </CardContent>

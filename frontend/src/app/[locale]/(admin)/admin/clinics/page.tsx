@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import { Building2, Pencil, Plus, Trash2 } from "lucide-react";
 import type { Column, DataTableProps } from "@/components/data/DataTable";
 import { Pagination } from "@/components/data/Pagination";
@@ -41,14 +42,15 @@ function ClinicActions({
   onEdit: (clinic: ClinicRecord) => void;
   onDelete: (clinic: ClinicRecord) => void;
 }) {
+  const ts = useTranslations("adminShared");
   return (
     <div className="flex shrink-0 items-center gap-1">
       <Button
         variant="ghost"
         size="xs"
         onClick={() => onEdit(clinic)}
-        aria-label={`Edit ${clinic.name}`}
-        title={`Edit ${clinic.name}`}
+        aria-label={ts("editName", { name: clinic.name })}
+        title={ts("editName", { name: clinic.name })}
       >
         <Pencil className="size-4" />
       </Button>
@@ -56,8 +58,8 @@ function ClinicActions({
         variant="ghost"
         size="xs"
         onClick={() => onDelete(clinic)}
-        aria-label={`Delete ${clinic.name}`}
-        title={`Delete ${clinic.name}`}
+        aria-label={ts("deleteName", { name: clinic.name })}
+        title={ts("deleteName", { name: clinic.name })}
       >
         <Trash2 className="size-4" />
       </Button>
@@ -70,6 +72,8 @@ function MissingValue() {
 }
 
 export default function AdminClinicsPage() {
+  const t = useTranslations("adminClinics");
+  const ts = useTranslations("adminShared");
   const { data: allClinics, isPending, isError, refetch } = useClinicsList();
   const { mutate: createClinic, isPending: isCreating } = useCreateClinic();
   const { mutate: updateClinic, isPending: isUpdating } = useUpdateClinic();
@@ -133,7 +137,7 @@ export default function AdminClinicsPage() {
     () => [
       {
         key: "name",
-        header: "Name",
+        header: ts("name"),
         sortable: true,
         render: (clinic) => (
           <span className="block max-w-[16rem] truncate font-medium" title={clinic.name}>
@@ -143,7 +147,7 @@ export default function AdminClinicsPage() {
       },
       {
         key: "id",
-        header: "ID",
+        header: ts("id"),
         render: (clinic) => (
           <span
             className={cn("block max-w-[10rem] truncate font-mono text-xs text-muted-foreground")}
@@ -155,27 +159,27 @@ export default function AdminClinicsPage() {
       },
       {
         key: "phone",
-        header: "Phone",
+        header: ts("phone"),
         render: (clinic) => clinic.phone ?? <MissingValue />,
       },
       {
         key: "city",
-        header: "City",
+        header: ts("city"),
         render: (clinic) => clinic.city ?? <MissingValue />,
       },
       {
         key: "doctorsCount",
-        header: "Doctors",
+        header: ts("doctors"),
         render: (clinic) => clinic.doctorsCount,
       },
       {
         key: "address",
-        header: "Address",
+        header: ts("address"),
         render: (clinic) => clinic.address ?? <MissingValue />,
       },
       {
         key: "description",
-        header: "Description",
+        header: ts("description"),
         render: (clinic) =>
           clinic.description ? (
             <span
@@ -199,26 +203,26 @@ export default function AdminClinicsPage() {
         ),
       },
     ],
-    [],
+    [ts],
   );
 
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Clinics</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("title")}</h1>
           <p className="text-lg text-muted-foreground">
-            Manage clinic locations.
+            {t("subtitle")}
           </p>
         </div>
         <Button onClick={() => setCreating(true)}>
           <Plus className="size-4" />
-          Add clinic
+          {t("add")}
         </Button>
       </header>
 
       {isError ? (
-        <ErrorBanner message="Could not load clinics." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-3">
@@ -226,15 +230,15 @@ export default function AdminClinicsPage() {
               <SearchInput
                 value={search}
                 onChange={handleSearch}
-                placeholder="Search by name, city, phone..."
+                placeholder={t("searchBy")}
               />
             </div>
             <FilterDropdown
               options={cityOptions}
               value={city}
               onChange={handleCityChange}
-              label="City"
-              placeholder="All cities"
+              label={ts("city")}
+              placeholder={ts("allCities")}
             />
           </div>
 
@@ -249,8 +253,8 @@ export default function AdminClinicsPage() {
               <div className="rounded-xl border border-border">
                 <EmptyState
                   icon={<Building2 className="size-12" />}
-                  title="No clinics found"
-                  description="No clinics match the current search and filters."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               </div>
             ) : (
@@ -271,19 +275,19 @@ export default function AdminClinicsPage() {
                     )}
                     <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Phone</dt>
+                        <dt className="text-muted-foreground">{ts("phone")}</dt>
                         <dd className="text-foreground">{clinic.phone ?? "—"}</dd>
                       </div>
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Doctors</dt>
+                        <dt className="text-muted-foreground">{ts("doctors")}</dt>
                         <dd className="text-foreground">{clinic.doctorsCount}</dd>
                       </div>
                       <div className="col-span-2 flex flex-col">
-                        <dt className="text-muted-foreground">Address</dt>
+                        <dt className="text-muted-foreground">{ts("address")}</dt>
                         <dd className="text-foreground">{clinic.address ?? "—"}</dd>
                       </div>
                       <div className="col-span-2 flex flex-col">
-                        <dt className="text-muted-foreground">ID</dt>
+                        <dt className="text-muted-foreground">{ts("id")}</dt>
                         <dd className="truncate font-mono text-foreground">{clinic.id}</dd>
                       </div>
                     </dl>
@@ -302,8 +306,8 @@ export default function AdminClinicsPage() {
               emptyState={
                 <EmptyState
                   icon={<Building2 className="size-12" />}
-                  title="No clinics found"
-                  description="No clinics match the current search and filters."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               }
             />
@@ -353,9 +357,9 @@ export default function AdminClinicsPage() {
           onConfirm={() =>
             deleteClinic(deleting.id, { onSuccess: () => setDeleting(null) })
           }
-          title="Delete clinic"
-          message={`Delete ${deleting.name}? This cannot be undone. Deleting fails if any doctor is assigned to this clinic.`}
-          confirmLabel="Delete"
+          title={t("deleteTitle")}
+          message={t("deleteMessage", { name: deleting.name })}
+          confirmLabel={ts("delete")}
           isLoading={isDeleting}
         />
       )}

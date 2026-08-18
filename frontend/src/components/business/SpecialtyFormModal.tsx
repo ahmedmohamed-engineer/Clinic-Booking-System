@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,6 +35,8 @@ export function SpecialtyFormModal({
   onSubmit,
   isSubmitting,
 }: SpecialtyFormModalProps) {
+  const t = useTranslations("adminForm");
+  const tc = useTranslations("common");
   const { parse } = useApiError();
   const [name, setName] = useState(specialty?.name ?? "");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -69,7 +72,7 @@ export function SpecialtyFormModal({
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{specialty ? "Edit specialty" : "Create specialty"}</DialogTitle>
+          <DialogTitle>{specialty ? t("editSpecialty") : t("createSpecialty")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4" noValidate>
           {formError && (
@@ -82,7 +85,7 @@ export function SpecialtyFormModal({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{t("name")}</Label>
             <Input
               id="name"
               value={name}
@@ -97,10 +100,14 @@ export function SpecialtyFormModal({
 
           <div className="mt-6 flex justify-end gap-3">
             <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : specialty ? "Save changes" : "Create specialty"}
+              {isSubmitting
+                ? tc("saving")
+                : specialty
+                  ? tc("save")
+                  : t("createSpecialty")}
             </Button>
           </div>
         </form>

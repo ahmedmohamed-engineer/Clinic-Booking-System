@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, type ReactNode } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { usePrefetchAdminSection } from "@/hooks/usePrefetchAdminSection";
 import {
   Users,
@@ -27,68 +28,67 @@ import { ErrorBanner } from "@/components/feedback/ErrorBanner";
 import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
 
 const sections: {
-  label: string;
-  description: string;
+  key:
+    | "users"
+    | "clinics"
+    | "specialties"
+    | "doctors"
+    | "schedules"
+    | "slots"
+    | "appointments"
+    | "payments"
+    | "reviews"
+    | "patients";
   href: string;
   icon: LucideIcon;
 }[] = [
   {
-    label: "Users",
-    description: "Manage accounts, roles, and verification.",
+    key: "users",
     href: "/admin/users",
     icon: Users,
   },
   {
-    label: "Clinics",
-    description: "Create and update clinic locations.",
+    key: "clinics",
     href: "/admin/clinics",
     icon: Building2,
   },
   {
-    label: "Specialties",
-    description: "Manage medical specialties.",
+    key: "specialties",
     href: "/admin/specialties",
     icon: Stethoscope,
   },
   {
-    label: "Doctors",
-    description: "Manage doctor profiles and fees.",
+    key: "doctors",
     href: "/admin/doctors",
     icon: UserRound,
   },
   {
-    label: "Schedules",
-    description: "Define weekly availability per doctor.",
+    key: "schedules",
     href: "/admin/doctor-schedules",
     icon: Clock,
   },
   {
-    label: "Slots",
-    description: "Manage bookable appointment slots.",
+    key: "slots",
     href: "/admin/appointment-slots",
     icon: CalendarRange,
   },
   {
-    label: "Appointments",
-    description: "Review and update all appointments.",
+    key: "appointments",
     href: "/admin/appointments",
     icon: Calendar,
   },
   {
-    label: "Payments",
-    description: "Review payment status and history.",
+    key: "payments",
     href: "/admin/payments",
     icon: CreditCard,
   },
   {
-    label: "Reviews",
-    description: "Moderate ratings and comments.",
+    key: "reviews",
     href: "/admin/reviews",
     icon: Star,
   },
   {
-    label: "Patients",
-    description: "Manage patient profiles.",
+    key: "patients",
     href: "/admin/patients",
     icon: ClipboardList,
   },
@@ -101,23 +101,6 @@ const toneDotClass: Record<string, string> = {
   danger: "bg-status-danger",
   neutral: "bg-status-neutral",
 };
-
-const paymentMethodLabel: Record<string, string> = {
-  cash: "Cash",
-  card: "Card",
-  online: "Online",
-  bank_transfer: "Bank Transfer",
-};
-
-const roleLabel: Record<string, string> = {
-  patient: "Patient",
-  doctor: "Doctor",
-  admin: "Admin",
-};
-
-function titleCase(value: string): string {
-  return value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
-}
 
 function BreakdownRow({
   label,
@@ -167,6 +150,7 @@ function StatCard({
   href?: string;
   children?: ReactNode;
 }) {
+  const ta = useTranslations("admin");
   const body = pending ? (
     <Card>
       <CardContent>
@@ -182,7 +166,7 @@ function StatCard({
         <div className="flex flex-col gap-1">
           <CardDescription>{label}</CardDescription>
           {error ? (
-            <p className="text-xs text-muted-foreground">Could not load.</p>
+            <p className="text-xs text-muted-foreground">{ta("couldNotLoad")}</p>
           ) : (
             <CardTitle className="text-3xl font-semibold tracking-tight tabular-nums">
               {total ?? 0}
@@ -244,6 +228,8 @@ function ActivityGroup({
 }
 
 export default function AdminDashboardPage() {
+  const ta = useTranslations("admin");
+  const locale = useLocale();
   const prefetchSection = usePrefetchAdminSection();
 
   const { data: usersAll, isPending: usersPending, isError: usersError, refetch: refetchUsers } =
@@ -344,15 +330,15 @@ export default function AdminDashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">{ta("headerTitle")}</h1>
         <p className="text-lg text-muted-foreground">
-          Manage every part of the clinic booking platform.
+          {ta("headerSubtitle")}
         </p>
       </header>
 
       {overviewError && !overviewPending && (
         <ErrorBanner
-          message="Could not load the dashboard overview."
+          message={ta("errorOverview")}
           onRetry={() => {
             refetchUsers();
             refetchClinics();
@@ -364,12 +350,12 @@ export default function AdminDashboardPage() {
 
       <section aria-labelledby="overview-heading" className="flex flex-col gap-4">
         <h2 id="overview-heading" className="heading-2">
-          Overview
+          {ta("overview")}
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             icon={Users}
-            label="Total Users"
+            label={ta("totalUsers")}
             total={usersAll?.pagination?.total}
             pending={usersPendingAgg}
             error={usersErrorAgg}
@@ -377,17 +363,17 @@ export default function AdminDashboardPage() {
           >
             <Breakdown>
               <BreakdownRow
-                label="Patients"
+                label={ta("breakdown.patients")}
                 tone="info"
                 count={rolePatients?.pagination?.total ?? 0}
               />
               <BreakdownRow
-                label="Doctors"
+                label={ta("breakdown.doctors")}
                 tone="success"
                 count={roleDoctors?.pagination?.total ?? 0}
               />
               <BreakdownRow
-                label="Admins"
+                label={ta("breakdown.admins")}
                 tone="neutral"
                 count={roleAdmins?.pagination?.total ?? 0}
               />
@@ -396,7 +382,7 @@ export default function AdminDashboardPage() {
 
           <StatCard
             icon={Building2}
-            label="Total Clinics"
+            label={ta("totalClinics")}
             total={clinics?.length}
             pending={clinicsPending}
             error={clinicsError}
@@ -405,7 +391,7 @@ export default function AdminDashboardPage() {
 
           <StatCard
             icon={Calendar}
-            label="Total Appointments"
+            label={ta("totalAppointments")}
             total={appointments.length}
             pending={appointmentsPending}
             error={appointmentsError}
@@ -413,27 +399,27 @@ export default function AdminDashboardPage() {
           >
             <Breakdown>
               <BreakdownRow
-                label="Scheduled"
+                label={ta("breakdown.scheduled")}
                 tone="info"
                 count={appointmentCounts.scheduled ?? 0}
               />
               <BreakdownRow
-                label="Confirmed"
+                label={ta("breakdown.confirmed")}
                 tone="info"
                 count={appointmentCounts.confirmed ?? 0}
               />
               <BreakdownRow
-                label="Completed"
+                label={ta("breakdown.completed")}
                 tone="success"
                 count={appointmentCounts.completed ?? 0}
               />
               <BreakdownRow
-                label="Cancelled"
+                label={ta("breakdown.cancelled")}
                 tone="danger"
                 count={appointmentCounts.cancelled ?? 0}
               />
               <BreakdownRow
-                label="No Show"
+                label={ta("breakdown.noShow")}
                 tone="neutral"
                 count={appointmentCounts.no_show ?? 0}
               />
@@ -442,17 +428,17 @@ export default function AdminDashboardPage() {
 
           <StatCard
             icon={CreditCard}
-            label="Total Payments"
+            label={ta("totalPayments")}
             total={payments.length}
             pending={paymentsPending}
             error={paymentsError}
             href="/admin/payments"
           >
             <Breakdown>
-              <BreakdownRow label="Paid" tone="success" count={paymentCounts.paid ?? 0} />
-              <BreakdownRow label="Pending" tone="warning" count={paymentCounts.pending ?? 0} />
-              <BreakdownRow label="Failed" tone="danger" count={paymentCounts.failed ?? 0} />
-              <BreakdownRow label="Refunded" tone="neutral" count={paymentCounts.refunded ?? 0} />
+              <BreakdownRow label={ta("breakdown.paid")} tone="success" count={paymentCounts.paid ?? 0} />
+              <BreakdownRow label={ta("breakdown.pending")} tone="warning" count={paymentCounts.pending ?? 0} />
+              <BreakdownRow label={ta("breakdown.failed")} tone="danger" count={paymentCounts.failed ?? 0} />
+              <BreakdownRow label={ta("breakdown.refunded")} tone="neutral" count={paymentCounts.refunded ?? 0} />
             </Breakdown>
           </StatCard>
         </div>
@@ -460,7 +446,7 @@ export default function AdminDashboardPage() {
 
       <section aria-labelledby="activity-heading" className="flex flex-col gap-4">
         <h2 id="activity-heading" className="heading-2">
-          Recent activity
+          {ta("recentActivity")}
         </h2>
         <Card>
           <CardContent>
@@ -474,8 +460,8 @@ export default function AdminDashboardPage() {
                 <ActivityGroup
                   label={
                     recentUsersPending
-                      ? "New users"
-                      : `New users (${recentUsers.length})`
+                      ? ta("newUsers")
+                      : ta("newUsersCount", { count: recentUsers.length })
                   }
                 >
                   {recentUsers.map((user) => (
@@ -491,7 +477,10 @@ export default function AdminDashboardPage() {
                         />
                       }
                       primary={user.fullName ?? user.email}
-                      secondary={`${roleLabel[user.role] ?? titleCase(user.role)} · ${formatDate(user.createdAt)}`}
+                      secondary={ta("activitySecondaryNoTime", {
+                        name: ta(`roles.${user.role}`),
+                        date: formatDate(user.createdAt, locale),
+                      })}
                     />
                   ))}
                 </ActivityGroup>
@@ -499,8 +488,8 @@ export default function AdminDashboardPage() {
                 <ActivityGroup
                   label={
                     appointmentsPending
-                      ? "Upcoming visits"
-                      : `Upcoming visits (${upcomingVisits.length})`
+                      ? ta("upcomingVisits")
+                      : ta("upcomingVisitsCount", { count: upcomingVisits.length })
                   }
                 >
                   {upcomingVisits.map((appointment) => (
@@ -516,7 +505,11 @@ export default function AdminDashboardPage() {
                         />
                       }
                       primary={appointment.patient.fullName}
-                      secondary={`with ${appointment.doctor.displayName} · ${formatDate(appointment.slot.date)} at ${formatTime(appointment.slot.startTime)}`}
+                      secondary={ta("upcomingVisit", {
+                        name: appointment.doctor.displayName,
+                        date: formatDate(appointment.slot.date, locale),
+                        time: formatTime(appointment.slot.startTime, locale),
+                      })}
                     />
                   ))}
                 </ActivityGroup>
@@ -524,8 +517,8 @@ export default function AdminDashboardPage() {
                 <ActivityGroup
                   label={
                     paymentsPending
-                      ? "Latest payments"
-                      : `Latest payments (${latestPayments.length})`
+                      ? ta("latestPayments")
+                      : ta("latestPaymentsCount", { count: latestPayments.length })
                   }
                 >
                   {latestPayments.map((payment) => (
@@ -541,9 +534,11 @@ export default function AdminDashboardPage() {
                         />
                       }
                       primary={payment.patient.fullName}
-                      secondary={`${formatCurrency(payment.amount)} · ${
-                        paymentMethodLabel[payment.method] ?? titleCase(payment.method)
-                      } · ${titleCase(payment.status)}`}
+                      secondary={ta("paymentActivity", {
+                        amount: formatCurrency(payment.amount, locale),
+                        method: ta(`payMethods.${payment.method}`),
+                        status: ta(`breakdown.${payment.status}`),
+                      })}
                     />
                   ))}
                 </ActivityGroup>
@@ -552,7 +547,7 @@ export default function AdminDashboardPage() {
                   upcomingVisits.length === 0 &&
                   latestPayments.length === 0 && (
                     <p className="text-sm text-muted-foreground">
-                      No activity yet. New users, visits, and payments will appear here.
+                      {ta("noActivity")}
                     </p>
                   )}
               </div>
@@ -564,7 +559,7 @@ export default function AdminDashboardPage() {
       <section aria-labelledby="sections-heading">
         <div className="flex flex-col gap-4">
           <h2 id="sections-heading" className="heading-2">
-            Manage
+            {ta("manage")}
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {sections.map((section) => {
@@ -583,8 +578,8 @@ export default function AdminDashboardPage() {
                         <Icon className="size-5" aria-hidden="true" />
                       </div>
                       <div className="flex flex-col gap-1">
-                        <CardTitle>{section.label}</CardTitle>
-                        <CardDescription>{section.description}</CardDescription>
+                        <CardTitle>{ta(`sections.${section.key}.label`)}</CardTitle>
+                        <CardDescription>{ta(`sections.${section.key}.description`)}</CardDescription>
                       </div>
                     </CardContent>
                   </Card>

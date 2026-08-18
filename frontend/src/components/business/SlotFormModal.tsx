@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,6 +50,9 @@ export function SlotFormModal({
   onSubmit,
   isSubmitting,
 }: SlotFormModalProps) {
+  const t = useTranslations("adminForm");
+  const tc = useTranslations("common");
+  const locale = useLocale();
   const { parse } = useApiError();
   const [doctorId, setDoctorId] = useState(slot?.doctorId ?? "");
   const [doctorScheduleId, setDoctorScheduleId] = useState(
@@ -100,7 +104,7 @@ export function SlotFormModal({
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{slot ? "Edit slot" : "Create slot"}</DialogTitle>
+          <DialogTitle>{slot ? t("editSlot") : t("createSlot")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4" noValidate>
           {formError && (
@@ -113,7 +117,7 @@ export function SlotFormModal({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="doctorId">Doctor</Label>
+            <Label htmlFor="doctorId">{t("doctor")}</Label>
             <Select
               value={doctorId}
               onValueChange={(value) => {
@@ -123,7 +127,7 @@ export function SlotFormModal({
               disabled={isSubmitting}
             >
               <SelectTrigger id="doctorId" className="w-full">
-                <SelectValue placeholder="Select doctor" />
+                <SelectValue placeholder={t("selectDoctor")} />
               </SelectTrigger>
               <SelectContent>
                 {doctors.map((doctor) => (
@@ -139,7 +143,7 @@ export function SlotFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="doctorScheduleId">Schedule</Label>
+            <Label htmlFor="doctorScheduleId">{t("schedule")}</Label>
             <Select
               value={doctorScheduleId}
               onValueChange={(value) => setDoctorScheduleId(value ?? "")}
@@ -149,15 +153,19 @@ export function SlotFormModal({
                 <SelectValue
                   placeholder={
                     doctorSchedules.length === 0
-                      ? "No schedule for this doctor"
-                      : "Select schedule"
+                      ? t("noScheduleForDoctor")
+                      : t("selectSchedule")
                   }
                 />
               </SelectTrigger>
               <SelectContent>
                 {doctorSchedules.map((schedule) => (
                   <SelectItem key={schedule.id} value={schedule.id}>
-                    {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)} ({schedule.slotDuration} min)
+                    {t("scheduleRange", {
+                      start: formatTime(schedule.startTime, locale),
+                      end: formatTime(schedule.endTime, locale),
+                      minutes: schedule.slotDuration,
+                    })}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -170,7 +178,7 @@ export function SlotFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="slotDate">Date</Label>
+            <Label htmlFor="slotDate">{t("date")}</Label>
             <Input
               id="slotDate"
               type="date"
@@ -186,7 +194,7 @@ export function SlotFormModal({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="startTime">Start time</Label>
+              <Label htmlFor="startTime">{t("startTime")}</Label>
               <Input
                 id="startTime"
                 type="time"
@@ -201,7 +209,7 @@ export function SlotFormModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="endTime">End time</Label>
+              <Label htmlFor="endTime">{t("endTime")}</Label>
               <Input
                 id="endTime"
                 type="time"
@@ -217,14 +225,14 @@ export function SlotFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
+            <Label htmlFor="status">{t("status")}</Label>
             <Select
               value={status}
               onValueChange={(value) => setStatus(value as AppointmentSlotRecord["status"])}
               disabled={isSubmitting}
             >
               <SelectTrigger id="status" className="w-full">
-                <SelectValue placeholder="Select status" />
+                <SelectValue placeholder={t("selectStatus")} />
               </SelectTrigger>
               <SelectContent>
                 {SLOT_STATUSES.map((option) => (
@@ -241,10 +249,10 @@ export function SlotFormModal({
 
           <div className="mt-6 flex justify-end gap-3">
             <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : slot ? "Save changes" : "Create slot"}
+              {isSubmitting ? tc("saving") : slot ? tc("save") : t("createSlot")}
             </Button>
           </div>
         </form>

@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BiroCircle } from "@/components/business/BiroCircle";
@@ -31,6 +32,7 @@ export function StepWizard({
   isLoading,
   className,
 }: StepWizardProps) {
+  const t = useTranslations();
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
@@ -45,7 +47,10 @@ export function StepWizard({
         {/* Compact step context on mobile; the full labeled indicator appears at sm+ */}
         <div className="flex items-baseline justify-between gap-2 sm:hidden">
           <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Step {currentStep + 1} of {steps.length}
+            {t("wizard.stepOf", {
+              current: currentStep + 1,
+              total: steps.length,
+            })}
           </span>
           <span className="truncate text-sm font-semibold text-primary">
             {steps[currentStep]?.title}
@@ -99,7 +104,7 @@ export function StepWizard({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={progress}
-          aria-label="Booking progress"
+          aria-label={t("wizard.progress")}
         >
           <div
             className="h-full rounded-full bg-primary transition-all duration-300 motion-reduce:transition-none"
@@ -118,14 +123,18 @@ export function StepWizard({
           onClick={onBack}
           disabled={currentStep === 0 || isLoading}
         >
-          Back
+          {t("common.back")}
         </Button>
         <Button
           className="pointer-coarse:min-h-11 flex-1 sm:flex-none sm:w-auto"
           onClick={onNext}
           disabled={isNextDisabled || isLoading}
         >
-          {isLoading ? "Loading..." : isLastStep ? "Confirm" : "Next"}
+          {isLoading
+            ? t("common.loading")
+            : isLastStep
+              ? t("common.confirm")
+              : t("common.next")}
         </Button>
       </div>
     </div>

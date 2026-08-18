@@ -3,8 +3,9 @@
 import { Suspense, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter, Link } from "@/i18n/navigation";
 import { loginSchema, type LoginInput } from "@/schemas/auth";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { useLogin } from "@/features/auth/hooks/use-login";
@@ -22,6 +23,8 @@ function isAllowedRedirect(role: UserRole, path: string): boolean {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("auth");
+  const tc = useTranslations("common");
   const { user, isAuthenticated } = useAuth();
   const redirectRaw = searchParams.get("redirect");
   const redirectParam =
@@ -58,18 +61,18 @@ function LoginForm() {
     <div className="flex flex-1 items-center justify-center px-4 py-10">
       <div className="paper-sheet w-full max-w-sm space-y-6 px-8 py-8 shadow-md">
         <div className="space-y-1 text-center">
-          <h1 className="heading-1">Sign in</h1>
-          <p className="body-text">Welcome back to MediCare</p>
+          <h1 className="heading-1">{t("signInTitle")}</h1>
+          <p className="body-text">{t("signInSubtitle")}</p>
         </div>
         <div className="letterhead-rule" />
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{tc("email")}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder={t("emailPlaceholder")}
               autoComplete="email"
               hasError={!!errors.email}
               aria-describedby={errors.email ? "email-error" : undefined}
@@ -81,11 +84,11 @@ function LoginForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{tc("password")}</Label>
             <Input
               id="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder={t("passwordPlaceholder")}
               autoComplete="current-password"
               hasError={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
@@ -101,17 +104,17 @@ function LoginForm() {
           )}
 
           <Button type="submit" disabled={isPending} className="w-full">
-            {isPending ? "Signing in..." : "Sign in"}
+            {isPending ? t("signingIn") : t("signInTitle")}
           </Button>
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
+          {t("noAccount")}{" "}
           <Link
             href="/register"
             className="font-medium text-primary hover:underline"
           >
-            Create one
+            {t("createOne")}
           </Link>
         </p>
       </div>

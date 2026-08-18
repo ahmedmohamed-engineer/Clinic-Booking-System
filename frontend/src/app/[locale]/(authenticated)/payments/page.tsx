@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { useLocale, useTranslations } from "next-intl";
 import { CreditCard, Receipt, Wallet } from "lucide-react";
 import { useMyAppointments } from "@/features/appointments";
 import { useMyPayments, useUpdateMyPayment, useCreatePayment } from "@/features/payments";
@@ -10,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/feedback/Skeleton";
 import { ErrorBanner } from "@/components/feedback/ErrorBanner";
 import { EmptyState } from "@/components/feedback/EmptyState";
-import { formatDateTime } from "@/lib/utils";
+import { formatCurrency, formatDateTime } from "@/lib/utils";
 import { StatusBadge } from "@/components/business/StatusBadge";
 import {
   Dialog,
@@ -37,6 +38,8 @@ function needsPayment(appointment: AppointmentReadModel): boolean {
 }
 
 export default function PatientPaymentsPage() {
+  const t = useTranslations("paymentsPage");
+  const locale = useLocale();
   const { data: appointments, isPending, isError, refetch } = useMyAppointments();
   const { data: payments, isPending: isPaymentsPending } = useMyPayments();
   const { mutate: updateMyPayment, isPending: isPaying } = useUpdateMyPayment();
@@ -46,7 +49,7 @@ export default function PatientPaymentsPage() {
   if (isError) {
     return (
       <div className="p-6">
-        <ErrorBanner message="Could not load your payments." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       </div>
     );
   }
@@ -94,9 +97,9 @@ export default function PatientPaymentsPage() {
   return (
     <div className="container-custom flex flex-col gap-8 p-6">
       <header className="animate-fade-in flex flex-col gap-2">
-        <h1 className="heading-1">Payments</h1>
+        <h1 className="heading-1">{t("title")}</h1>
         <p className="body-text">
-          Complete payments for your visits and track your payment history.
+          {t("subtitle")}
         </p>
       </header>
 
@@ -104,22 +107,22 @@ export default function PatientPaymentsPage() {
         <div className="animate-fade-in rounded-xl border border-border bg-card">
           <EmptyState
             icon={<Wallet className="size-12 text-primary" />}
-            title="Nothing to pay"
-            description="Payments for your completed visits will appear here."
+            title={t("emptyTitle")}
+            description={t("emptyDesc")}
           />
         </div>
       ) : (
         <div className="animate-fade-in flex flex-col gap-6">
           <section className="flex flex-col gap-3">
             <h2 className="heading-2">
-              Complete payment ({due.length})
+              {t("completeSection", { count: due.length })}
             </h2>
             {due.length === 0 ? (
               <div className="rounded-xl border border-border bg-card">
                 <EmptyState
                   icon={<CreditCard className="size-12 text-primary" />}
-                  title="No payments due"
-                  description="You're all caught up. Nothing needs to be paid right now."
+                  title={t("dueEmptyTitle")}
+                  description={t("dueEmptyDesc")}
                 />
               </div>
             ) : (
@@ -142,7 +145,7 @@ export default function PatientPaymentsPage() {
                           {appointment.doctor.clinicName}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {formatDateTime(appointment.slot.date, appointment.slot.startTime)}
+                          {formatDateTime(appointment.slot.date, appointment.slot.startTime, locale)}
                         </p>
                       </div>
                     </div>
@@ -151,10 +154,7 @@ export default function PatientPaymentsPage() {
                       <div className="flex items-center justify-between gap-4">
                         <p className="text-sm font-medium text-foreground">
                           {appointment.doctor.consultationFee !== undefined
-                            ? new Intl.NumberFormat("en-US", {
-                                style: "currency",
-                                currency: "USD",
-                              }).format(appointment.doctor.consultationFee)
+                            ? formatCurrency(appointment.doctor.consultationFee, locale)
                             : ""}
                         </p>
                         <StatusBadge status={appointment.paymentStatus ?? "pending"} />
@@ -165,7 +165,7 @@ export default function PatientPaymentsPage() {
                         disabled={isCreating}
                       >
                         <CreditCard />
-                        {isCreating ? "Preparing..." : "Pay"}
+                        {isCreating ? t("preparing") : t("pay")}
                       </Button>
                     </div>
                   </div>
@@ -177,7 +177,7 @@ export default function PatientPaymentsPage() {
           {history.length > 0 && (
             <section className="flex flex-col gap-3">
               <h2 className="heading-2">
-                Payment history ({history.length})
+                {t("historyTitle", { count: history.length })}
               </h2>
               {history.map((payment) => (
                 <PaymentCard key={payment.id} payment={payment} />
@@ -190,7 +190,7 @@ export default function PatientPaymentsPage() {
       <Dialog open={selected !== null} onClose={() => setSelected(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Pay Now</DialogTitle>
+            <DialogTitle>{t("payNow")}</DialogTitle>
           </DialogHeader>
           {selected && (
             <div className="mt-4">

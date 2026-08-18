@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo } from "react";
-import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import {
   CalendarPlus,
   CalendarDays,
@@ -14,6 +14,7 @@ import {
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { useMyAppointments, useCancelAppointment } from "@/features/appointments";
 import { usePatientProfile } from "@/features/patients";
+import { Link } from "@/i18n/navigation";
 
 import { useMySchedule } from "@/features/schedules";
 import { usePrefetchBookingData } from "@/hooks/usePrefetchBookingData";
@@ -106,6 +107,8 @@ function DashboardStats({
 }
 
 function PatientDashboardContent() {
+  const t = useTranslations("dashboard");
+  const te = useTranslations("emptyDashboard");
   const { user } = useAuth();
   const { data: appointments, isPending, isError, refetch } = useMyAppointments();
   const { data: patient, isPending: isProfilePending } = usePatientProfile();
@@ -161,7 +164,7 @@ function PatientDashboardContent() {
             >
               <Button className="w-full md:w-auto">
                 <CalendarPlus />
-                Book Appointment
+                {t("bookAppointment")}
               </Button>
             </Link>
             <Link
@@ -169,7 +172,7 @@ function PatientDashboardContent() {
               className="inline-flex w-full md:w-auto"
             >
               <Button variant="outline" className="w-full md:w-auto">
-                View Appointments
+                {t("viewAppointments")}
               </Button>
             </Link>
           </>
@@ -177,6 +180,8 @@ function PatientDashboardContent() {
       />
     ) : (
       <EmptyDashboardState
+        title={te("title")}
+        description={te("description")}
         action={
           <Link
             href="/book"
@@ -186,7 +191,7 @@ function PatientDashboardContent() {
           >
             <Button size="lg" className="w-full md:w-auto">
               <CalendarPlus />
-              Book Appointment
+              {t("bookAppointment")}
             </Button>
           </Link>
         }
@@ -196,8 +201,8 @@ function PatientDashboardContent() {
   return (
     <div className="container-custom flex flex-col gap-8 p-6">
       <DashboardHeader
-        title="Welcome back"
-        subtitle="Your care at a glance."
+        title={t("welcomeBack")}
+        subtitle={t("patientSubtitle")}
         name={resolveDisplayName(
           [patient?.fullName, user?.fullName],
           user?.email,
@@ -219,7 +224,7 @@ function PatientDashboardContent() {
       />
 
       {isError ? (
-        <ErrorBanner message="Unable to load your appointments." onRetry={refetch} />
+        <ErrorBanner message={t("errorAppointments")} onRetry={refetch} />
       ) : isPending ? (
         <DashboardSkeleton />
       ) : (
@@ -239,7 +244,7 @@ function PatientDashboardContent() {
             <QuickActions />
             <section aria-labelledby="health-summary-heading" className="animate-fade-in flex flex-col gap-4">
               <h2 id="health-summary-heading" className="heading-2">
-                Health summary
+                {t("healthSummary")}
               </h2>
               {isProfilePending ? (
                 <Skeleton variant="card" className="h-48" />
@@ -249,11 +254,11 @@ function PatientDashboardContent() {
                 <div className="rounded-xl border border-border bg-card">
                   <EmptyState
                     icon={<UserRound className="size-12" />}
-                    title="Complete your profile"
-                    description="Add your contact details so your clinic can reach you."
+                    title={t("completeProfile")}
+                    description={t("completeProfileDesc")}
                     action={
                       <Link href="/profile">
-                        <Button>Complete Profile</Button>
+                        <Button>{t("completeProfileBtn")}</Button>
                       </Link>
                     }
                   />
@@ -268,6 +273,8 @@ function PatientDashboardContent() {
 }
 
 function DoctorDashboardContent() {
+  const t = useTranslations("dashboard");
+  const tu = useTranslations("upcoming");
   const { user } = useAuth();
   const { data: appointments, isPending, isError, refetch } = useMyAppointments();
   const {
@@ -307,27 +314,27 @@ function DoctorDashboardContent() {
     () => [
       {
         icon: CalendarClock,
-        label: "Appointments Today",
+        label: t("appointmentsToday"),
         value: todayCount,
         href: "/appointments",
-        hint: "On your calendar today",
+        hint: t("todayHint"),
       },
       {
         icon: CalendarDays,
-        label: "Upcoming Appointments",
+        label: t("upcomingStat"),
         value: upcoming.length,
         href: "/appointments",
-        hint: "Scheduled & confirmed",
+        hint: t("upcomingHint"),
       },
       {
         icon: CalendarRange,
-        label: "Working Days",
+        label: t("workingDays"),
         value: workingDays,
         href: "/schedule",
-        hint: "Days in your weekly schedule",
+        hint: t("workingDaysHint"),
       },
     ],
-    [todayCount, upcoming.length, workingDays],
+    [t, todayCount, upcoming.length, workingDays],
   );
 
   return (
@@ -346,9 +353,9 @@ function DoctorDashboardContent() {
             height={40}
           />
           <div className="flex flex-col gap-1">
-            <h1 className="heading-1">Doctor Dashboard</h1>
+            <h1 className="heading-1">{t("doctorTitle")}</h1>
             <p className="body-text">
-              Here is an overview of your appointments and weekly schedule.
+              {t("doctorSubtitle")}
             </p>
           </div>
         </div>
@@ -356,7 +363,7 @@ function DoctorDashboardContent() {
 
       {isError || isScheduleError ? (
         <ErrorBanner
-          message="Could not load your dashboard data."
+          message={t("errorDashboard")}
           onRetry={() => {
             refetch();
             refetchSchedule();
@@ -370,19 +377,19 @@ function DoctorDashboardContent() {
         <section className="animate-fade-in flex flex-col gap-4 lg:col-span-8">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <h2 id="upcoming-heading" className="heading-2">
-              Upcoming Appointments
+              {t("upcomingStat")}
             </h2>
             <Link
               href="/appointments"
               className="w-fit text-sm font-semibold text-primary hover:text-primary/80 hover:underline"
             >
-              View All
+              {tu("viewAll")}
             </Link>
           </div>
 
           {isError && (
             <ErrorBanner
-              message="Could not load your appointments."
+              message={t("errorAppointments")}
               onRetry={refetch}
             />
           )}
@@ -396,8 +403,8 @@ function DoctorDashboardContent() {
             <div className="rounded-xl border border-border bg-card">
               <EmptyState
                 icon={<CalendarDays className="size-12" />}
-                title="No appointments scheduled"
-                description="Appointments booked by your patients will appear here."
+                title={t("noAppointments")}
+                description={t("noAppointmentsDesc")}
               />
             </div>
           ) : (
@@ -416,24 +423,24 @@ function DoctorDashboardContent() {
         </section>
 
         <section className="animate-fade-in flex flex-col gap-4 lg:col-span-4">
-          <h2 id="weekly-schedule-heading" className="heading-2">Weekly Schedule</h2>
+          <h2 id="weekly-schedule-heading" className="heading-2">{t("weeklySchedule")}</h2>
           {isSchedulePending ? (
             <Skeleton variant="card" className="h-48" />
           ) : isScheduleError ? (
             <ErrorBanner
-              message="Could not load your schedule."
+              message={t("errorSchedule")}
               onRetry={refetchSchedule}
             />
           ) : (schedules?.length ?? 0) === 0 ? (
 <div className="rounded-xl border border-border bg-card">
             <EmptyState
               icon={<CalendarClock className="size-12" />}
-              title="No schedule defined"
-              description="Set your weekly availability so patients can book you."
+              title={t("noSchedule")}
+              description={t("noScheduleDesc")}
               action={
                 <Link href="/schedule">
                   <Button variant="outline" size="sm">
-                    Set up your schedule
+                    {t("setUpSchedule")}
                   </Button>
                 </Link>
               }

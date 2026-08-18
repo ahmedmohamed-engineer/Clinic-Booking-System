@@ -45,8 +45,12 @@ import type {
   CreateAppointmentSlotInput,
   UpdateAppointmentSlotInput,
 } from "@/schemas/slot";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function AdminAppointmentSlotsPage() {
+  const t = useTranslations("adminSlots");
+  const ts = useTranslations("adminShared");
+  const locale = useLocale();
   const [page, setPage] = useState<number>(PAGINATION_DEFAULTS.page);
   const { data, isPending, isError, refetch } = useSlotsAdmin({
     page,
@@ -78,7 +82,7 @@ export default function AdminAppointmentSlotsPage() {
   const columns: Column<AppointmentSlotReadModel>[] = useMemo(() => [
     {
       key: "doctorId",
-      header: "Doctor",
+      header: ts("doctor"),
       render: (slot) => (
         <div className="flex min-w-0 items-center gap-2.5">
           <Avatar
@@ -94,7 +98,7 @@ export default function AdminAppointmentSlotsPage() {
     },
     {
       key: "clinicId",
-      header: "Clinic",
+      header: ts("clinic"),
       render: (slot) => (
         <span className="block max-w-[12rem] truncate" title={slot.doctor.clinicName}>
           {slot.doctor.clinicName}
@@ -103,7 +107,7 @@ export default function AdminAppointmentSlotsPage() {
     },
     {
       key: "specialtyId",
-      header: "Specialty",
+      header: ts("specialty"),
       render: (slot) => (
         <span className="block max-w-[10rem] truncate" title={slot.doctor.specialtyName}>
           {slot.doctor.specialtyName}
@@ -112,18 +116,18 @@ export default function AdminAppointmentSlotsPage() {
     },
     {
       key: "slotDate",
-      header: "Date",
+      header: ts("date"),
       sortable: true,
-      render: (slot) => formatDate(slot.slotDate),
+      render: (slot) => formatDate(slot.slotDate, locale),
     },
     {
       key: "startTime",
-      header: "Time",
-      render: (slot) => `${formatTime(slot.startTime)} – ${formatTime(slot.endTime)}`,
+      header: ts("time"),
+      render: (slot) => `${formatTime(slot.startTime, locale)} – ${formatTime(slot.endTime, locale)}`,
     },
     {
       key: "status",
-      header: "Status",
+      header: ts("status"),
       render: (slot) => <StatusBadge status={slot.status} />,
     },
     {
@@ -136,8 +140,8 @@ export default function AdminAppointmentSlotsPage() {
             variant="ghost"
             size="xs"
             onClick={() => setEditing(slot)}
-            aria-label={`Edit slot for ${slot.doctor.displayName} on ${formatDate(slot.slotDate)}`}
-            title={`Edit slot for ${slot.doctor.displayName} on ${formatDate(slot.slotDate)}`}
+            aria-label={t("editAria", { name: slot.doctor.displayName, date: formatDate(slot.slotDate, locale) })}
+            title={t("editAria", { name: slot.doctor.displayName, date: formatDate(slot.slotDate, locale) })}
           >
             <Pencil className="size-4" />
           </Button>
@@ -145,35 +149,35 @@ export default function AdminAppointmentSlotsPage() {
             variant="ghost"
             size="xs"
             onClick={() => setDeleting(slot)}
-            aria-label={`Delete slot for ${slot.doctor.displayName} on ${formatDate(slot.slotDate)}`}
-            title={`Delete slot for ${slot.doctor.displayName} on ${formatDate(slot.slotDate)}`}
+            aria-label={t("deleteAria", { name: slot.doctor.displayName, date: formatDate(slot.slotDate, locale) })}
+            title={t("deleteAria", { name: slot.doctor.displayName, date: formatDate(slot.slotDate, locale) })}
           >
             <Trash2 className="size-4" />
           </Button>
         </div>
       ),
     },
-  ], []);
+  ], [ts, t, locale]);
 
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Appointment Slots
+            {t("title")}
           </h1>
           <p className="text-lg text-muted-foreground">
-            Manage bookable appointment slots.
+            {t("subtitle")}
           </p>
         </div>
         <Button onClick={() => setCreating(true)}>
           <Plus className="size-4" />
-          Add slot
+          {t("add")}
         </Button>
       </header>
 
       {isError ? (
-        <ErrorBanner message="Could not load appointment slots." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       ) : (
         <>
           <div className="flex flex-col gap-4 md:hidden">
@@ -187,8 +191,8 @@ export default function AdminAppointmentSlotsPage() {
               <div className="rounded-xl border border-border">
                 <EmptyState
                   icon={<CalendarRange className="size-12" />}
-                  title="No slots yet"
-                  description="Create appointment slots for doctors to fill their schedule."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               </div>
             ) : (
@@ -218,8 +222,8 @@ export default function AdminAppointmentSlotsPage() {
                           variant="ghost"
                           size="xs"
                           onClick={() => setEditing(slot)}
-                          aria-label={`Edit slot for ${slot.doctor.displayName} on ${formatDate(slot.slotDate)}`}
-                          title={`Edit slot for ${slot.doctor.displayName} on ${formatDate(slot.slotDate)}`}
+                          aria-label={t("editAria", { name: slot.doctor.displayName, date: formatDate(slot.slotDate, locale) })}
+                          title={t("editAria", { name: slot.doctor.displayName, date: formatDate(slot.slotDate, locale) })}
                         >
                           <Pencil className="size-4" />
                         </Button>
@@ -227,8 +231,8 @@ export default function AdminAppointmentSlotsPage() {
                           variant="ghost"
                           size="xs"
                           onClick={() => setDeleting(slot)}
-                          aria-label={`Delete slot for ${slot.doctor.displayName} on ${formatDate(slot.slotDate)}`}
-                          title={`Delete slot for ${slot.doctor.displayName} on ${formatDate(slot.slotDate)}`}
+                          aria-label={t("deleteAria", { name: slot.doctor.displayName, date: formatDate(slot.slotDate, locale) })}
+                          title={t("deleteAria", { name: slot.doctor.displayName, date: formatDate(slot.slotDate, locale) })}
                         >
                           <Trash2 className="size-4" />
                         </Button>
@@ -242,15 +246,15 @@ export default function AdminAppointmentSlotsPage() {
                     </div>
                     <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border/60 pt-3 text-xs">
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Date</dt>
+                        <dt className="text-muted-foreground">{ts("date")}</dt>
                         <dd className="whitespace-nowrap text-foreground">
-                          {formatDate(slot.slotDate)}
+                          {formatDate(slot.slotDate, locale)}
                         </dd>
                       </div>
                       <div className="flex flex-col">
-                        <dt className="text-muted-foreground">Time</dt>
+                        <dt className="text-muted-foreground">{ts("time")}</dt>
                         <dd className="whitespace-nowrap text-foreground">
-                          {formatTime(slot.startTime)} – {formatTime(slot.endTime)}
+                          {formatTime(slot.startTime, locale)} – {formatTime(slot.endTime, locale)}
                         </dd>
                       </div>
                     </dl>
@@ -269,8 +273,8 @@ export default function AdminAppointmentSlotsPage() {
               emptyState={
                 <EmptyState
                   icon={<CalendarRange className="size-12" />}
-                  title="No slots yet"
-                  description="Create appointment slots for doctors to fill their schedule."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               }
             />
@@ -323,9 +327,9 @@ export default function AdminAppointmentSlotsPage() {
           onConfirm={() =>
             deleteSlot(deleting.id, { onSuccess: () => setDeleting(null) })
           }
-          title="Delete slot"
-          message={`Delete the appointment slot on ${formatDate(deleting.slotDate)}? The slot will be soft-deleted.`}
-          confirmLabel="Delete"
+          title={t("deleteTitle")}
+          message={t("deleteMessage", { date: formatDate(deleting.slotDate, locale) })}
+          confirmLabel={ts("delete")}
           isLoading={isDeleting}
         />
       )}

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import { Pencil, Plus, Stethoscope, Trash2 } from "lucide-react";
 import type { Column, DataTableProps } from "@/components/data/DataTable";
 import { ErrorBanner } from "@/components/feedback/ErrorBanner";
@@ -34,6 +35,8 @@ import type { SpecialtyRecord } from "@/types/models/specialty";
 import type { CreateSpecialtyInput, UpdateSpecialtyInput } from "@/schemas/specialty";
 
 export default function AdminSpecialtiesPage() {
+  const t = useTranslations("adminSpecialties");
+  const ts = useTranslations("adminShared");
   const {
     data: specialties,
     isPending,
@@ -49,7 +52,7 @@ export default function AdminSpecialtiesPage() {
   const [deleting, setDeleting] = useState<SpecialtyRecord | null>(null);
 
   const columns: Column<SpecialtyRecord>[] = useMemo(() => [
-    { key: "name", header: "Name", sortable: true },
+    { key: "name", header: ts("name"), sortable: true },
     {
       key: "actions",
       header: "",
@@ -60,8 +63,8 @@ export default function AdminSpecialtiesPage() {
             variant="ghost"
             size="xs"
             onClick={() => setEditing(specialty)}
-            aria-label={`Edit ${specialty.name}`}
-            title={`Edit ${specialty.name}`}
+            aria-label={ts("editName", { name: specialty.name })}
+            title={ts("editName", { name: specialty.name })}
           >
             <Pencil className="size-4" />
           </Button>
@@ -69,35 +72,35 @@ export default function AdminSpecialtiesPage() {
             variant="ghost"
             size="xs"
             onClick={() => setDeleting(specialty)}
-            aria-label={`Delete ${specialty.name}`}
-            title={`Delete ${specialty.name}`}
+            aria-label={ts("deleteName", { name: specialty.name })}
+            title={ts("deleteName", { name: specialty.name })}
           >
             <Trash2 className="size-4" />
           </Button>
         </div>
       ),
     },
-  ], []);
+  ], [ts]);
 
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Specialties
+            {t("title")}
           </h1>
           <p className="text-lg text-muted-foreground">
-            Manage medical specialties.
+            {t("subtitle")}
           </p>
         </div>
         <Button onClick={() => setCreating(true)}>
           <Plus className="size-4" />
-          Add specialty
+          {t("add")}
         </Button>
       </header>
 
       {isError ? (
-        <ErrorBanner message="Could not load specialties." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       ) : (
         <>
           <div className="flex flex-col gap-4 md:hidden">
@@ -111,8 +114,8 @@ export default function AdminSpecialtiesPage() {
               <div className="rounded-xl border border-border">
                 <EmptyState
                   icon={<Stethoscope className="size-12" />}
-                  title="No specialties yet"
-                  description="Create your first specialty to get started."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               </div>
             ) : (
@@ -132,8 +135,8 @@ export default function AdminSpecialtiesPage() {
                         variant="ghost"
                         size="xs"
                         onClick={() => setEditing(specialty)}
-                        aria-label={`Edit ${specialty.name}`}
-                        title={`Edit ${specialty.name}`}
+                        aria-label={ts("editName", { name: specialty.name })}
+                        title={ts("editName", { name: specialty.name })}
                       >
                         <Pencil className="size-4" />
                       </Button>
@@ -141,8 +144,8 @@ export default function AdminSpecialtiesPage() {
                         variant="ghost"
                         size="xs"
                         onClick={() => setDeleting(specialty)}
-                        aria-label={`Delete ${specialty.name}`}
-                        title={`Delete ${specialty.name}`}
+                        aria-label={ts("deleteName", { name: specialty.name })}
+                        title={ts("deleteName", { name: specialty.name })}
                       >
                         <Trash2 className="size-4" />
                       </Button>
@@ -162,8 +165,8 @@ export default function AdminSpecialtiesPage() {
               emptyState={
                 <EmptyState
                   icon={<Stethoscope className="size-12" />}
-                  title="No specialties yet"
-                  description="Create your first specialty to get started."
+                  title={t("emptyTitle")}
+                  description={t("emptyDesc")}
                 />
               }
             />
@@ -204,9 +207,9 @@ export default function AdminSpecialtiesPage() {
           onConfirm={() =>
             deleteSpecialty(deleting.id, { onSuccess: () => setDeleting(null) })
           }
-          title="Delete specialty"
-          message={`Delete ${deleting.name}? This cannot be undone. Deleting fails if any doctor is assigned to this specialty.`}
-          confirmLabel="Delete"
+          title={t("deleteTitle")}
+          message={t("deleteMessage", { name: deleting.name })}
+          confirmLabel={ts("delete")}
           isLoading={isDeleting}
         />
       )}

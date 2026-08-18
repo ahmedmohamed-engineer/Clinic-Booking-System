@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,6 +41,10 @@ export function AppointmentDetailModal({
   isSubmitting,
 }: AppointmentDetailModalProps) {
   const { parse } = useApiError();
+  const t = useTranslations("adminForm");
+  const tc = useTranslations("common");
+  const tStatus = useTranslations("status");
+  const locale = useLocale();
   const [status, setStatus] = useState(appointment.status);
   const [notes, setNotes] = useState(appointment.notes ?? "");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -75,16 +80,16 @@ export function AppointmentDetailModal({
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Appointment details</DialogTitle>
+          <DialogTitle>{t("appointmentDetails")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4">
           <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3">
             <div className="flex flex-col gap-1 text-sm">
               <span className="text-muted-foreground">
-                Patient: <span className="font-medium text-foreground">{appointment.patient.fullName}</span>
+                {t("patientLabel", { name: appointment.patient.fullName })}
               </span>
               <span className="text-muted-foreground">
-                Slot: <span className="font-medium text-foreground">{formatDateTime(appointment.slot.date, appointment.slot.startTime)}</span>
+                {t("slotLabel", { date: formatDateTime(appointment.slot.date, appointment.slot.startTime, locale) })}
               </span>
             </div>
             <StatusBadge status={appointment.status} />
@@ -101,7 +106,7 @@ export function AppointmentDetailModal({
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="status">{t("status")}</Label>
               <Select
                 value={status}
                 onValueChange={(value) =>
@@ -110,12 +115,12 @@ export function AppointmentDetailModal({
                 disabled={isSubmitting}
               >
                 <SelectTrigger id="status" className="w-full">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder={t("selectStatus")} />
                 </SelectTrigger>
                 <SelectContent>
                   {APPOINTMENT_STATUSES.map((option) => (
                     <SelectItem key={option} value={option}>
-                      {option.replace(/_/g, " ")}
+                      {tStatus(option)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -126,7 +131,7 @@ export function AppointmentDetailModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes">Notes (optional)</Label>
+              <Label htmlFor="notes">{t("notes")}</Label>
               <Textarea
                 id="notes"
                 value={notes}
@@ -142,10 +147,10 @@ export function AppointmentDetailModal({
 
             <div className="flex justify-end gap-3">
               <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
-                Close
+                {tc("close")}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save changes"}
+                {isSubmitting ? tc("saving") : tc("save")}
               </Button>
             </div>
           </form>

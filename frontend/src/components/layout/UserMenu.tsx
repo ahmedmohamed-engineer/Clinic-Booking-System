@@ -1,7 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { ChevronDown, LogOut, UserRound } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { useLogout } from "@/features/auth/hooks/use-logout";
 import { Avatar } from "@/components/ui/avatar";
@@ -23,6 +24,7 @@ export function UserMenu({ profileHref = "/profile" }: UserMenuProps) {
   const { user } = useAuth();
   const { submit: logout, isPending } = useLogout();
   const router = useRouter();
+  const t = useTranslations();
 
   if (!user) return null;
 
@@ -50,12 +52,12 @@ export function UserMenu({ profileHref = "/profile" }: UserMenuProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => router.push(profileHref)}>
           <UserRound className="size-4" aria-hidden="true" />
-          Profile
+          {t("userMenu.profile")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => logout()} disabled={isPending}>
           <LogOut className="size-4" aria-hidden="true" />
-          {isPending ? "Signing out..." : "Logout"}
+          {isPending ? t("common.signingOut") : t("common.signOut")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

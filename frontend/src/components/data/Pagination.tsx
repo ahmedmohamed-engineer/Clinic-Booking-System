@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,8 @@ export function Pagination({
   onPageSizeChange,
   className,
 }: PaginationProps) {
+  const t = useTranslations("dataTable");
+
   if (totalPages <= 1 && !onPageSizeChange) return null;
 
   const handlePagePrefetch = (target: number) => {
@@ -48,7 +51,7 @@ export function Pagination({
     <div className={cn("flex flex-col items-center justify-between gap-3 sm:flex-row", className)}>
       {onPageSizeChange && (
         <label className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span>Rows per page</span>
+          <span>{t("rowsPerPage")}</span>
           <select
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
@@ -64,9 +67,9 @@ export function Pagination({
       )}
       <div className="flex flex-col items-center gap-2">
         <p className="text-xs text-muted-foreground" aria-live="polite">
-          Page {page} of {totalPages}
+          {t("pageOf", { page, total: totalPages })}
         </p>
-        <nav className="flex items-center justify-center gap-1" aria-label="Pagination">
+        <nav className="flex items-center justify-center gap-1" aria-label={t("label")}>
         <Button
           variant="outline"
           size="xs"
@@ -74,9 +77,9 @@ export function Pagination({
           onClick={() => onPageChange(page - 1)}
           onMouseEnter={() => handlePagePrefetch(page - 1)}
           onFocus={() => handlePagePrefetch(page - 1)}
-          aria-label="Previous page"
+          aria-label={t("previous")}
         >
-          <ChevronLeft className="size-4" />
+          <ChevronLeft className="size-4 rtl:rotate-180" />
         </Button>
 
         {pages.map((p, i) =>
@@ -106,9 +109,9 @@ export function Pagination({
           onClick={() => onPageChange(page + 1)}
           onMouseEnter={() => handlePagePrefetch(page + 1)}
           onFocus={() => handlePagePrefetch(page + 1)}
-          aria-label="Next page"
+          aria-label={t("next")}
         >
-          <ChevronRight className="size-4" />
+          <ChevronRight className="size-4 rtl:rotate-180" />
         </Button>
       </nav>
       </div>
