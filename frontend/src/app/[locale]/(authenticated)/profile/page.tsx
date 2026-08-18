@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import { Building2, Mail, Pencil, Plus, Stethoscope, X } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { usePatientProfile, useUpdateProfile } from "@/features/patients";
 import { useDoctorProfile, useUpdateDoctorProfile } from "@/features/doctors";
-import { ProfileForm } from "@/components/business/ProfileForm";
-import { DoctorProfileForm } from "@/components/business/DoctorProfileForm";
 import { AvatarUploader } from "@/components/business/AvatarUploader";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +21,30 @@ import { Skeleton } from "@/components/feedback/Skeleton";
 import { ErrorBanner } from "@/components/feedback/ErrorBanner";
 import { formatCurrency, formatDate, resolveDisplayName } from "@/lib/utils";
 
+/* The edit forms bundle the date-picker calendar, popover, and select
+   controls — a large chunk that only matters while the user is editing.
+   They are split into their own chunk and fetched on first click of
+   "Edit", so the read view of the profile stays light. */
+const ProfileForm = dynamic(
+  () =>
+    import("@/components/business/ProfileForm").then((mod) => mod.ProfileForm),
+  {
+    loading: () => <Skeleton variant="form" className="h-56" />,
+    ssr: false,
+  },
+);
+
+const DoctorProfileForm = dynamic(
+  () =>
+    import("@/components/business/DoctorProfileForm").then(
+      (mod) => mod.DoctorProfileForm,
+    ),
+  {
+    loading: () => <Skeleton variant="form" className="h-56" />,
+    ssr: false,
+  },
+);
+
 function InfoRow({
   label,
   value,
@@ -30,14 +54,16 @@ function InfoRow({
   value?: ReactNode;
   children?: ReactNode;
 }) {
+  const t = useTranslations("common");
+
   return (
     <div className="flex min-w-0 flex-col gap-1">
       <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
       <dd className="min-w-0 break-words text-sm text-foreground">
         {children ?? value ?? (
-          <span className="inline-flex items-center gap-1.5 rounded-md border border-dashed border-border px-2 py-1 text-xs text-muted-foreground" aria-label={`${label} not set`}>
+          <span className="inline-flex items-center gap-1.5 rounded-md border border-dashed border-border px-2 py-1 text-xs text-muted-foreground" aria-label={t("notSetAria", { label })}>
             <Plus className="size-3" aria-hidden="true" />
-            Not set — click Edit to add
+            {t("notSet")}
           </span>
         )}
       </dd>
@@ -50,11 +76,9 @@ function formatGender(gender: string | null | undefined): string | undefined {
   return gender.charAt(0).toUpperCase() + gender.slice(1);
 }
 
-function formatRole(role: string): string {
-  return role.charAt(0).toUpperCase() + role.slice(1);
-}
-
 function PatientProfileContent() {
+  const t = useTranslations("profile");
+  const tc = useTranslations("common");
   const { user, updateUser } = useAuth();
   const { data: patient, isPending, isError, refetch } = usePatientProfile();
   const { mutateAsync: updateProfile, isPending: isSaving } = useUpdateProfile();
@@ -63,7 +87,7 @@ function PatientProfileContent() {
   if (isError) {
     return (
       <div className="p-6">
-        <ErrorBanner message="Could not load your profile." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       </div>
     );
   }
@@ -91,8 +115,8 @@ function PatientProfileContent() {
     <main className="container-custom py-10">
       <div className="mx-auto max-w-5xl">
         <header className="flex flex-col gap-1">
-          <h1 className="heading-1">Profile</h1>
-          <p className="body-text">Manage your personal information.</p>
+          <h1 className="heading-1">{t("title")}</h1>
+          <p className="body-text">{t("patientSubtitle")}</p>
         </header>
 
         <section className="mt-8 flex flex-col items-center gap-4 border-b border-border pb-8">
@@ -107,7 +131,7 @@ function PatientProfileContent() {
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
+              <CardTitle>{t("personalInfo")}</CardTitle>
               <CardAction>
                 {!isEditing && (
                   <Button
@@ -117,7 +141,7 @@ function PatientProfileContent() {
                     onClick={() => setIsEditing(true)}
                   >
                     <Pencil className="size-3.5" aria-hidden="true" />
-                    Edit
+                    {tc("edit")}
                   </Button>
                 )}
               </CardAction>
@@ -152,7 +176,7 @@ function PatientProfileContent() {
                     disabled={isSaving}
                   >
                     <X className="size-4" aria-hidden="true" />
-                    Cancel
+                    {tc("cancel")}
                   </Button>
                   <Button
                     type="submit"
@@ -160,24 +184,24 @@ function PatientProfileContent() {
                     className="w-full sm:w-auto"
                     disabled={isSaving}
                   >
-                    {isSaving ? "Saving..." : "Save changes"}
+                    {isSaving ? tc("saving") : tc("save")}
                   </Button>
                 </CardFooter>
               </>
             ) : (
               <CardContent>
                 <dl className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-                  <InfoRow label="Full name" value={displayName} />
+                  <InfoRow label={t("fullName")} value={displayName} />
                   <InfoRow
-                    label="Phone"
+                    label={t("phone")}
                     value={patient.phone ?? undefined}
                   />
                   <InfoRow
-                    label="Gender"
+                    label={t("gender")}
                     value={formatGender(patient.gender)}
                   />
                   <InfoRow
-                    label="Birth date"
+                    label={t("birthDate")}
                     value={patient.birthDate ? formatDate(patient.birthDate) : undefined}
                   />
                 </dl>
@@ -193,6 +217,8 @@ function PatientProfileContent() {
 }
 
 function DoctorProfileContent() {
+  const t = useTranslations("profile");
+  const tc = useTranslations("common");
   const { user, updateUser } = useAuth();
   const { data: doctor, isPending, isError, refetch } = useDoctorProfile();
   const { mutateAsync: updateProfile, isPending: isSaving } = useUpdateDoctorProfile();
@@ -201,7 +227,7 @@ function DoctorProfileContent() {
   if (isError) {
     return (
       <div className="p-6">
-        <ErrorBanner message="Could not load your profile." onRetry={refetch} />
+        <ErrorBanner message={t("error")} onRetry={refetch} />
       </div>
     );
   }
@@ -229,8 +255,8 @@ function DoctorProfileContent() {
     <main className="container-custom py-10">
       <div className="mx-auto max-w-5xl">
         <header className="flex flex-col gap-1">
-          <h1 className="heading-1">Profile</h1>
-          <p className="body-text">Manage your professional information.</p>
+          <h1 className="heading-1">{t("title")}</h1>
+          <p className="body-text">{t("doctorSubtitle")}</p>
         </header>
 
         <section className="mt-8 flex flex-col items-center gap-4 border-b border-border pb-8">
@@ -245,7 +271,7 @@ function DoctorProfileContent() {
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle>Professional Information</CardTitle>
+              <CardTitle>{t("professionalInfo")}</CardTitle>
               <CardAction>
                 {!isEditing && (
                   <Button
@@ -255,7 +281,7 @@ function DoctorProfileContent() {
                     onClick={() => setIsEditing(true)}
                   >
                     <Pencil className="size-3.5" aria-hidden="true" />
-                    Edit
+                    {tc("edit")}
                   </Button>
                 )}
               </CardAction>
@@ -289,7 +315,7 @@ function DoctorProfileContent() {
                     disabled={isSaving}
                   >
                     <X className="size-4" aria-hidden="true" />
-                    Cancel
+                    {tc("cancel")}
                   </Button>
                   <Button
                     type="submit"
@@ -297,15 +323,15 @@ function DoctorProfileContent() {
                     className="w-full sm:w-auto"
                     disabled={isSaving}
                   >
-                    {isSaving ? "Saving..." : "Save changes"}
+                    {isSaving ? tc("saving") : tc("save")}
                   </Button>
                 </CardFooter>
               </>
             ) : (
               <CardContent>
                 <dl className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-                  <InfoRow label="Full name" value={displayName} />
-                  <InfoRow label="Specialty">
+                  <InfoRow label={t("fullName")} value={displayName} />
+                  <InfoRow label={t("specialty")}>
                     <span className="flex min-w-0 items-center gap-2">
                       <Stethoscope
                         className="size-4 shrink-0 text-muted-foreground"
@@ -314,7 +340,7 @@ function DoctorProfileContent() {
                       <span className="min-w-0 break-words">{doctor.doctor.specialtyName}</span>
                     </span>
                   </InfoRow>
-                  <InfoRow label="Clinic">
+                  <InfoRow label={t("clinic")}>
                     <span className="flex min-w-0 items-center gap-2">
                       <Building2
                         className="size-4 shrink-0 text-muted-foreground"
@@ -324,7 +350,7 @@ function DoctorProfileContent() {
                     </span>
                   </InfoRow>
                   <InfoRow
-                    label="Consultation fee"
+                    label={t("fee")}
                     value={
                       doctor.consultationFee != null
                         ? formatCurrency(doctor.consultationFee)
@@ -344,16 +370,24 @@ function DoctorProfileContent() {
 }
 
 function AccountCard() {
+  const t = useTranslations("profile");
+  const ta = useTranslations("admin");
   const { user } = useAuth();
+
+  const roleLookup: Record<string, string> = {
+    patient: ta("roles.patient"),
+    doctor: ta("roles.doctor"),
+    admin: ta("roles.admin"),
+  };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Account</CardTitle>
+        <CardTitle>{t("account")}</CardTitle>
       </CardHeader>
       <CardContent>
         <dl className="flex flex-col gap-5">
-          <InfoRow label="Email">
+          <InfoRow label={t("email")}>
             <span className="flex min-w-0 items-center gap-2">
               <Mail
                 className="size-4 shrink-0 text-muted-foreground"
@@ -363,8 +397,8 @@ function AccountCard() {
             </span>
           </InfoRow>
           <InfoRow
-            label="Role"
-            value={user?.role ? formatRole(user.role) : "—"}
+            label={t("role")}
+            value={user?.role ? roleLookup[user.role] ?? user.role : "—"}
           />
         </dl>
       </CardContent>
