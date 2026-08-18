@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { TimeBlock } from "@/components/business/TimeBlock";
 import type { DoctorScheduleRecord } from "@/types/models/schedule";
 
@@ -8,9 +9,20 @@ interface WeeklyCalendarProps {
   className?: string;
 }
 
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
 export function WeeklyCalendar({ schedules, className }: WeeklyCalendarProps) {
+  const td = useTranslations("weekdays");
+  const tb = useTranslations("business.weeklyCalendar");
+
+  const days = [
+    td("sunday"),
+    td("monday"),
+    td("tuesday"),
+    td("wednesday"),
+    td("thursday"),
+    td("friday"),
+    td("saturday"),
+  ];
+
   return (
     <div
       className={
@@ -18,7 +30,7 @@ export function WeeklyCalendar({ schedules, className }: WeeklyCalendarProps) {
         (className ? ` ${className}` : "")
       }
     >
-      {DAYS.map((day, index) => {
+      {days.map((day, index) => {
         const entries = schedules.filter((schedule) => schedule.weekday === index);
         return (
           <div
@@ -39,7 +51,7 @@ export function WeeklyCalendar({ schedules, className }: WeeklyCalendarProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">Off</p>
+              <p className="text-sm text-muted-foreground">{tb("off")}</p>
             )}
           </div>
         );

@@ -1,6 +1,7 @@
 "use client";
 
 import type { ClinicRecord } from "@/types/models/clinic";
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Building2, MapPin, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,8 @@ export function ClinicSelector({
   onSelect,
   isLoading,
 }: ClinicSelectorProps) {
+  const t = useTranslations("clinicSelector");
+
   if (isLoading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -36,7 +39,7 @@ export function ClinicSelector({
   if (clinics.length === 0) {
     return (
       <div className="py-12 text-center text-muted-foreground">
-        No clinics available at the moment.
+        {t("empty")}
       </div>
     );
   }

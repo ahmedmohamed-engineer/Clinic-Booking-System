@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +24,7 @@ interface PaymentFormProps {
 }
 
 export function PaymentForm({ payment, onSubmit, isSubmitting }: PaymentFormProps) {
+  const t = useTranslations("adminForm");
   const { parse } = useApiError();
   const [method, setMethod] = useState(payment.method);
   const [transactionReference, setTransactionReference] = useState(
@@ -71,7 +73,7 @@ export function PaymentForm({ payment, onSubmit, isSubmitting }: PaymentFormProp
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="amount">Amount</Label>
+        <Label htmlFor="amount">{t("amount")}</Label>
         <Input
           id="amount"
           name="amount"
@@ -83,14 +85,14 @@ export function PaymentForm({ payment, onSubmit, isSubmitting }: PaymentFormProp
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="method">Payment method</Label>
+        <Label htmlFor="method">{t("paymentMethod")}</Label>
         <Select
           value={method}
           onValueChange={(value) => setMethod(value as typeof method)}
           disabled={isSubmitting}
         >
           <SelectTrigger id="method" className="w-full">
-            <SelectValue placeholder="Select payment method" />
+            <SelectValue placeholder={t("selectPaymentMethod")} />
           </SelectTrigger>
           <SelectContent>
             {PAYMENT_METHODS.map((option) => (
@@ -106,7 +108,7 @@ export function PaymentForm({ payment, onSubmit, isSubmitting }: PaymentFormProp
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="transactionReference">Transaction reference (optional)</Label>
+        <Label htmlFor="transactionReference">{t("transactionReference")}</Label>
         <Input
           id="transactionReference"
           name="transactionReference"
@@ -124,7 +126,7 @@ export function PaymentForm({ payment, onSubmit, isSubmitting }: PaymentFormProp
 
       <div className="flex justify-end">
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Submit payment"}
+          {isSubmitting ? t("submitting") : t("submitPayment")}
         </Button>
       </div>
     </form>

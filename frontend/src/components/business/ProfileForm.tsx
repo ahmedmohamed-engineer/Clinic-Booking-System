@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CalendarIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +22,7 @@ import {
 import { updatePatientSchema, type UpdatePatientInput } from "@/schemas/patient";
 import type { PatientRecord } from "@/types/models/patient";
 import { formatDate } from "@/lib/utils";
+import { ar as arLocale } from "react-day-picker/locale";
 import { useApiError } from "@/hooks/useApiError";
 
 interface ProfileFormProps {
@@ -57,6 +59,10 @@ export function ProfileForm({
   formId,
   hideActions = false,
 }: ProfileFormProps) {
+  const tp = useTranslations("profile");
+  const tf = useTranslations("adminForm");
+  const tc = useTranslations("common");
+  const locale = useLocale();
   const { parse } = useApiError();
   const [fullName, setFullName] = useState(patient.fullName);
   const [phone, setPhone] = useState(patient.phone ?? "");
@@ -108,7 +114,7 @@ export function ProfileForm({
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="fullName">Full name</Label>
+        <Label htmlFor="fullName">{tp("fullName")}</Label>
         <Input
           id="fullName"
           name="fullName"
@@ -132,7 +138,7 @@ export function ProfileForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="phone">Phone</Label>
+        <Label htmlFor="phone">{tp("phone")}</Label>
         <Input
           id="phone"
           name="phone"
@@ -157,14 +163,14 @@ export function ProfileForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="gender">Gender</Label>
+        <Label htmlFor="gender">{tp("gender")}</Label>
         <Select
           value={gender}
           onValueChange={(value) => setGender(value ?? "")}
           disabled={isSubmitting}
         >
           <SelectTrigger id="gender" className="w-full">
-            <SelectValue placeholder="Select gender" />
+            <SelectValue placeholder={tf("selectGender")} />
           </SelectTrigger>
           <SelectContent>
             {GENDER_OPTIONS.map((option) => (
@@ -180,13 +186,13 @@ export function ProfileForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Birth date</Label>
+        <Label>{tp("birthDate")}</Label>
         <Popover>
           <PopoverTrigger
             className="flex w-full items-center justify-between gap-2 rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className={birthDate ? "text-foreground" : "text-muted-foreground"}>
-              {birthDate ? formatDate(birthDate) : "Select a date"}
+              {birthDate ? formatDate(birthDate, locale) : tf("selectDate")}
             </span>
             <CalendarIcon className="size-4 text-muted-foreground" aria-hidden="true" />
           </PopoverTrigger>
@@ -199,6 +205,7 @@ export function ProfileForm({
               startMonth={new Date(1900, 0)}
               endMonth={new Date(new Date().getFullYear(), 11)}
               disabled={{ after: new Date() }}
+              locale={locale === "ar" ? arLocale : undefined}
             />
           </PopoverContent>
         </Popover>
@@ -210,7 +217,7 @@ export function ProfileForm({
       {!hideActions && (
           <div className="flex justify-end">
             <Button type="submit" form={formId} disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save changes"}
+              {isSubmitting ? tc("saving") : tc("save")}
             </Button>
           </div>
         )}

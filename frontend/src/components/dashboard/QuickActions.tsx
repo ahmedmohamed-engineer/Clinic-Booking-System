@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { CalendarPlus, CalendarDays, ChevronRight, CreditCard, Star } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface QuickAction {
@@ -8,19 +9,21 @@ interface QuickAction {
   icon: typeof CalendarPlus;
 }
 
-const actions: QuickAction[] = [
-  { label: "Book Appointment", href: "/book", icon: CalendarPlus },
-  { label: "View Appointments", href: "/appointments", icon: CalendarDays },
-  { label: "Payments", href: "/payments", icon: CreditCard },
-  { label: "Leave a Review", href: "/reviews", icon: Star },
-];
-
 export function QuickActions() {
+  const t = useTranslations("quickActions");
+
+  const actions: QuickAction[] = [
+    { label: t("book"), href: "/book", icon: CalendarPlus },
+    { label: t("view"), href: "/appointments", icon: CalendarDays },
+    { label: t("payments"), href: "/payments", icon: CreditCard },
+    { label: t("review"), href: "/reviews", icon: Star },
+  ];
+
   return (
     <Card className="animate-fade-in">
       <div className="border-b border-border/60 px-(--card-spacing) py-(--card-spacing)">
         <h2 id="quick-actions-heading" className="heading-2">
-          Quick actions
+          {t("title")}
         </h2>
       </div>
       <CardContent className="flex flex-col p-(--card-spacing)">
@@ -35,7 +38,7 @@ export function QuickActions() {
             </span>
             <span className="flex-1 text-sm font-medium text-foreground">{label}</span>
             <ChevronRight
-              className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+              className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 rtl:-translate-x-0.5 rtl:rotate-180"
               aria-hidden="true"
             />
           </Link>

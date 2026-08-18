@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -72,6 +73,8 @@ export function DoctorFormModal({
   onSubmit,
   isSubmitting,
 }: DoctorFormModalProps) {
+  const t = useTranslations("adminForm");
+  const tc = useTranslations("common");
   const { parse } = useApiError();
   const [userId, setUserId] = useState(doctor?.userId ?? "");
   const [clinicId, setClinicId] = useState(doctor?.clinicId ?? "");
@@ -162,7 +165,7 @@ export function DoctorFormModal({
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{doctor ? "Edit doctor" : "Create doctor"}</DialogTitle>
+          <DialogTitle>{doctor ? t("editDoctor") : t("createDoctor")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4" noValidate>
           {formError && (
@@ -176,13 +179,13 @@ export function DoctorFormModal({
 
           {!doctor && (
             <div className="space-y-2">
-              <Label htmlFor="userSearch">User</Label>
+              <Label htmlFor="userSearch">{t("user")}</Label>
               <div className="relative">
-                <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Search className="pointer-events-none absolute top-1/2 start-3 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="userSearch"
                   type="search"
-                  placeholder="Search by email or full name"
+                  placeholder={t("userSearch")}
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -195,12 +198,12 @@ export function DoctorFormModal({
                       return next;
                     });
                   }}
-                  className="pl-9"
+                  className="ps-9"
                   disabled={isSubmitting}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Type at least 2 characters to search.
+                {t("typeToSearch")}
               </p>
 
               {matchedUser ? (
@@ -223,10 +226,10 @@ export function DoctorFormModal({
                   <RolePill role={matchedUser.role} />
                 </div>
               ) : searchStatus === "searching" ? (
-                <p className="text-xs text-muted-foreground">Searching…</p>
+                <p className="text-xs text-muted-foreground">{t("searching")}</p>
               ) : searchStatus === "done" && searchResults.length === 0 ? (
                 <p className="text-xs text-muted-foreground">
-                  No account found with this email or full name.
+                  {t("noAccountFound")}
                 </p>
               ) : searchStatus === "done" ? (
                 <div className="max-h-56 space-y-1 overflow-y-auto rounded-lg border border-border p-1">
@@ -238,8 +241,7 @@ export function DoctorFormModal({
                         if (user.role !== "doctor") {
                           setFieldErrors((prev) => ({
                             ...prev,
-                            userId:
-                              "This account is not a doctor. Change its role to Doctor on the Users page first.",
+                            userId: t("notDoctor"),
                           }));
                           return;
                         }
@@ -280,10 +282,10 @@ export function DoctorFormModal({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="clinicId">Clinic</Label>
+            <Label htmlFor="clinicId">{t("clinic")}</Label>
             <Select value={clinicId} onValueChange={(value) => setClinicId(value ?? "")} disabled={isSubmitting}>
               <SelectTrigger id="clinicId" className="w-full">
-                <SelectValue placeholder="Select clinic" />
+                <SelectValue placeholder={t("selectClinic")} />
               </SelectTrigger>
               <SelectContent>
                 {clinics.map((clinic) => (
@@ -299,14 +301,14 @@ export function DoctorFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="specialtyId">Specialty</Label>
+            <Label htmlFor="specialtyId">{t("specialty")}</Label>
             <Select
               value={specialtyId}
               onValueChange={(value) => setSpecialtyId(value ?? "")}
               disabled={isSubmitting}
             >
               <SelectTrigger id="specialtyId" className="w-full">
-                <SelectValue placeholder="Select specialty" />
+                <SelectValue placeholder={t("selectSpecialty")} />
               </SelectTrigger>
               <SelectContent>
                 {specialties.map((specialty) => (
@@ -323,7 +325,7 @@ export function DoctorFormModal({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="consultationFee">Consultation fee</Label>
+              <Label htmlFor="consultationFee">{t("consultationFee")}</Label>
               <Input
                 id="consultationFee"
                 type="number"
@@ -342,7 +344,7 @@ export function DoctorFormModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="experienceYears">Experience (years)</Label>
+              <Label htmlFor="experienceYears">{t("experienceYears")}</Label>
               <Input
                 id="experienceYears"
                 type="number"
@@ -362,7 +364,7 @@ export function DoctorFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="bio">Bio (optional)</Label>
+            <Label htmlFor="bio">{t("bio")}</Label>
             <Textarea
               id="bio"
               value={bio}
@@ -373,10 +375,10 @@ export function DoctorFormModal({
 
           <div className="mt-6 flex justify-end gap-3">
             <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : doctor ? "Save changes" : "Create doctor"}
+              {isSubmitting ? tc("saving") : doctor ? tc("save") : t("createDoctor")}
             </Button>
           </div>
         </form>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,6 +39,8 @@ export function ClinicFormModal({
   onSubmit,
   isSubmitting,
 }: ClinicFormModalProps) {
+  const t = useTranslations("adminForm");
+  const tc = useTranslations("common");
   const { parse } = useApiError();
   const [name, setName] = useState(clinic?.name ?? "");
   const [phone, setPhone] = useState(clinic?.phone ?? "");
@@ -83,7 +86,7 @@ export function ClinicFormModal({
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{clinic ? "Edit clinic" : "Create clinic"}</DialogTitle>
+          <DialogTitle>{clinic ? t("editClinic") : t("createClinic")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4" noValidate>
           {formError && (
@@ -96,7 +99,7 @@ export function ClinicFormModal({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{t("name")}</Label>
             <Input
               id="name"
               value={name}
@@ -110,7 +113,7 @@ export function ClinicFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone (optional)</Label>
+            <Label htmlFor="phone">{t("phoneOptional")}</Label>
             <Input
               id="phone"
               value={phone}
@@ -124,7 +127,7 @@ export function ClinicFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="address">Address (optional)</Label>
+            <Label htmlFor="address">{t("address")}</Label>
             <Input
               id="address"
               value={address}
@@ -134,7 +137,7 @@ export function ClinicFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="city">City (optional)</Label>
+            <Label htmlFor="city">{t("cityOptional")}</Label>
             <Input
               id="city"
               value={city}
@@ -148,7 +151,7 @@ export function ClinicFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description (optional)</Label>
+            <Label htmlFor="description">{t("description")}</Label>
             <Textarea
               id="description"
               value={description}
@@ -159,10 +162,14 @@ export function ClinicFormModal({
 
           <div className="mt-6 flex justify-end gap-3">
             <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : clinic ? "Save changes" : "Create clinic"}
+              {isSubmitting
+                ? tc("saving")
+                : clinic
+                  ? tc("save")
+                  : t("createClinic")}
             </Button>
           </div>
         </form>

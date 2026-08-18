@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 type StatusTone = "success" | "info" | "warning" | "danger" | "neutral";
@@ -24,13 +25,37 @@ const statusToneMap: Record<string, StatusTone> = {
   refunded: "neutral",
 };
 
+const TRANSLATED_STATUSES = [
+  "scheduled",
+  "confirmed",
+  "booked",
+  "available",
+  "completed",
+  "paid",
+  "pending",
+  "cancelled",
+  "failed",
+  "no_show",
+  "refunded",
+] as const;
+
+type StatusKey = (typeof TRANSLATED_STATUSES)[number];
+
 interface StatusBadgeProps {
   status: string;
   className?: string;
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
+  const t = useTranslations("status");
   const tone = statusToneMap[status] ?? "neutral";
+
+  const isTranslated = (TRANSLATED_STATUSES as readonly string[]).includes(
+    status,
+  );
+  const label = isTranslated
+    ? t(status as StatusKey)
+    : status.replace(/_/g, " ");
 
   return (
     <span
@@ -40,7 +65,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
         className,
       )}
     >
-      {status.replace(/_/g, " ")}
+      {label}
     </span>
   );
 }

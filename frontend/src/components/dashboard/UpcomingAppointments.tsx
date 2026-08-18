@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { AppointmentCard } from "@/components/business/AppointmentCard";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { AppointmentReadModel } from "@/types/models/appointment";
@@ -14,6 +15,8 @@ export function UpcomingAppointments({
   onCancel,
   isCancelling,
 }: UpcomingAppointmentsProps) {
+  const t = useTranslations("upcoming");
+
   return (
     <section
       aria-labelledby="upcoming-heading"
@@ -22,13 +25,13 @@ export function UpcomingAppointments({
       <Card>
         <CardHeader className="flex flex-col gap-2 border-b border-border/60 md:flex-row md:items-center md:justify-between">
           <h2 id="upcoming-heading" className="heading-2">
-            Upcoming appointments
+            {t("title")}
           </h2>
           <Link
             href="/appointments"
             className="w-fit text-sm font-semibold text-primary hover:text-primary/80 hover:underline"
           >
-            View all
+            {t("viewAll")}
           </Link>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/features/auth/hooks/use-auth";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useEffect, type ReactNode } from "react";
 import { getHomePathForRole } from "@/lib/routing";
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,6 +16,7 @@ interface ReviewFormProps {
 }
 
 export function ReviewForm({ appointmentId, onSubmit, isSubmitting }: ReviewFormProps) {
+  const t = useTranslations("adminForm");
   const { parse } = useApiError();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -60,7 +62,7 @@ export function ReviewForm({ appointmentId, onSubmit, isSubmitting }: ReviewForm
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="rating">Rating</Label>
+        <Label htmlFor="rating">{t("rating")}</Label>
         <div id="rating" className="flex items-center gap-2">
           <StarRating rating={rating} onChange={setRating} />
           {fieldErrors.rating && (
@@ -70,14 +72,14 @@ export function ReviewForm({ appointmentId, onSubmit, isSubmitting }: ReviewForm
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="comment">Comment (optional)</Label>
+        <Label htmlFor="comment">{t("commentOptional")}</Label>
         <Textarea
           id="comment"
           name="comment"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           maxLength={500}
-          placeholder="Share your experience (up to 500 characters)"
+          placeholder={t("reviewPlaceholder")}
           aria-invalid={Boolean(fieldErrors.comment)}
           disabled={isSubmitting}
         />
@@ -88,7 +90,7 @@ export function ReviewForm({ appointmentId, onSubmit, isSubmitting }: ReviewForm
 
       <div className="flex justify-end">
         <Button type="submit" disabled={isSubmitting || rating === 0}>
-          {isSubmitting ? "Submitting..." : "Submit review"}
+          {isSubmitting ? t("submitting") : t("submitReview")}
         </Button>
       </div>
     </form>

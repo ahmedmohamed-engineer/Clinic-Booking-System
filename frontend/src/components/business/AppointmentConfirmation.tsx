@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Calendar, Clock, Building2, User, DollarSign } from "lucide-react";
 import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
@@ -26,6 +27,10 @@ export function AppointmentConfirmation({
   consultationFee,
   onViewAppointments,
 }: AppointmentConfirmationProps) {
+  const t = useTranslations("confirmation");
+  const tl = useTranslations("logo");
+  const locale = useLocale();
+
   return (
     <div className="mx-auto max-w-lg space-y-6 py-6 text-center">
       <div className="flex justify-center">
@@ -36,10 +41,10 @@ export function AppointmentConfirmation({
 
       <div className="space-y-2">
         <h2 className="text-2xl font-bold text-foreground">
-          Appointment Booked Successfully!
+          {t("title")}
         </h2>
         <p className="text-sm text-muted-foreground">
-          Your appointment has been scheduled. You can view or manage it from your appointments dashboard.
+          {t("text")}
         </p>
       </div>
 
@@ -50,16 +55,16 @@ export function AppointmentConfirmation({
           className="absolute inset-x-2 -top-1.5 bottom-2 rotate-1 rounded-lg border border-border/70 bg-card/60 px-6 py-4 opacity-60"
         >
           <div className="heading-2 text-muted-foreground/40">
-            MediCare — Appointment prescription
+            {tl("tagline")}
           </div>
           <div className="mt-4 space-y-2 text-sm text-muted-foreground/40">
             <div className="flex justify-between">
-              <span>Specialist</span>
+              <span>{t("specialist")}</span>
               <span>{doctorName}</span>
             </div>
             <div className="flex justify-between">
-              <span>Date</span>
-              <span>{formatDate(date)}</span>
+              <span>{t("date")}</span>
+              <span>{formatDate(date, locale)}</span>
             </div>
           </div>
         </div>
@@ -70,7 +75,7 @@ export function AppointmentConfirmation({
               <RxMark className="size-6 text-sm" />
               MediCare
             </p>
-            <span className="heading-2 text-muted-foreground">Confirmation</span>
+            <span className="heading-2 text-muted-foreground">{t("label")}</span>
           </div>
           <div className="letterhead-rule mt-3" />
 
@@ -90,32 +95,32 @@ export function AppointmentConfirmation({
             )}
             <div className="flex items-center gap-3 text-muted-foreground">
               <Calendar className="size-4 text-primary" />
-              <span className="tabular">{formatDate(date)}</span>
+              <span className="tabular">{formatDate(date, locale)}</span>
             </div>
             <div className="flex items-center gap-3 text-muted-foreground">
               <Clock className="size-4 text-primary" />
               <span className="tabular">
-                {formatTime(startTime)} - {formatTime(endTime)}
+                {formatTime(startTime, locale)} - {formatTime(endTime, locale)}
               </span>
             </div>
             <div className="flex items-center justify-between border-t border-border pt-3 font-semibold text-foreground">
-              <span>Consultation Fee</span>
+              <span>{t("fee")}</span>
               <div className="flex items-center text-primary">
                 <DollarSign className="size-4" />
-                <span className="tabular">{formatCurrency(consultationFee)}</span>
+                <span className="tabular">{formatCurrency(consultationFee, locale)}</span>
               </div>
             </div>
           </div>
 
           <div className="stamp-ring mt-5 inline-flex -rotate-3 items-center gap-1.5 px-4 py-1.5 text-sm font-bold uppercase tracking-widest text-primary">
-            Booked
+            {t("booked")}
           </div>
         </div>
       </div>
 
       <div className="flex justify-center pt-2">
         <Button onClick={onViewAppointments} className="w-full sm:w-auto px-8">
-          View My Appointments
+          {t("viewAll")}
         </Button>
       </div>
     </div>

@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import {
   LayoutDashboard,
   Users,
@@ -15,22 +14,9 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn, isPathActive } from "@/lib/utils";
 import { BiroCircle } from "@/components/business/BiroCircle";
-
-const adminLinks: { label: string; href: string; icon: LucideIcon }[] = [
-  { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { label: "Users", href: "/admin/users", icon: Users },
-  { label: "Clinics", href: "/admin/clinics", icon: Building2 },
-  { label: "Specialties", href: "/admin/specialties", icon: Stethoscope },
-  { label: "Doctors", href: "/admin/doctors", icon: UserRound },
-  { label: "Schedules", href: "/admin/doctor-schedules", icon: Clock },
-  { label: "Slots", href: "/admin/appointment-slots", icon: CalendarRange },
-  { label: "Appointments", href: "/admin/appointments", icon: Calendar },
-  { label: "Payments", href: "/admin/payments", icon: CreditCard },
-  { label: "Reviews", href: "/admin/reviews", icon: Star },
-  { label: "Patients", href: "/admin/patients", icon: Users },
-];
 
 export function AdminSidebar({
   className,
@@ -40,6 +26,21 @@ export function AdminSidebar({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  const t = useTranslations();
+
+  const adminLinks: { label: string; href: string; icon: LucideIcon }[] = [
+    { label: t("adminChrome.dashboard"), href: "/admin/dashboard", icon: LayoutDashboard },
+    { label: t("adminChrome.users"), href: "/admin/users", icon: Users },
+    { label: t("adminChrome.clinics"), href: "/admin/clinics", icon: Building2 },
+    { label: t("adminChrome.specialties"), href: "/admin/specialties", icon: Stethoscope },
+    { label: t("adminChrome.doctors"), href: "/admin/doctors", icon: UserRound },
+    { label: t("adminChrome.schedules"), href: "/admin/doctor-schedules", icon: Clock },
+    { label: t("adminChrome.slots"), href: "/admin/appointment-slots", icon: CalendarRange },
+    { label: t("adminChrome.appointments"), href: "/admin/appointments", icon: Calendar },
+    { label: t("adminChrome.payments"), href: "/admin/payments", icon: CreditCard },
+    { label: t("adminChrome.reviews"), href: "/admin/reviews", icon: Star },
+    { label: t("adminChrome.patients"), href: "/admin/patients", icon: Users },
+  ];
 
   return (
     <nav className={cn("flex flex-col gap-1 overflow-y-auto p-4", className)}>

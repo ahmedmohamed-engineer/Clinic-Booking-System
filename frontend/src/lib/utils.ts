@@ -57,9 +57,26 @@ export function resolveDisplayName(
 export const APP_TIMEZONE = "Africa/Cairo";
 export const APP_LOCALE = "en-EG";
 
-export function formatDate(date: string | Date): string {
+/**
+ * Maps a next-intl locale to the ICU locale used for date/time/number
+ * rendering. Arabic keeps the Latin digit set (`-u-nu-latn`) so numbers
+ * stay tabular and consistent with data-driven values (phones, fees,
+ * references) — only the month/day names and AM/PM markers switch to
+ * Arabic.
+ */
+const ICU_LOCALES: Record<string, string> = {
+  en: "en-EG",
+  ar: "ar-EG-u-nu-latn",
+};
+
+function resolveIcuLocale(locale?: string): string {
+  if (!locale) return APP_LOCALE;
+  return ICU_LOCALES[locale] ?? locale;
+}
+
+export function formatDate(date: string | Date, locale?: string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  const parts = new Intl.DateTimeFormat(APP_LOCALE, {
+  const parts = new Intl.DateTimeFormat(resolveIcuLocale(locale), {
     timeZone: APP_TIMEZONE,
     day: "numeric",
     month: "short",
@@ -72,22 +89,36 @@ export function formatDate(date: string | Date): string {
   return `${value.day} ${value.month} ${value.year}`;
 }
 
-export function formatDateTime(date: string | Date, time: string): string {
-  return `${formatDate(date)} • ${formatTime(time)}`;
+export function formatDateTime(
+  date: string | Date,
+  time: string,
+  locale?: string,
+): string {
+  return `${formatDate(date, locale)} • ${formatTime(time, locale)}`;
 }
 
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
+export function formatCurrency(amount: number, locale?: string): string {
+  return new Intl.NumberFormat(resolveIcuLocale(locale), {
     style: "currency",
     currency: "USD",
   }).format(amount);
 }
 
-export function formatTime(time: string): string {
+export function formatTime(time: string, locale?: string): string {
   const [hours, minutes] = time.split(":");
   const h = parseInt(hours, 10);
   const ampm = h >= 12 ? "PM" : "AM";
   const hour12 = h % 12 || 12;
+  if (locale && locale !== "en") {
+    // Arabic meridiem markers (ص / م) and localized numerals, Latin digits
+    // kept for the tabular-numerals rule.
+    const d = new Date(2000, 0, 1, h, parseInt(minutes, 10) || 0);
+    return new Intl.DateTimeFormat(resolveIcuLocale(locale), {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(d);
+  }
   return `${hour12}:${minutes} ${ampm}`;
 }
 

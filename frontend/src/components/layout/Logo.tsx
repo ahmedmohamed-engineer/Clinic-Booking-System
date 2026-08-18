@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -22,6 +23,8 @@ export function RxMark({ className }: { className?: string }) {
 }
 
 export function Logo({ href = "/", className }: LogoProps) {
+  const t = useTranslations("logo");
+
   return (
     <Link
       href={href}
@@ -29,7 +32,7 @@ export function Logo({ href = "/", className }: LogoProps) {
         "group inline-flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         className,
       )}
-      aria-label="MediCare home"
+      aria-label={t("aria")}
     >
       <RxMark className="transition-transform duration-200 group-hover:-rotate-3 motion-reduce:transition-none" />
       <span className="flex flex-col leading-none">
@@ -37,7 +40,7 @@ export function Logo({ href = "/", className }: LogoProps) {
           Medi<span className="text-primary">Care</span>
         </span>
         <span className="heading-2 mt-1 text-[0.6rem] tracking-[0.18em]">
-          Appointment prescription
+          {t("tagline")}
         </span>
       </span>
     </Link>

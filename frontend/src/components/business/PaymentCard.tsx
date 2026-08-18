@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import { CreditCard, Receipt } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/business/StatusBadge";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
@@ -18,6 +19,8 @@ export const PaymentCard = memo(function PaymentCard({
   onPay,
   isPaying,
 }: PaymentCardProps) {
+  const t = useTranslations("business.paymentCard");
+  const locale = useLocale();
   const canPay = payment.status === "pending" && Boolean(onPay);
 
   return (
@@ -28,13 +31,13 @@ export const PaymentCard = memo(function PaymentCard({
         </div>
         <div className="min-w-0">
           <h3 className="truncate text-sm font-medium text-foreground">
-            {formatCurrency(payment.amount)}
+            {formatCurrency(payment.amount, locale)}
           </h3>
           <p className="text-sm text-muted-foreground">
             {payment.method.replace(/_/g, " ")} · {payment.doctor.displayName}
           </p>
           <p className="text-xs text-muted-foreground">
-            {formatDateTime(payment.slot.date, payment.slot.startTime)}
+            {formatDateTime(payment.slot.date, payment.slot.startTime, locale)}
           </p>
         </div>
       </div>
@@ -43,15 +46,15 @@ export const PaymentCard = memo(function PaymentCard({
         <div className="text-left sm:text-right">
           <p className="text-sm text-muted-foreground">
             {payment.transactionReference
-              ? `Ref: ${payment.transactionReference}`
-              : "No transaction reference"}
+              ? t("reference", { ref: payment.transactionReference })
+              : t("noReference")}
           </p>
         </div>
         <StatusBadge status={payment.status} />
         {canPay && onPay && (
           <Button onClick={() => onPay(payment)} disabled={isPaying}>
             <CreditCard />
-            {isPaying ? "Processing..." : "Pay Now"}
+            {isPaying ? t("processing") : t("payNow")}
           </Button>
         )}
       </div>

@@ -388,3 +388,31 @@ html {
     color-mix(in oklch, var(--surface-container-lowest), var(--surface-container-highest) 18%) 75%
   );
 }
+
+/* =====================================================================
+   Arabic ink: the same pad, written in the hand of the region
+   ===================================================================== */
+
+/* The font roles never change between locales — the *faces* do. Archivo
+   and Kalam are swapped for their Arabic siblings on the Arabic document.
+   Because Tailwind's @theme inline inlines the variable reference into
+   every font utility, overriding the source variable (not --font-sans)
+   is what actually reaches the render. */
+html[lang="ar"] {
+  --font-archivo: var(--font-ibm-plex-sans-arabic), ui-sans-serif, system-ui,
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-kalam: var(--font-aref-ruqaa), var(--font-ibm-plex-sans-arabic),
+    ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Arabic joins its letters; wide tracking breaks the joined script. The
+   printed-label voice keeps its uppercase concept (harmless for Arabic)
+   but tracked typography is neutralized so the Plex/ruqaa faces keep
+   their ligatures. */
+html[lang="ar"] [class*="tracking-"] {
+  letter-spacing: 0;
+}
+
+html[lang="ar"] .heading-2 {
+  letter-spacing: 0;
+}

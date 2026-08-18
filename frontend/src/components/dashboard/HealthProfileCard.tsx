@@ -1,4 +1,7 @@
-import Link from "next/link";
+"use client";
+
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { CalendarPlus } from "lucide-react";
 import { ProfileSummaryCard } from "@/components/business/ProfileSummaryCard";
 import { Button } from "@/components/ui/button";
@@ -15,6 +18,7 @@ export function HealthProfileCard({
   patient,
   isLoading,
 }: HealthProfileCardProps) {
+  const td = useTranslations("dashboard");
   return (
     <section
       aria-labelledby="health-summary-heading"
@@ -24,7 +28,7 @@ export function HealthProfileCard({
         id="health-summary-heading"
         className="text-lg font-semibold text-foreground"
       >
-        Health details
+        {td("healthSummary")}
       </h2>
       {isLoading ? (
         <Skeleton variant="card" className="h-48" />
@@ -36,11 +40,11 @@ export function HealthProfileCard({
         <div className="rounded-xl border border-border bg-card">
           <EmptyState
             icon={<CalendarPlus className="size-12" />}
-            title="Add your contact details"
-            description="These help your clinic reach you about appointments."
+            title={td("completeProfile")}
+            description={td("completeProfileDesc")}
             action={
               <Link href="/profile">
-                <Button>Complete Profile</Button>
+                <Button>{td("completeProfileBtn")}</Button>
               </Link>
             }
           />

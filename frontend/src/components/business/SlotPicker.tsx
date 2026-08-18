@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import { useLocale, useTranslations } from "next-intl";
 
 import type { AppointmentSlotRecord } from "@/types/models/slot";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ interface SlotButtonProps {
 }
 
 function SlotButton({ slot, isSelected, onSelect }: SlotButtonProps) {
+  const locale = useLocale();
   const isAvailable = slot.status === "available";
   return (
     <Button
@@ -41,9 +43,9 @@ function SlotButton({ slot, isSelected, onSelect }: SlotButtonProps) {
           : "border-status-success/25 bg-status-success/10 text-on-surface hover:border-primary hover:bg-status-success/15",
       )}
     >
-      <span className="tabular">{formatTime(slot.startTime)}</span>
-      <span className="tabular text-[10px] opacity-75">
-        {formatTime(slot.endTime)}
+      <span className="tabular">{formatTime(slot.startTime, locale)}</span>
+      <span className="tabular text-xs opacity-75">
+        {formatTime(slot.endTime, locale)}
       </span>
       {isSelected && (
         <BiroCircle className="absolute -top-2 -right-2 size-5 bg-card rounded-full text-primary" />
@@ -80,6 +82,7 @@ export function SlotPicker({
   onDateChange,
   isLoading,
 }: SlotPickerProps) {
+  const t = useTranslations("slotPicker");
   const todayStr = toISODateString(new Date());
 
   return (
@@ -87,10 +90,10 @@ export function SlotPicker({
       <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <Label htmlFor="slot-date" className="text-sm font-medium text-foreground">
-            Select Date
+            {t("selectDate")}
           </Label>
           <p className="text-xs text-muted-foreground">
-            Choose a date to view available appointment slots.
+            {t("hint")}
           </p>
         </div>
         <div className="flex w-full items-center gap-2 sm:w-auto">
@@ -109,7 +112,7 @@ export function SlotPicker({
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
           <Clock className="size-4 text-primary" />
-          <span>Available Time Slots</span>
+          <span>{t("available")}</span>
         </div>
 
         {isLoading ? (
@@ -124,7 +127,7 @@ export function SlotPicker({
           </div>
         ) : slots.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border py-10 text-center text-muted-foreground">
-            No available slots for this date. Please select another date.
+            {t("empty")}
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
@@ -142,7 +145,7 @@ export function SlotPicker({
 
       <div className="flex items-center gap-2 rounded-md bg-primary/5 p-3 text-xs text-primary">
         <Info className="size-4 shrink-0" />
-        <span>All times are shown in Africa/Cairo (EG). Select a slot to proceed.</span>
+        <span>{t("timezone")}</span>
       </div>
     </div>
   );

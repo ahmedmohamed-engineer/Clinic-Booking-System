@@ -1,4 +1,5 @@
 import { CalendarDays, Phone, User as UserIcon, VenusAndMars } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { formatDate, resolveDisplayName } from "@/lib/utils";
 import type { PatientRecord } from "@/types/models/patient";
 
@@ -8,6 +9,10 @@ interface ProfileSummaryCardProps {
 }
 
 export function ProfileSummaryCard({ patient, email }: ProfileSummaryCardProps) {
+  const tp = useTranslations("profile");
+  const tb = useTranslations("business.profileCard");
+  const locale = useLocale();
+
   if (!patient) return null;
 
   const displayName = resolveDisplayName([patient.fullName], email, "Patient");
@@ -15,18 +20,18 @@ export function ProfileSummaryCard({ patient, email }: ProfileSummaryCardProps) 
   const rows = [
     {
       icon: Phone,
-      label: "Phone",
-      value: patient.phone ?? "Not set",
+      label: tp("phone"),
+      value: patient.phone ?? tb("notSet"),
     },
     {
       icon: VenusAndMars,
-      label: "Gender",
-      value: patient.gender ?? "Not set",
+      label: tp("gender"),
+      value: patient.gender ?? tb("notSet"),
     },
     {
       icon: CalendarDays,
-      label: "Birth date",
-      value: patient.birthDate ? formatDate(patient.birthDate) : "Not set",
+      label: tp("birthDate"),
+      value: patient.birthDate ? formatDate(patient.birthDate, locale) : tb("notSet"),
     },
   ];
 
@@ -40,7 +45,7 @@ export function ProfileSummaryCard({ patient, email }: ProfileSummaryCardProps) 
           <h3 className="truncate text-sm font-semibold text-foreground">
             {displayName}
           </h3>
-          <p className="text-sm text-muted-foreground">Patient profile</p>
+          <p className="text-sm text-muted-foreground">{tb("patientProfile")}</p>
         </div>
       </div>
 

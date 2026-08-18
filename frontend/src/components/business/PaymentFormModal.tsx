@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,6 +39,10 @@ export function PaymentFormModal({
   isSubmitting,
 }: PaymentFormModalProps) {
   const { parse } = useApiError();
+  const t = useTranslations("adminForm");
+  const tc = useTranslations("common");
+  const tp = useTranslations("admin");
+  const tStatus = useTranslations("status");
   const [amount, setAmount] = useState(String(payment.amount));
   const [method, setMethod] = useState(payment.method);
   const [status, setStatus] = useState(payment.status);
@@ -80,7 +85,7 @@ export function PaymentFormModal({
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit payment</DialogTitle>
+          <DialogTitle>{t("editPayment")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4" noValidate>
           {formError && (
@@ -93,7 +98,7 @@ export function PaymentFormModal({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="amount">Amount</Label>
+            <Label htmlFor="amount">{t("amount")}</Label>
             <Input
               id="amount"
               type="number"
@@ -111,19 +116,19 @@ export function PaymentFormModal({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="method">Method</Label>
+              <Label htmlFor="method">{t("method")}</Label>
               <Select
                 value={method}
                 onValueChange={(value) => setMethod(value as PaymentRecord["method"])}
                 disabled={isSubmitting}
               >
                 <SelectTrigger id="method" className="w-full">
-                  <SelectValue placeholder="Select method" />
+                  <SelectValue placeholder={t("selectMethod")} />
                 </SelectTrigger>
                 <SelectContent>
                   {PAYMENT_METHODS.map((option) => (
                     <SelectItem key={option} value={option}>
-                      {option.replace(/_/g, " ")}
+                      {tp(`payMethods.${option}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -134,19 +139,19 @@ export function PaymentFormModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="status">{t("status")}</Label>
               <Select
                 value={status}
                 onValueChange={(value) => setStatus(value as PaymentRecord["status"])}
                 disabled={isSubmitting}
               >
                 <SelectTrigger id="status" className="w-full">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder={t("selectStatus")} />
                 </SelectTrigger>
                 <SelectContent>
                   {PAYMENT_STATUSES.map((option) => (
                     <SelectItem key={option} value={option}>
-                      {option}
+                      {tStatus(option)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -158,7 +163,7 @@ export function PaymentFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="transactionReference">Transaction reference (optional)</Label>
+            <Label htmlFor="transactionReference">{t("transactionReference")}</Label>
             <Input
               id="transactionReference"
               value={transactionReference}
@@ -175,10 +180,10 @@ export function PaymentFormModal({
 
           <div className="mt-6 flex justify-end gap-3">
             <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save changes"}
+              {isSubmitting ? tc("saving") : tc("save")}
             </Button>
           </div>
         </form>
