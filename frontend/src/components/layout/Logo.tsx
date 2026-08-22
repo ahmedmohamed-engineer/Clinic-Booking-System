@@ -5,6 +5,10 @@ import { cn } from "@/lib/utils";
 interface LogoProps {
   href?: string;
   className?: string;
+  /** Hide the wordmark + tagline below `sm` so narrow headers (e.g. the
+   *  admin bar at 375px) keep only the Rx mark. Opt-in: consumers that
+   *  always have room (Navbar, AuthLayout) leave it unset. */
+  hideTextOnMobile?: boolean;
 }
 
 /** The prescription mark: an Rx drawn in stamp-ink, set beside the letterhead wordmark. */
@@ -22,7 +26,11 @@ export function RxMark({ className }: { className?: string }) {
   );
 }
 
-export function Logo({ href = "/", className }: LogoProps) {
+export function Logo({
+  href = "/",
+  className,
+  hideTextOnMobile,
+}: LogoProps) {
   const t = useTranslations("logo");
 
   return (
@@ -35,7 +43,12 @@ export function Logo({ href = "/", className }: LogoProps) {
       aria-label={t("aria")}
     >
       <RxMark className="transition-transform duration-200 group-hover:-rotate-3 motion-reduce:transition-none" />
-      <span className="flex flex-col leading-none">
+      <span
+        className={cn(
+          "flex flex-col leading-none",
+          hideTextOnMobile && "max-sm:hidden",
+        )}
+      >
         <span className="text-lg font-bold tracking-tight text-foreground">
           Medi<span className="text-primary">Care</span>
         </span>

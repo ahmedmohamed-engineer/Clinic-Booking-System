@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { queryClient } from "@/lib/query-client";
+import { prefetchAdminQuery } from "@/lib/prefetch";
 import { STALE_TIMES } from "@/config";
 
 interface UsePrefetchAdminPageOptions<TParams> {
@@ -30,7 +30,7 @@ export function usePrefetchAdminPage<TParams extends { page?: number }>({
     (targetPage: number) => {
       if (targetPage < 1 || targetPage > totalPages) return;
       const targetParams = { ...latestRef.current.params, page: targetPage } as TParams;
-      void queryClient.prefetchQuery({
+      prefetchAdminQuery({
         queryKey: latestRef.current.queryKey(targetParams),
         queryFn: () => latestRef.current.queryFn(targetParams),
         staleTime,

@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 import { uploadConfig } from "../config/upload.js";
+import { AppError } from "../shared/errors/app-error.js";
 
 const AVATARS_SUBDIR = "avatars";
 const AVATAR_SIZE = 400;
@@ -35,10 +36,25 @@ export async function saveAvatar(buffer: Buffer): Promise<SavedAvatar> {
   const filePath = path.join(dir, name);
   const publicUrl = `/uploads/${AVATARS_SUBDIR}/${name}`;
 
-  await sharp(buffer)
-    .resize(AVATAR_SIZE, AVATAR_SIZE, { fit: "cover" })
-    .webp()
-    .toFile(filePath);
+  // Decode + re-encode fully in memory first: a corrupted or spoofed payload
+  // (valid MIME, undecodable bytes) fails here and nothing reaches the disk.
+  // If this throws, uploadConfig's MIME allow-list already passed, so the
+  // failure means the bytes are not a real JPEG/PNG/WebP image.
+  let encoded: Buffer;
+  try {
+    encoded = await sharp(buffer)
+      .resize(AVATAR_SIZE, AVATAR_SIZE, { fit: "cover" })
+      .webp()
+      .toBuffer();
+  } catch {
+    throw AppError.badRequest(
+      "Invalid image file. Upload a valid JPEG, PNG, or WebP image.",
+    );
+  }
+
+  // Persist only the freshly re-encoded image. A filesystem error here is a
+  // genuine server failure and must surface as a 500, not a client error.
+  await fs.promises.writeFile(filePath, encoded);
 
   return { path: filePath, publicUrl };
 }

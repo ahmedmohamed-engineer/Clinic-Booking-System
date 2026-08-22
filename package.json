@@ -8,6 +8,10 @@
     "build": "tsc && node scripts/copy-migrations.mjs",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
+    "typecheck:test": "tsc -p tsconfig.test.json",
+    "test:avatar": "tsx --test src/services/avatar-storage.test.ts",
+    "test:cors": "tsx --test src/config/cors.test.ts src/app.cors.test.ts",
+    "test:powered-by": "tsx --test src/app.powered-by.test.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:test": "PGPASSWORD=postgres psql -h postgres -U postgres -d clinic_booking -f src/database/tests/database_validation.sql",
     "db:cleanup": "PGPASSWORD=postgres psql -h postgres -U postgres -d clinic_booking -f src/database/tests/cleanup.sql"
